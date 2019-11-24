@@ -1,18 +1,11 @@
-import * as fs from 'fs'
-import TSV from 'tsv'
+import { TsvExt } from '../lib'
 
-const Roles = class {
-	#data
+const Roles = class extends TsvExt {
+	static keys = ['name', 'application', 'superRole', 'description', 'notes']
 
-	constructor(file) {
-		const contents = fs.readFileSync(file, 'utf8')
-		const lines = contents.split("\n")
-		const filteredLines = lines.filter((line) => !line.match(/^\s*$/))
-
-		this.data = TSV.parse(filteredLines.join("\n"))
+	constructor(fileName) {
+		super(Roles.keys, fileName)
 	}
-
-	get length() { return this.data.length }
 }
 
 export { Roles }

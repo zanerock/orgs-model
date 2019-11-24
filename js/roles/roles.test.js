@@ -1,4 +1,3 @@
-import { TSV } from 'tsv'
 import { Roles } from './roles'
 
 describe(`Roles`, () => {
@@ -9,4 +8,9 @@ describe(`Roles`, () => {
 
 	test('parses test file', () => expect(testRoles).toBeTruthy())
 	test('ignore blank lines', () => expect(testRoles.length).toBe(1))
+	test(`properly sets fields`, () => {
+		testRoles.reset()
+		const role = testRoles.next()
+		expect(role['name']).toBe('RoleA')
+	})
 })
