@@ -4,6 +4,7 @@
   "description": "Model definitions library for Liquid Policy.",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
+  "files": ["dist/"],
   "scripts": {
     "build": "catalyst-scripts build",
     "pretest": "catalyst-scripts pretest",
