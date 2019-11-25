@@ -13,24 +13,27 @@ const item = function(keys, fields, pos) {
 }
 
 const TsvExt = class {
+  #headers
   #fileName
-  #header
   #keys
   #data
   #cursor
 
-  constructor(keys, fileName) {
+  constructor(headers, keys, fileName) {
+    this.headers = headers
     this.fileName = fileName
 
     const contents = fs.readFileSync(fileName, 'utf8')
     // allow blank lines (which are ignored)
     const lines = contents.split("\n")
-    this.header = lines.shift()
+    lines.shift() // remove headers line
     const filteredLines = lines.filter((line) => !line.match(/^\s*$/))
     TSV.header = false
     this.keys = keys
     this.data = TSV.parse(filteredLines.join("\n"))
   }
+
+  get length() { return this.data.length }
 
   reset() { this.cursor = -1 }
 
@@ -40,7 +43,28 @@ const TsvExt = class {
     else return item(this.keys, this.data[this.cursor], this.cursor)
   }
 
-  get length() { return this.data.length }
+  add(item) {
+    const line = []
+    this.keys.forEach((key) => {
+      const field = item[key]
+      if (field === undefined) throw new Error(`Item does not define key '${key}'.`)
+      line.push(field)
+    })
+    let failDesc;
+    if (this.notUnique && (failDesc = this.notUnique(this.data.slice(), item))) throw new Error(failDesc)
+    this.data.push(line)
+  }
+
+  remove(key) {
+    const index = this.data.findIndex((line) => this.matchKey(line, key))
+    if (index >= 0) return this.data.splice(index, 1)
+    else return null
+  }
+
+  write() {
+    fs.writeFileSync(this.fileName,
+                     `${this.headers.join("\t")}\n${this.data.map((line) => line.join("\t")).join("\n")}\n`)
+  }
 }
 
 export { TsvExt }
