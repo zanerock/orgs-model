@@ -50,7 +50,15 @@ const TsvExt = class {
       if (field === undefined) throw new Error(`Item does not define key '${key}'.`)
       line.push(field)
     })
+    let failDesc;
+    if (this.notUnique && (failDesc = this.notUnique(this.data.slice(), item))) throw new Error(failDesc)
     this.data.push(line)
+  }
+
+  remove(key) {
+    const index = this.data.findIndex((line) => this.matchKey(line, key))
+    if (index >= 0) return this.data.splice(index, 1)
+    else return null
   }
 
   write() {
