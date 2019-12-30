@@ -5,8 +5,12 @@
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "files": [
+    "bin/"
     "dist/"
   ],
+  "bin": {
+   "liq-tsv2md": "./bin/liq-tsv2md.sh"
+ },
   "scripts": {
     "build": "catalyst-scripts build",
     "pretest": "catalyst-scripts pretest",
