@@ -39,7 +39,7 @@ const TsvExt = class {
 
   next() {
     this.cursor += 1
-    if (this.cursor > this.length) return null
+    if (this.cursor >= this.length) return null
     else return item(this.keys, this.data[this.cursor], this.cursor)
   }
 
@@ -48,7 +48,9 @@ const TsvExt = class {
     this.keys.forEach((key) => {
       const field = item[key]
       if (field === undefined) throw new Error(`Item does not define key '${key}'.`)
-      line.push(field)
+      // We convert a single '-' to 'null'. Primarily because Atom trims white space at the end of  lines (!). Fix that,
+      // and consider changing this.
+      line.push(field === '-' ? null : field)
     })
     let failDesc;
     if (this.notUnique && (failDesc = this.notUnique(this.data.slice(), item))) throw new Error(failDesc)
