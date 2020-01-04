@@ -25,6 +25,7 @@ const Policies = class {
   getRoles() {
     if (this.roles !== undefined) return this.roles
 
+    // TODO: allom multiple role files to be merged
     const rolesFile = this.findFile(this.rolesFile)
     this.roles = new Roles(rolesFile)
     return this.roles
@@ -51,10 +52,10 @@ const Policies = class {
     if (!fs.existsSync(this.docDir)) throw new Error(`Target document dir '${this.docDir}' does not exist.`)
 
     const roles = this.getRoles()
-
-    roles.data.forEach((i) => {
-      this.addTerm(i['Role Name'], i['Job Description'])
-    })
+    roles.reset()
+    let i; while ((i = roles.next())) {
+      this.addTerm(i['name'], i['description'])
+    }
 
     let glossaryContent = "# Glossary\n\n<dl>"
     this.terms.sort((a, b) => a[0].localeCompare(b[0]))
