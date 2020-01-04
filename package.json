@@ -33,5 +33,11 @@
   "dependencies": {
     "fs": "0.0.1-security",
     "tsv": "^0.2.0"
+  },
+  "liquidDev": {
+    "orgBase": "git@github.com:Liquid-Labs/Liquid-Labs.git",
+    "changeControl": {
+      "type": "code"
+    }
   }
 }
