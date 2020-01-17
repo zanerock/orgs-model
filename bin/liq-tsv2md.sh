@@ -5,15 +5,15 @@ set -o errexit # exit on errors
 set -o nounset # exit on use of uninitialized variable
 set -o pipefail
 
-INPUT="${1}"
-OUTPUT="${2}"
-
-source "${HOME}/.liquid-development/orgs/curr_org/sensitive/settings.sh"
+# pull off the output argument
+OUTPUT="${@:$#}"
+set -- "${@:1:$(($#-1))}"
 
 mkdir -p $(dirname "$OUTPUT")
 
-# skip the (conventional) header and following blank line
-tail +2 "${INPUT}" | perl -e '
+npx liq-standards-filter-abs "$@" | perl -e'
+use strict; use warnings;
+
 my $outFile = shift;
 my $lastSubSection = "";
 my $anyIncluded = 0;
@@ -21,33 +21,14 @@ my $anyIncluded = 0;
 my $output = "{{ define \"${outFile}\" }}\n\n";
 
 while (<>) {
-  use strict; use warnings;
-  my ($uuid, $subSection, $statement, $absCondition, $indCondition, $refs) =
+
+  my ($uuid, $subSection, $statement, $absCondition, $indCondition, $auditCondition, $refs) =
     split(/\t/, "$_");
 
-  my @conditions = split(/\s*,\s*/, $absCondition);
-  my $include = 1;
-
-  while (@conditions && $include) {
-    my $condition = shift @conditions;
-    $condition =~ s/HAS_TECHNICAL_OPS/$ENV{'HAS_TECHNICAL_OPS'}/;
-    $condition =~ s/DEVELOPS_APPS/$ENV{'DEVELOPS_APPS'}/;
-    $condition =~ s/GEN_SEC_LVL/$ENV{'GEN_SEC_LVL'}/;
-    $condition =~ s/SEC_TRIVIAL/1/;
-    $condition =~ s/SEC_MODERATE/2/;
-    $condition =~ s/SEC_HARDENED/3/;
-    $condition =~ s/ALWAYS/1/;
-
-    $condition =~ /[0-9]<>=/ or die "Invalid condition: '$condition'";
-
-    eval "$condition" or $include = 0;
+  if ($subSection ne $lastSubSection) {
+    $output .= "\n### $subSection\n\n";
+    $lastSubSection = $subSection;
   }
-
-  if ($include) {
-    if ($subSection ne $lastSubSection) {
-      $output .= "\n### $subSection\n\n";
-      $lastSubSection = $subSection;
-    }
 
     $output .= "* $statement\n";
     $anyIncluded = 1;
