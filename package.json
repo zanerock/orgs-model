@@ -9,6 +9,7 @@
     "dist/"
   ],
   "bin": {
+    "liq-standards-filter-abs": "./bin/liq-standards-filter-abs.sh",
     "liq-tsv2md": "./bin/liq-tsv2md.sh"
   },
   "scripts": {
