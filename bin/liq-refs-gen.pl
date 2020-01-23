@@ -3,7 +3,8 @@
 use strict; use warnings;
 
 my $out = shift;
-$out = "$ENV{'PWD'}/${out}";
+# $out = "$ENV{'PWD'}/${out}";
+my %proj_map = do $ARGV[0]; shift;
 my $my_package = shift;
 my $rel_path = shift;
 my @paths = @ARGV;
@@ -58,11 +59,21 @@ foreach my $path (@paths) {
     my $find_path = join('/', @adjustment);
     if (!$find_path) { $find_path = '.'; }
     $find_str = `cd 'node_modules/${my_package}/policy/${rel_path}'; find '$find_path' -maxdepth 1 -name '*.md'`;
-  }
+  } # if ($is_my_package)
   else {
     $find_str = `cd "${path}"; find . -maxdepth 1 -name "*.md"`;
   }
   my @files = split /\n/, $find_str;
+
+  if (!$is_my_package) {
+    print "bits:\n\t".join("\n\t", @bits)."\n$path_pivot\n#: ".$#bits."\n";
+    @files = map {
+        s|^\./||;
+        $proj_map{join('/', @bits[$path_pivot...$path_pivot + 1])}.'/'
+          .join('/', @bits[$path_pivot+2...$#bits])
+          ."/$_";
+      } @files;
+  }
 
   $tracker->{"files"} = \@files;
 }
@@ -84,6 +95,7 @@ sub print_refs {
 
     print $fd " " x ($depth * 2);
     # print $fd "${var_name}: ".join("/", @$path)."/${file}\n";
+    $file =~ s/ /%20/g;
     print $fd "${var_name}: ${file}\n";
   }
 
@@ -94,7 +106,7 @@ sub print_refs {
     my @new_path = (@$path, ($dir));
     print_refs($refs->{"dirs"}->{$dir}, \@new_path);
   }
-}
+} # foreach path
 
 print_refs($refs, []);
 close $fd;

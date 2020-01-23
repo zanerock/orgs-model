@@ -9,9 +9,10 @@
     "dist/"
   ],
   "bin": {
+    "liq-proj-mapper": "./bin/liq-proj-mapper.sh",
+    "liq-refs-gen": "./bin/liq-refs-gen.pl",
     "liq-standards-filter-abs": "./bin/liq-standards-filter-abs.sh",
-    "liq-tsv2md": "./bin/liq-tsv2md.pl",
-    "liq-refs-gen": "./bin/liq-refs-gen.pl"
+    "liq-tsv2md": "./bin/liq-tsv2md.pl"
   },
   "scripts": {
     "build": "catalyst-scripts build",
