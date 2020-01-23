@@ -66,7 +66,6 @@ foreach my $path (@paths) {
   my @files = split /\n/, $find_str;
 
   if (!$is_my_package) {
-    print "bits:\n\t".join("\n\t", @bits)."\n$path_pivot\n#: ".$#bits."\n";
     @files = map {
         s|^\./||;
         $proj_map{join('/', @bits[$path_pivot...$path_pivot + 1])}.'/'

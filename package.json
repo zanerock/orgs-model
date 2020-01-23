@@ -9,6 +9,8 @@
     "dist/"
   ],
   "bin": {
+    "liq-gen-make": "./bin/liq-gen-make.sh",
+    "liq-settings-conv": "./bin/liq-settings-conv.pl",
     "liq-proj-mapper": "./bin/liq-proj-mapper.sh",
     "liq-refs-gen": "./bin/liq-refs-gen.pl",
     "liq-standards-filter-abs": "./bin/liq-standards-filter-abs.sh",
