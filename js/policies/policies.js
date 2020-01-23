@@ -39,10 +39,6 @@ const Policies = class {
     else return results[0]
   }
 
-  addTerm(term, definition) {
-    this.terms.push([term, definition])
-  }
-
   setDocumentDir(dir) {
     this.docDir = dir
   }
@@ -52,16 +48,11 @@ const Policies = class {
     if (!fs.existsSync(this.docDir)) throw new Error(`Target document dir '${this.docDir}' does not exist.`)
 
     const roles = this.getRoles()
-    roles.reset()
-    let i; while ((i = roles.next())) {
-      this.addTerm(i['name'], i['description'])
-    }
 
-    let glossaryContent = "# Glossary\n\n<dl>"
-    this.terms.sort((a, b) => a[0].localeCompare(b[0]))
-    this.terms.forEach(([term, def]) => glossaryContent += `  <dt>${term}</dt>\n  <dd>${def}</dd>\n\n`)
-    glossaryContent += "</dl>\n"
-    fs.writeFileSync(`${this.docDir}/Glossary.md`, glossaryContent)
+    const glossary = new Glossary()
+    glossary.addTermsFromIterator(roles)
+
+    fs.writeFileSync(`${this.docDir}/Glossary.md`, glossary.generateContent())
   }
 }
 
