@@ -10,8 +10,8 @@
   ],
   "bin": {
     "liq-standards-filter-abs": "./bin/liq-standards-filter-abs.sh",
-    "liq-tsv2md": "./bin/liq-tsv2md.sh",
-    "liq-refs-gen": "./bin/liq-refs-gen.sh"
+    "liq-tsv2md": "./bin/liq-tsv2md.pl",
+    "liq-refs-gen": "./bin/liq-refs-gen.pl"
   },
   "scripts": {
     "build": "catalyst-scripts build",
