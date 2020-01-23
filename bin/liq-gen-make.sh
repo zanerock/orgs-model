@@ -20,15 +20,15 @@ ASSET_DIRS = $(shell find node_modules/@liquid-labs -path "*/policy-*/policy/*" 
 default: all
 
 clean:
-	rm -rf build/* policy/*
+	rm -rf .build/* policy/*
 
-build:
+.build:
 	mkdir -p $@
 
-build/settings.yaml : settings.sh $(SETTINGS_CONV) | build
+.build/settings.yaml : settings.sh $(SETTINGS_CONV) | .build
 	$(SETTINGS_CONV) "$@" "$<"
 
-build/proj-maps.pl : $(POLICY_PROJECTS) $(PROJ_MAPPER) | build
+.build/proj-maps.pl : $(POLICY_PROJECTS) $(PROJ_MAPPER) | .build
 	rm -f "$@"
 	$(PROJ_MAPPER) "$@" $(POLICY_PROJECTS)
 
@@ -51,14 +51,14 @@ foreach my $source (split /\n/, $sources) {
   (my $safe_name = $base_name) =~ s/ /\\ /g;
 
   if (!exists($refs_tracker{$common_path})) {
-    print "build/$common_path/policy-refs.yaml : ".'$(ASSET_DIRS) $(REFS_GEN) build/proj-maps.pl build/settings.yaml | build'."\n";
+    print ".build/$common_path/policy-refs.yaml : ".'$(ASSET_DIRS) $(REFS_GEN) .build/proj-maps.pl .build/settings.yaml | .build'."\n";
     print "\t".'rm -f "$@"'."\n";
     print "\t".'mkdir -p $(dir $@)'."\n";
-    print "\t".'$(REFS_GEN) "$@" ./build/proj-maps.pl "'.${project}.'" "'.${common_path}.'" $(ASSET_DIRS)'."\n";
-    print "\t".'cat "$@" build/settings.yaml > tmp.yaml && mv tmp.yaml "$@"'."\n";
+    print "\t".'$(REFS_GEN) "$@" ./.build/proj-maps.pl "'.${project}.'" "'.${common_path}.'" $(ASSET_DIRS)'."\n";
+    print "\t".'cat "$@" .build/settings.yaml > tmp.yaml && mv tmp.yaml "$@"'."\n";
     print "\n";
 
-    $refs_tracker{$common_path} = "build/${common_path}/policy-refs.yaml";
+    $refs_tracker{$common_path} = ".build/${common_path}/policy-refs.yaml";
   }
 
   (my $items = $source) =~ s/\.md/ - items.tsv/;
@@ -66,14 +66,14 @@ foreach my $source (split /\n/, $sources) {
   my $tsv = '';
   my $tmpl = '';
   if (-e "$items") {
-    $tsv = "build/${common_path}/${safe_name}".'\ -\ items.tsv';
-    print "$tsv : $safe_items".' settings.sh $(TSV_FILTER) | build'."\n";
+    $tsv = ".build/${common_path}/${safe_name}".'\ -\ items.tsv';
+    print "$tsv : $safe_items".' settings.sh $(TSV_FILTER) | .build'."\n";
     print "\t".'rm -f "$@"'."\n";
     print "\t".'$(TSV_FILTER) --settings=settings.sh "$<" "$@"'."\n";
     print "\n";
 
-    $tmpl = "build/${common_path}/${safe_name}".'\ -\ items.tmpl';
-    print "$tmpl : ".$tsv.' $(TSV2MD) | build'."\n";
+    $tmpl = ".build/${common_path}/${safe_name}".'\ -\ items.tmpl';
+    print "$tmpl : ".$tsv.' $(TSV2MD) | .build'."\n";
     print "\t".'rm -f "$@"'."\n";
     print "\t".'$(TSV2MD) "$<" "$@"'."\n";
     print "\n";
@@ -84,7 +84,7 @@ foreach my $source (split /\n/, $sources) {
 
   my $safe_target = "policy/${common_path}/${safe_name}.md";
   my $refs = $refs_tracker{$common_path};
-  print "$safe_target : $safe_source $tmpl $refs build/settings.yaml\n";
+  print "$safe_target : $safe_source $tmpl $refs .build/settings.yaml\n";
   print "\t".'mkdir -p $(shell dirname "$@")'."\n"; # $(dir...) does not play will spaces
   print "\tcat $tmpl ".'"$<" | ./gucci --vars-file '.$refs.' > "$@" || { rm "$@"; echo "\nFailed to make\n$@\n"; }'."\n";
   print "\n";

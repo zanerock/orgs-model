@@ -8,7 +8,7 @@ my $lastSubSection = "";
 my $anyIncluded = 0;
 my $template_name = $file;
 $template_name =~ s/\.\w+$//;
-$template_name =~ s|build/||;
+$template_name =~ s|\.build/||;
 
 my $output = "{{ define \"${template_name}\" }}\n\n";
 open my $fd, "<", "$file";
