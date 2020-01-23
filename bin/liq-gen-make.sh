@@ -38,7 +38,7 @@ print $common_make;
 
 foreach my $source (split /\n/, $sources) {
   (my $safe_source = $source) =~ s/ /\\ /g;
-  my @bits = split(/\//, $source);
+  my @bits = split(/\/+/, $source);
   my $pivot = 0;
   for (@bits) {
     if (/^@/) { last; }
@@ -55,7 +55,7 @@ foreach my $source (split /\n/, $sources) {
     print "\t".'rm -f "$@"'."\n";
     print "\t".'mkdir -p $(dir $@)'."\n";
     print "\t".'$(REFS_GEN) "$@" ./build/proj-maps.pl "'.${project}.'" "'.${common_path}.'" $(ASSET_DIRS)'."\n";
-    print "\t".'cat "$@" build/settings.yaml > tmp.yaml && mv tmp.yaml "$@"';
+    print "\t".'cat "$@" build/settings.yaml > tmp.yaml && mv tmp.yaml "$@"'."\n";
     print "\n";
 
     $refs_tracker{$common_path} = "build/${common_path}/policy-refs.yaml";
@@ -82,9 +82,9 @@ foreach my $source (split /\n/, $sources) {
     $safe_items = '';
   }
 
-  my $safe_target = "build/${common_path}/${safe_name}.md";
+  my $safe_target = "policy/${common_path}/${safe_name}.md";
   my $refs = $refs_tracker{$common_path};
-  print "$safe_target : $safe_source $safe_items $refs build/settings.yaml\n";
+  print "$safe_target : $safe_source $tmpl $refs build/settings.yaml\n";
   print "\t".'mkdir -p $(shell dirname "$@")'."\n"; # $(dir...) does not play will spaces
   print "\tcat $tmpl ".'"$<" | ./gucci --vars-file '.$refs.' > "$@" || { rm "$@"; echo "\nFailed to make\n$@\n"; }'."\n";
   print "\n";
