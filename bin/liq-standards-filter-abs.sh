@@ -33,9 +33,15 @@ shift
 VARS=${VARS:1}
 
 INPUT="${1}"
+echo "INPUT: $INPUT"
+OUTPUT="${2}"
+mkdir -p "$(dirname "${OUTPUT}")"
 # +2 skips the (conventional) header
+# tail +2 "${INPUT}"
 tail +2 "${INPUT}" | env -i -S "$VARS" perl -e '
 use strict; use warnings;
+
+my $output_file = $ARGV[0];
 
 my %constants = (
   "SEC_TRIVIAL" => 1,
@@ -45,12 +51,14 @@ my %constants = (
   "NEVER" => 0
 );
 
-while (<>) {
+open my $fd, ">", "$output_file" or die "Could not open \"$output_file\" ($!)";
+
+while (<STDIN>) {
   my $line="$_";
   chomp $line;
   my $lineno = $. + 1;
 
-  if ($line =~ /^[^#\s]/) { # else skip blanks and comments
+  if ($line !~ /^(#.*|\s*)$/) { # else skip blanks and comments
     my ($uuid, $subSection, $statement, $absCondition, $indCondition, $auditCondition, $refs) =
       split(/\t/, "$line") or die "Could not split record at line ${lineno}.";
 
@@ -72,10 +80,12 @@ while (<>) {
     }
 
     if ($include) {
-      print "$line\n";
+      print $fd "$line\n";
     }
     elsif ('$SHOW_DROPPED') {
       print STDERR "DROPPED: $uuid\n";
     }
   }
-}'
+}
+close $fd;
+' "${OUTPUT}"
