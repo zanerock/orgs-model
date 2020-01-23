@@ -14,10 +14,12 @@
     "liq-proj-mapper": "./bin/liq-proj-mapper.sh",
     "liq-refs-gen": "./bin/liq-refs-gen.pl",
     "liq-standards-filter-abs": "./bin/liq-standards-filter-abs.sh",
-    "liq-tsv2md": "./bin/liq-tsv2md.pl"
+    "liq-tsv2md": "./bin/liq-tsv2md.pl",
+    "gucci": "./bin/gucci"
   },
   "scripts": {
     "build": "catalyst-scripts build",
+    "preinstall": "./bin/gucci-install.sh",
     "pretest": "catalyst-scripts pretest",
     "test": "catalyst-scripts test",
     "postversion": "git push && git push --tags"

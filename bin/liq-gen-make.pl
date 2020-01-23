@@ -9,11 +9,14 @@ my @all = ();
 
 my $common_make = <<'EOF';
 BIN = $(shell npm bin)
+
 SETTINGS_CONV = $(BIN)/liq-settings-conv
 PROJ_MAPPER = $(BIN)/liq-proj-mapper
 REFS_GEN = $(BIN)/liq-refs-gen
 TSV_FILTER = $(BIN)/liq-standards-filter-abs
 TSV2MD = $(BIN)/liq-tsv2md
+GUCCI = $(BIN)/gucci
+
 POLICY_PROJECTS = $(shell find node_modules/@liquid-labs -maxdepth 1 -name "policy-*")
 ASSET_DIRS = $(shell find node_modules/@liquid-labs -path "*/policy-*/policy/*" -type d)
 
@@ -86,7 +89,7 @@ foreach my $source (split /\n/, $sources) {
   my $refs = $refs_tracker{$common_path};
   print "$safe_target : $safe_source $tmpl $refs .build/settings.yaml\n";
   print "\t".'mkdir -p $(shell dirname "$@")'."\n"; # $(dir...) does not play will spaces
-  print "\tcat $tmpl ".'"$<" | ./gucci --vars-file '.$refs.' > "$@" || { rm "$@"; echo "\nFailed to make\n$@\n"; }'."\n";
+  print "\tcat $tmpl ".'"$<" | $(GUCCI) --vars-file '.$refs.' > "$@" || { rm "$@"; echo "\nFailed to make\n$@\n"; }'."\n";
   print "\n";
 
   push(@all, $safe_target);
