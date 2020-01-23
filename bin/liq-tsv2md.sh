@@ -1,41 +1,32 @@
-#!/usr/bin/env bash
-
-# bash strict settings
-set -o errexit # exit on errors
-set -o nounset # exit on use of uninitialized variable
-set -o pipefail
-
-# pull off the output argument
-OUTPUT="${@:$#}"
-set -- "${@:1:$(($#-1))}"
-
-mkdir -p $(dirname "$OUTPUT")
-
-npx liq-standards-filter-abs "$@" | perl -e'
+#!/usr/bin/env perl
 use strict; use warnings;
 
-my $outFile = shift;
+my $file = shift;
+my $output_file = shift;
+
 my $lastSubSection = "";
 my $anyIncluded = 0;
+my $template_name = $file;
+$template_name =~ s/\.\w+$//;
+$template_name =~ s|build/||;
 
-my $output = "{{ define \"${outFile}\" }}\n\n";
+my $output = "{{ define \"${template_name}\" }}\n\n";
+open my $fd, "<", "$file";
 
-while (<>) {
-
-  my ($uuid, $subSection, $statement, $absCondition, $indCondition, $auditCondition, $refs) =
-    split(/\t/, "$_");
+while (<$fd>) {
+  my ($uuid, $subSection, $statement, $absCondition, $indCondition, $auditCondition, $refs) = split(/\t/, "$_");
 
   if ($subSection ne $lastSubSection) {
     $output .= "\n### $subSection\n\n";
     $lastSubSection = $subSection;
   }
 
-    $output .= "* $statement\n";
-    $anyIncluded = 1;
-  }
+  $statement =~ s/\\n/\n/g;
+  $output .= "* $statement\n";
+  $anyIncluded = 1;
 }
+close $fd;
 
-if ($anyIncluded) {
-  open(my $fh, ">", "build/${outFile}") or die "Could not open file \"$outFile\" $!";
-  print $fh "$output\n{{ end }}\n";
-}'  "$(basename "$OUTPUT")"
+open $fd, ">", "$output_file";
+print $fd "${output}\n{{ end }}\n";
+close $fd;
