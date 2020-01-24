@@ -91,7 +91,6 @@ foreach my $source (split /\n/, $sources) {
 	my @deps = do "./.build/${common_path}/${raw_name}.deps" || ();
 	my $deps_string = '';
 	if ($#deps >= 0) {
-		print STDERR "deps: ".join(',', @deps)."; $#deps\n";
 		my @safe_deps = map { s| |\\ |g; $_; } @deps;
 		$deps_string = join(' ', @safe_deps);
 	}
