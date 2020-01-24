@@ -9,10 +9,11 @@
     "dist/"
   ],
   "bin": {
+    "liq-init-docs": "./bin/liq-init-docs.pl",
     "liq-gen-make": "./bin/liq-gen-make.pl",
     "liq-settings-conv": "./bin/liq-settings-conv.pl",
-    "liq-proj-mapper": "./bin/liq-proj-mapper.sh",
     "liq-refs-gen": "./bin/liq-refs-gen.pl",
+    "liq-proj-mapper": "./bin/liq-proj-mapper.sh",
     "liq-standards-filter-abs": "./bin/liq-standards-filter-abs.sh",
     "liq-tsv2md": "./bin/liq-tsv2md.pl",
     "gucci": "./bin/gucci"
