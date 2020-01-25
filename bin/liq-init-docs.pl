@@ -52,11 +52,12 @@ print $out "(\n";
 while (<$fd>) {
   /\{\{\s*template\s+"([^"]+)"/ or next;
   my $template = $1;
+  $template =~ s/^\s+|\s+$//g;
   # we don't currently support cross-including item lists; only the partner file can do that.
   next if $template =~ /- items$/;
 
   my $template_path;
-  for (split /\n/, `find 'node_modules/\@liquid-labs' -name "policy-*"`) {
+  for (split /\n/, `find 'node_modules/\@liquid-labs' -maxdepth 1 -name "policy-*"`) {
     my $candidate = `find "$_" -path "*${template}.tmpl"`;
     chomp($candidate);
     ($candidate && $template_path) and die "Ambiguous template: $template. Found at '$candidate' and '$template_path'.";
