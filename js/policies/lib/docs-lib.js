@@ -1,4 +1,4 @@
-class Glossary() {
+class Glossary {
   constructor() {
     this.terms = []
   }

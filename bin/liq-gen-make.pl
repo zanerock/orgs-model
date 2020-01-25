@@ -8,14 +8,14 @@ my %refs_tracker = ();
 my @all = ();
 
 my $common_make = <<'EOF';
-BIN = $(shell npm bin)
+BIN := $(shell npm bin)
 
-SETTINGS_CONV = $(BIN)/liq-settings-conv
-PROJ_MAPPER = $(BIN)/liq-proj-mapper
-REFS_GEN = $(BIN)/liq-refs-gen
-TSV_FILTER = $(BIN)/liq-standards-filter-abs
-TSV2MD = $(BIN)/liq-tsv2md
-GUCCI = $(BIN)/gucci
+SETTINGS_CONV := $(BIN)/liq-settings-conv
+PROJ_MAPPER := $(BIN)/liq-proj-mapper
+REFS_GEN := $(BIN)/liq-refs-gen
+TSV_FILTER := $(BIN)/liq-standards-filter-abs
+TSV2MD := $(BIN)/liq-tsv2md
+GUCCI := $(BIN)/gucci
 
 POLICY_PROJECTS = $(shell find node_modules/@liquid-labs -maxdepth 1 -name "policy-*")
 ASSET_DIRS = $(shell find node_modules/@liquid-labs -path "*/policy-*/policy/*" -type d)
@@ -50,7 +50,8 @@ foreach my $source (split /\n/, $sources) {
   my $project = join("/", @bits[$pivot...$pivot + 1]);
   my $common_path = join("/", @bits[$pivot + 3...$#bits - 1]);
   $common_path ne 'policy' or $common_path = '';
-  (my $base_name = $bits[$#bits]) =~ s/\.md//;
+	my $raw_name = $bits[$#bits];
+  (my $base_name = $raw_name) =~ s/\.md//;
   (my $safe_name = $base_name) =~ s/ /\\ /g;
 
   if (!exists($refs_tracker{$common_path})) {
@@ -87,9 +88,15 @@ foreach my $source (split /\n/, $sources) {
 
   my $safe_target = "policy/${common_path}/${safe_name}.md";
   my $refs = $refs_tracker{$common_path};
-  print "$safe_target : $safe_source $tmpl $refs .build/settings.yaml\n";
+	my @deps = do "./.build/${common_path}/${raw_name}.deps" or ();
+	my $deps_string = '';
+	if ($#deps >= 0) {
+		my @safe_deps = map { s| |\\ |g; $_; } @deps;
+		$deps_string = join(' ', @safe_deps);
+	}
+  print "$safe_target : $safe_source $tmpl $refs .build/settings.yaml $deps_string\n";
   print "\t".'mkdir -p $(shell dirname "$@")'."\n"; # $(dir...) does not play will spaces
-  print "\tcat $tmpl ".'"$<" | $(GUCCI) --vars-file '.$refs.' > "$@" || { rm "$@"; echo "\nFailed to make\n$@\n"; }'."\n";
+  print "\tcat $deps_string $tmpl ".'"$<" | $(GUCCI) --vars-file '.$refs.' > "$@" || { rm "$@"; echo "\nFailed to make\n$@\n"; }'."\n";
   print "\n";
 
   push(@all, $safe_target);
