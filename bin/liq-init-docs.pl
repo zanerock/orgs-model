@@ -50,7 +50,7 @@ open(my $out, ">", $output) or die "Couldn't open data file: $output ($!)";
 print $out "(\n";
 
 while (<$fd>) {
-  /\{\{\s*template\s+"([^"]+)"/ or next;
+  /\{\{-?\s*template\s+"([^"]+)"/ or next;
   my $template = $1;
   $template =~ s/^\s+|\s+$//g;
   # we don't currently support cross-including item lists; only the partner file can do that.
