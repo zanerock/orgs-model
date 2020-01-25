@@ -33,7 +33,6 @@ shift
 VARS=${VARS:1}
 
 INPUT="${1}"
-echo "INPUT: $INPUT"
 OUTPUT="${2}"
 mkdir -p "$(dirname "${OUTPUT}")"
 # +2 skips the (conventional) header
