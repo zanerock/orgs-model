@@ -88,7 +88,7 @@ foreach my $source (split /\n/, $sources) {
 
   my $safe_target = "policy/${common_path}/${safe_name}.md";
   my $refs = $refs_tracker{$common_path};
-	my @deps = do "./.build/${common_path}/${raw_name}.deps" || ();
+	my @deps = do "./.build/${common_path}/${raw_name}.deps" or ();
 	my $deps_string = '';
 	if ($#deps >= 0) {
 		my @safe_deps = map { s| |\\ |g; $_; } @deps;
