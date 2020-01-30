@@ -10,7 +10,7 @@ my $template_name = $file;
 $template_name =~ s/\.\w+$//;
 $template_name =~ s|\.build/||;
 
-my $output = "{{ define \"${template_name}\" }}\n\n";
+my $output = "{{- define \"${template_name}\" -}}\n\n";
 open my $fd, "<", "$file";
 
 while (<$fd>) {
@@ -28,5 +28,5 @@ while (<$fd>) {
 close $fd;
 
 open $fd, ">", "$output_file";
-print $fd "${output}\n{{ end }}\n";
+print $fd "${output}\n{{- end -}}\n";
 close $fd;

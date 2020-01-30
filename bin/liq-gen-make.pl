@@ -70,8 +70,11 @@ foreach my $source (split /\n/, $sources) {
   my $tsv = '';
   my $tmpl = '';
   if (-e "$items") {
+		my @incs=`grep -E "^# *include +" "$items"`;
+		@incs = map { s|^#\s*include\s*|node_modules/${project}/policy/|; s/ /\\ /g; chomp($_); "$_.tsv"; } @incs;
+
     $tsv = ".build/${common_path}/${safe_name}".'\ -\ items.tsv';
-    print "$tsv : $safe_items".' settings.sh $(TSV_FILTER) | .build'."\n";
+    print "$tsv : $safe_items".' settings.sh '.join(' ', @incs).' $(TSV_FILTER) | .build'."\n";
     print "\t".'rm -f "$@"'."\n";
     print "\t".'$(TSV_FILTER) --settings=settings.sh "$<" "$@"'."\n";
     print "\n";
@@ -96,7 +99,7 @@ foreach my $source (split /\n/, $sources) {
 	}
   print "$safe_target : $safe_source $tmpl $refs .build/settings.yaml $deps_string\n";
   print "\t".'mkdir -p $(shell dirname "$@")'."\n"; # $(dir...) does not play will spaces
-  print "\tcat $deps_string $tmpl ".'"$<" | $(GUCCI) --vars-file '.$refs.' > "$@" || { rm "$@"; echo "\nFailed to make\n$@\n"; }'."\n";
+  print "\tcat $deps_string $tmpl ".'"$<" | $(GUCCI) --vars-file '.$refs.' -s IS_SUBMIT_AUDIT=0 -s IS_PR_AUDIT=0 > "$@" || { rm "$@"; echo "\nFailed to make\n$@\n"; }'."\n";
   print "\n";
 
   push(@all, $safe_target);
