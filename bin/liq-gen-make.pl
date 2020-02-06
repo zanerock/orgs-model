@@ -2,7 +2,18 @@
 
 use strict; use warnings;
 
-my $sources = `find node_modules/\@liquid-labs -path "*/policy-*/policy/*" -name "*.md"`;
+my $OUT_DIR;
+if (scalar(@ARGV) == 1) {
+	$OUT_DIR=$ARGV[0];
+}
+elsif (scalar(@ARGV) > 1) {
+	print STDERR "Usage: liq-gen-make [target output directory]\n  Output defaults to 'policy'.\n";
+}
+else {
+	$OUT_DIR='policy'
+}
+
+my $sources = `find -L node_modules/\@liquid-labs -path "*/policy-*/policy/*" -name "*.md"`;
 
 my %refs_tracker = ();
 my @all = ();
@@ -22,9 +33,15 @@ ASSET_DIRS = $(shell find node_modules/@liquid-labs -path "*/policy-*/policy/*" 
 
 default: all
 
-clean:
-	rm -rf .build/* policy/*
+EOF
 
+$common_make .= <<"EOF";
+clean:
+	rm -rf .build/* $OUT_DIR/*
+
+EOF
+
+$common_make .= <<'EOF';
 .build:
 	mkdir -p $@
 
@@ -89,7 +106,7 @@ foreach my $source (split /\n/, $sources) {
     $safe_items = '';
   }
 
-  my $safe_target = "policy/${common_path}/${safe_name}.md";
+  my $safe_target = "${OUT_DIR}/${common_path}/${safe_name}.md";
   my $refs = $refs_tracker{$common_path};
 	my @deps = do "./.build/${common_path}/${raw_name}.deps" or ();
 	my $deps_string = '';

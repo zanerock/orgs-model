@@ -6,8 +6,15 @@ if ($#ARGV == -1) { die "Usage:\nliq-init-docs run # to initialize\nand:\nliq-in
 
 if ($ARGV[0] eq 'run') {
   mkdir('.build');
+  my $OUT_DIR;
+  if (scalar(@ARGV) == 2) {
+    $OUT_DIR="${ARGV[1]}"
+  }
+  else {
+  	$OUT_DIR='policy'
+  }
 
-  my @sources = split(/\n/, `find node_modules/\@liquid-labs -path "*/policy-*/policy/*" -name "*.md" -o -name "*.tmpl" | grep -v '/tmpl/'`); # #TODO: the '/tmpl/' files are from an older layout and will go away'
+  my @sources = split(/\n/, `find -L node_modules/\@liquid-labs -path "*/policy-*/policy/*" -name "*.md" -o -name "*.tmpl" | grep -v '/tmpl/'`); # #TODO: the '/tmpl/' files are from an older layout and will go away'
   open my $fd, ">", ".build/resolve.makefile" or die "Could not create makefile for resolve.";
 
   my $common_make = <<'EOF';
@@ -34,7 +41,7 @@ EOF
   }
 
   print $fd ".build/main.makefile : ".join(' ', @targets)."\n";
-  print $fd "\t".'$(GEN_MAKE) > "$@"'."\n";
+  print $fd "\t".'$(GEN_MAKE) "'.$OUT_DIR.'" > "$@"'."\n";
   print $fd "\n";
 
   print "Initiating resolution build...\n";
@@ -55,16 +62,17 @@ while (<$fd>) {
   $template =~ s/^\s+|\s+$//g;
   # we don't currently support cross-including item lists; only the partner file can do that.
   next if $template =~ /- items$/;
+  $template .= '.tmpl';
 
   my $template_path;
-  for (split /\n/, `find 'node_modules/\@liquid-labs' -maxdepth 1 -name "policy-*"`) {
-    my $candidate = `find "$_" -path "*${template}.tmpl"`;
+  for (split /\n/, `find -L 'node_modules/\@liquid-labs' -maxdepth 1 -name "policy-*"`) {
+    my $candidate = `find -L "$_" -path "*${template}"`;
     chomp($candidate);
-    ($candidate && $template_path) and die "Ambiguous template: $template. Found at '$candidate' and '$template_path'.";
+    ($candidate && $template_path) and die "Ambiguous template: ${template}. Found at '$candidate' and '$template_path'.";
     $candidate && ($template_path = $candidate);
   }
 
-  !$template_path and die "Could not find template: $template.";
+  !$template_path and die "Could not find template: ${template}.";
   print $out "'$template_path',\n";
 }
 print $out ");\n";
