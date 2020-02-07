@@ -13,7 +13,7 @@ else {
 	$OUT_DIR='policy'
 }
 
-my $sources = `find -L node_modules/\@liquid-labs -path "*/policy-*/policy/*" -name "*.md"`;
+my $sources = `find -L node_modules/\@liquid-labs -path "*/policy-*/policy/*" -name "*.md" -not -path "node_modules/*/node_modules" -not -path "*/.yalc/*"`;
 
 my %refs_tracker = ();
 my @all = ();
@@ -29,7 +29,7 @@ TSV2MD := $(BIN)/liq-tsv2md
 GUCCI := $(BIN)/gucci
 
 POLICY_PROJECTS = $(shell find node_modules/@liquid-labs -maxdepth 1 -name "policy-*")
-ASSET_DIRS = $(shell find -L node_modules/@liquid-labs -path "*/policy-*/policy/*" -type d -not -path "node_modules/*/node_modules/*")
+ASSET_DIRS = $(shell find -L node_modules/@liquid-labs -path "*/policy-*/policy/*" -type d -not -path "node_modules/*/node_modules/*" -not -path "*/.yalc/*")
 
 default: all
 
