@@ -68,10 +68,10 @@ sub process_line {
   while (@conditions && $include) {
     my $condition = shift @conditions;
     while (my ($k, $v) = each %ENV) {
-      $condition =~ s/$k/$v/g;
+      $condition =~ s/(^|[ ,])$k([ ,]|$)/$1$v$2/g;
     }
     while (my ($k, $v) = each %constants) {
-      $condition =~ s/$k/$v/g;
+      $condition =~ s/(^|[ ,])$k([ ,]|$)/$1$v$2/g;
     }
 
     $condition =~ /[0-9<>=]+/ or die "Invalid condition at line ${lineno}: $condition\nref: $uuid";
