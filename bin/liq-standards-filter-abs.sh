@@ -22,7 +22,7 @@ while [[ $1 != '--' ]]; do
         echo "Could not find settings file: $2" >&2
         exit 1
       fi
-      VARS="${VARS:-} $(cat $2 | sed -e 's/#.*//' | tr '\n' ' ')"
+      VARS="${VARS:-} $(cat $2 | sed -Ee "s/^([^']*)#.*/\\1/" -e "s/('[^']') *#.*/\\1/" | tr '\n' ' ')"
       shift;;
     -D|--show-dropped)
       SHOW_DROPPED=1;;
@@ -30,7 +30,7 @@ while [[ $1 != '--' ]]; do
   shift
 done
 shift
-VARS=${VARS:1}
+VARS="${VARS:1}"
 
 INPUT="${1}"
 OUTPUT="${2}"
