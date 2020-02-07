@@ -29,7 +29,7 @@ TSV2MD := $(BIN)/liq-tsv2md
 GUCCI := $(BIN)/gucci
 
 POLICY_PROJECTS = $(shell find node_modules/@liquid-labs -maxdepth 1 -name "policy-*")
-ASSET_DIRS = $(shell find node_modules/@liquid-labs -path "*/policy-*/policy/*" -type d)
+ASSET_DIRS = $(shell find -L node_modules/@liquid-labs -path "*/policy-*/policy/*" -type d -not -path "node_modules/*/node_modules/*")
 
 default: all
 
@@ -116,7 +116,7 @@ foreach my $source (split /\n/, $sources) {
 	}
   print "$safe_target : $safe_source $tmpl $refs .build/settings.yaml $deps_string\n";
   print "\t".'mkdir -p $(shell dirname "$@")'."\n"; # $(dir...) does not play will spaces
-  print "\tcat $deps_string $tmpl ".'"$<" | $(GUCCI) --vars-file '.$refs.' -s IS_SUBMIT_AUDIT=0 -s IS_PR_AUDIT=0 > "$@" || { rm "$@"; echo "\nFailed to make\n$@\n"; }'."\n";
+  print "\tcat $deps_string $tmpl ".'"$<" | $(GUCCI) --vars-file '.$refs.' -s IS_SUBMIT_AUDIT=0 -s IS_PR_AUDIT=0 > "$@" || { rm "$@"; echo "\nFailed to make\n$@\n"; exit 1; }'."\n";
   print "\n";
 
   push(@all, $safe_target);
