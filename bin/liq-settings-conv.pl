@@ -11,7 +11,8 @@ open my $out, ">", $output;
 my $in_multiline = 0;
 
 while (my $line = <$fd>) {
-  if ($line !~ /^(#.*|\s*)$/) {
+  if ($line !~ /^(#.*|\s*)$/) { # is a non-empty, non-comment line?
+    chomp $line;
     if ($in_multiline) {
       $line =~ s/^/  /;
       if ($line =~ s/'\s*//) {
@@ -19,7 +20,7 @@ while (my $line = <$fd>) {
       }
     }
     else {
-      # first, try to match lines with no quotes
+      # substite a 'non-quoted' value; if not-non-quoted value, then continue processing.
       if ($line !~ s/^([^']+)=([^'#]+)\s*(#.*)?$/$1 : $2/) {
         $line =~ s/([^']*)\s*=\s*'/$1 : '/;
         if ($line !~ /'[^']*'/) { # then it's multiline
@@ -27,11 +28,10 @@ while (my $line = <$fd>) {
           $in_multiline = 1;
         }
         else {
-          $line =~ s/'\s*(#.*)?$/'/; # allow and remove trailing comments
+          $line =~ s/('[^']*')\s*(#.*)?$/$1/; # allow and remove trailing comments
         }
       }
-    } # multiline or not
-    chomp $line;
+    } # in multiline
     print $out "$line\n";
   } # blank line
 }
