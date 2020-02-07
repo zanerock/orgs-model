@@ -14,7 +14,7 @@ if ($ARGV[0] eq 'run') {
   	$OUT_DIR='policy'
   }
 
-  my @sources = split(/\n/, `find -L node_modules/\@liquid-labs -path "*/policy-*/policy/*" -name "*.md" -o -name "*.tmpl" | grep -v '/tmpl/'`); # #TODO: the '/tmpl/' files are from an older layout and will go away'
+  my @sources = split(/\n/, `find -L node_modules/\@liquid-labs -path "*/policy-*/policy/*" -name "*.md" -o -name "*.tmpl" -not -path "node_modules/*/node_modules/*" | grep -v '/tmpl/'`); # #TODO: the '/tmpl/' files are from an older layout and will go away'
   open my $fd, ">", ".build/resolve.makefile" or die "Could not create makefile for resolve.";
 
   my $common_make = <<'EOF';
@@ -66,7 +66,7 @@ while (<$fd>) {
 
   my $template_path;
   for (split /\n/, `find -L 'node_modules/\@liquid-labs' -maxdepth 1 -name "policy-*"`) {
-    my $candidate = `find -L "$_" -path "*${template}"`;
+    my $candidate = `find -L "$_" -path "*${template}" -not -path "node_modules/*/node_modules/*"`;
     chomp($candidate);
     ($candidate && $template_path) and die "Ambiguous template: ${template}. Found at '$candidate' and '$template_path'.";
     $candidate && ($template_path = $candidate);
