@@ -15,6 +15,7 @@ open my $fd, "<", "$file";
 
 while (<$fd>) {
   my ($uuid, $subSection, $statement, $absCondition, $indCondition, $auditCondition, $refs) = split(/\t/, "$_");
+  $refs && chomp($refs);
 
   if ($subSection ne $lastSubSection) {
     $output .= "\n### $subSection\n\n";
@@ -22,7 +23,7 @@ while (<$fd>) {
   }
 
   $statement =~ s/\\n/\n/g;
-  $output .= "* $statement\n";
+  $output .= "* <a id=\"$uuid\">$statement</a>".( !$refs || $refs eq '-' ? '' : " _($refs)_")."\n";
   $anyIncluded = 1;
 }
 close $fd;
