@@ -35,8 +35,7 @@ VARS="${VARS:1}"
 INPUT="${1}"
 OUTPUT="${2}"
 mkdir -p "$(dirname "${OUTPUT}")"
-# +2 skips the (conventional) header
-# tail +2 "${INPUT}"
+
 env -i -S "$VARS" perl -e '
 use strict; use warnings;
 
@@ -66,15 +65,16 @@ sub process_line {
   my $include = 1;
 
   while (@conditions && $include) {
+
     my $condition = shift @conditions;
     while (my ($k, $v) = each %ENV) {
-      $condition =~ s/(^|[ ,])$k([ ,]|$)/$1$v$2/g;
+      $condition =~ s/(^|[^A-Z_])$k([^A-Z_]|$)/$1$v$2/g;
     }
     while (my ($k, $v) = each %constants) {
-      $condition =~ s/(^|[ ,])$k([ ,]|$)/$1$v$2/g;
+      $condition =~ s/(^|[^A-Z_])$k([^A-Z_]|$)/$1$v$2/g;
     }
 
-    $condition =~ /[0-9<>=]+/ or die "Invalid condition at line ${lineno}: $condition\nref: $uuid";
+    $condition =~ /^[0-9<>=|&! ]+$/ or die "Invalid condition at line ${lineno}: $condition\nref: $uuid";
 
     eval "$condition" or $include = 0;
   }
