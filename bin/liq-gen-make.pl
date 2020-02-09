@@ -13,7 +13,7 @@ else {
 	$OUT_DIR='policy'
 }
 
-my $sources = `find -L node_modules/\@liquid-labs -path "*/policy-*/policy/*" -name "*.md" -not -path "node_modules/*/node_modules" -not -path "*/.yalc/*"`;
+my $sources = `find -L node_modules/\@liquid-labs -path "*/policy-*/policy/*" -name "*.md" -not -path "node_modules/*/node_modules/*" -not -path "*/.yalc/*"`;
 
 my %refs_tracker = ();
 my @all = ();
