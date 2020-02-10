@@ -61,6 +61,8 @@ sub process_line {
   my ($uuid, $subSection, $statement, $absCondition, $indCondition, $auditCondition, $refs) =
     split(/\t/, "$line") or die "Could not split record at line ${lineno}.";
 
+  if (!$uuid) { die "No UUID found for record at line ${lineno}."; }
+  if (!$absCondition) { die "No absolute condition found for record $uuid at line ${lineno}."; }
   my @conditions = split(/\s*,\s*/, $absCondition);
   my $include = 1;
 
