@@ -11,27 +11,29 @@ open my $out, ">", $output;
 my $in_multiline = 0;
 
 while (my $line = <$fd>) {
-  if ($line !~ /^(#.*|\s*)$/) { # is a non-empty, non-comment line?
-    chomp $line;
-    if ($in_multiline) {
-      $line =~ s/^/  /;
-      if ($line =~ s/'\s*//) {
-        $in_multiline = 0;
-      }
+  chomp $line;
+  if ($in_multiline) {
+    $line =~ s/^/  /;
+    if ($line =~ s/'\s*$//) {
+      $in_multiline = 0;
     }
-    else {
-      # substite a 'non-quoted' value; if not-non-quoted value, then continue processing.
-      if ($line !~ s/^([^']+)=([^'#]+)\s*(#.*)?$/$1 : $2/) {
-        $line =~ s/([^']*)\s*=\s*'/$1 : '/;
-        if ($line !~ /'[^']*'/) { # then it's multiline
-          $line =~ s/:\s*'/: |\n  /;
-          $in_multiline = 1;
-        }
-        else {
-          $line =~ s/('[^']*')\s*(#.*)?$/$1/; # allow and remove trailing comments
-        }
+  }
+  elsif ($line !~ /^(#.*|\s*)$/) { # is a non-empty, non-comment line?
+    # substite a 'non-quoted' value; if not-non-quoted value, then continue processing.
+    if ($line !~ s/^([^']+)=([^'#]+)\s*(#.*)?$/$1 : $2/) {
+      $line =~ s/([^']*)\s*=\s*'/$1 : '/;
+      if ($line !~ /'[^']*'/) { # then it's multiline
+        $line =~ s/:\s*'/: |\n  /;
+        $in_multiline = 1;
       }
-    } # in multiline
-    print $out "$line\n";
-  } # blank line
+      else {
+        $line =~ s/('[^']*')\s*(#.*)?$/$1/; # allow and remove trailing comments
+      }
+    } # else already handled by the '!~' with substitution. :)
+  } # blank or comment test
+  else { # is a non-multiline blank or comment
+    next; # to skip the line print
+  }
+
+  print $out "$line\n";
 }
