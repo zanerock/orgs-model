@@ -17,6 +17,12 @@ while (<$fd>) {
   my ($uuid, $subSection, $statement, $absCondition, $indCondition, $auditCondition, $refs) = split(/\t/, "$_");
   $refs && chomp($refs);
 
+  if ($file =~ /Policy/) {
+    chomp($auditCondition) or warn "Missing ref spec in '$file' at line $.";
+    $refs = $auditCondition;
+    undef $auditCondition;
+  }
+
   if ($subSection ne $lastSubSection) {
     $output .= "\n### $subSection\n\n";
     $lastSubSection = $subSection;
