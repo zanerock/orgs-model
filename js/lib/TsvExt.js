@@ -1,12 +1,17 @@
 import * as fs from 'fs'
 import TSV from 'tsv'
 
-const item = function(keys, fields, pos) {
+/**
+ * Converts array-string data to an actual object
+ */
+const item = function(keys, multis, fields, pos) {
   if (keys.length !== fields.length) throw new Error(`Found ${keys.length} keys but ${fields.length} fields.`)
 
   const item = { _pos: pos }
   for (let i = 0; i < fields.length; i += 1) {
-    item[keys[i]] = fields[i]
+    item[keys[i]] = (multis[keys[i]]
+      ? (fields[i] === '' || fields[i] === '-' ? [] : fields[i].split(/\s*,\s*/))
+      : (fields[i] === '' || fields[i] === '-' ? null : fields[i]))
   }
 
   return item
@@ -19,17 +24,19 @@ const TsvExt = class {
   #data
   #cursor
 
-  constructor(headers, keys, fileName) {
+  constructor(headers, keys, fileName, multis) {
     this.headers = headers
     this.fileName = fileName
 
     const contents = fs.readFileSync(fileName, 'utf8')
-    // allow blank lines (which are ignored)
     const lines = contents.split("\n")
     lines.shift() // remove headers line
+    // allow blank lines (which are ignored)
     const filteredLines = lines.filter((line) => !line.match(/^\s*$/))
+
     TSV.header = false
     this.keys = keys
+    this.multis = multis || {}
     this.data = TSV.parse(filteredLines.join("\n"))
   }
 
@@ -40,17 +47,17 @@ const TsvExt = class {
   next() {
     this.cursor += 1
     if (this.cursor >= this.length) return null
-    else return item(this.keys, this.data[this.cursor], this.cursor)
+    else return item(this.keys, this.multis, this.data[this.cursor], this.cursor)
   }
 
   add(item) {
     const line = []
     this.keys.forEach((key) => {
-      const field = item[key]
-      if (field === undefined) throw new Error(`Item does not define key '${key}'.`)
-      // We convert a single '-' to 'null'. Primarily because Atom trims white space at the end of  lines (!). Fix that,
-      // and consider changing this.
-      line.push(field === '-' ? null : field)
+      const value = item[key]
+      if (value === undefined) throw new Error(`Item does not define value for key '${key}'.`)
+      line.push(this.multis[key]
+        ? (value.length === 0 ? '-' : value.join(","))
+        : (value === null ? '-' : value))
     })
     let failDesc;
     if (this.notUnique && (failDesc = this.notUnique(this.data.slice(), item))) throw new Error(failDesc)
@@ -65,7 +72,11 @@ const TsvExt = class {
 
   write() {
     fs.writeFileSync(this.fileName,
-                     `${this.headers.join("\t")}\n${this.data.map((line) => line.join("\t")).join("\n")}\n`)
+                     `${this.headers.join("\t")}\n` +
+                     `${this.data.map((line) =>
+                          line.map(v => v === ''
+                            ? '-'
+                            : v).join("\t")).join("\n")}\n`)
   }
 }
 

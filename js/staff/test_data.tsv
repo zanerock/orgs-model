@@ -1,2 +1,2 @@
-Email	Family Name	Given Name	Start Date
-foo@bar.com	Bar	Foo	2019-06-17
+Email	Family Name	Given Name	Start Date	Primary Roles	Secondary Roles
+foo@bar.com	Bar	Foo	2019-06-17	CEO, CTO	-

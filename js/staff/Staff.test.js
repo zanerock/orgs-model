@@ -6,11 +6,13 @@ describe(`Staff`, () => {
 		testStaff = new Staff(`./js/staff/test_data.tsv`)
 	})
 
-	test('parses test file', () => expect(testStaff).toBeTruthy())
-	test('ignore blank lines', () => expect(testStaff.length).toBe(1))
-	test(`properly sets fields`, () => {
+	test('test file', () => expect(testStaff).toBeTruthy())
+	test('blank lines', () => expect(testStaff.length).toBe(1))
+	test(`fields`, () => {
 		testStaff.reset()
 		const staff = testStaff.next()
 		expect(staff['email']).toBe('foo@bar.com')
+		expect(staff['primaryRoles']).toEqual(['CEO', 'CTO'])
+		expect(staff['secondaryRoles']).toEqual([])
 	})
 })

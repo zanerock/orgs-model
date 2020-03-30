@@ -1,11 +1,12 @@
 import { TsvExt } from '../lib'
 
 const Staff = class extends TsvExt {
-  static headers = ['Email', 'Family Name', 'Given Name', 'Start Date']
-  static keys = ['email', 'familyName', 'givenName', 'startDate']
+  static headers = ['Email', 'Family Name', 'Given Name', 'Start Date', 'Primary Roles', 'Secondary Roles']
+  static keys = ['email', 'familyName', 'givenName', 'startDate', 'primaryRoles', 'secondaryRoles']
+  static multis = {'primaryRoles': true, 'secondaryRoles': true}
 
 	constructor(fileName) {
-    super(Staff.headers, Staff.keys, fileName)
+    super(Staff.headers, Staff.keys, fileName, Staff.multis)
 	}
 
   notUnique(data, item) {
