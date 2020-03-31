@@ -12,10 +12,9 @@ describe(`Staff`, () => {
 		testStaff.reset()
 		const ceo = testStaff.next()
 		expect(ceo['email']).toBe('ceo@bar.com')
-		expect(ceo['primaryRoles']).toEqual(['CEO', 'CTO'])
+		expect(ceo['primaryRoles']).toEqual(['CEO/', 'CTO/'])
 		expect(ceo['secondaryRoles']).toEqual([])
-		expect(ceo['managers']).toEqual([]);
 		const vp = testStaff.next()
-		expect(vp['managers']).toEqual([ceo['email']])
+		expect(vp['primaryRoles']).toEqual(['VP/' + ceo['email']])
 	})
 })

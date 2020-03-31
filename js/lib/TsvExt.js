@@ -37,7 +37,8 @@ const TsvExt = class {
     TSV.header = false
     this.keys = keys
     this.multis = multis || {}
-    this.data = TSV.parse(filteredLines.join("\n"))
+    this.data = filteredLines.length > 0 ? TSV.parse(filteredLines.join("\n")) : []
+    this.reset()
   }
 
   get length() { return this.data.length }
@@ -46,7 +47,9 @@ const TsvExt = class {
 
   next() {
     this.cursor += 1
-    if (this.cursor >= this.length) return null
+    const l = this.data.length
+    const cursor = this.cursor;
+    if (this.cursor >= this.data.length) return undefined
     else return item(this.keys, this.multis, this.data[this.cursor], this.cursor)
   }
 

@@ -8,6 +8,7 @@ class Glossary {
   }
 
   addTermsFromIterator({it, termKey='name', descKey='description'}) {
+    if (!it) return;
     it.reset()
     let i; while ((i = it.next())) {
       this.addTerm(i[termKey], i[descKey])

@@ -51,7 +51,8 @@ const Policies = class {
     const roles = this.getRoles()
 
     const glossary = new Glossary()
-    glossary.addTermsFromIterator(roles)
+    if (roles) glossary.addTermsFromIterator(roles)
+    // TODO: else warn
 
     fs.writeFileSync(`${this.docDir}/Glossary.md`, glossary.generateContent())
   }
