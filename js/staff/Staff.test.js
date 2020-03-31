@@ -7,12 +7,15 @@ describe(`Staff`, () => {
 	})
 
 	test('test file', () => expect(testStaff).toBeTruthy())
-	test('blank lines', () => expect(testStaff.length).toBe(1))
+	test('blank lines', () => expect(testStaff.length).toBe(2))
 	test(`fields`, () => {
 		testStaff.reset()
-		const staff = testStaff.next()
-		expect(staff['email']).toBe('foo@bar.com')
-		expect(staff['primaryRoles']).toEqual(['CEO', 'CTO'])
-		expect(staff['secondaryRoles']).toEqual([])
+		const ceo = testStaff.next()
+		expect(ceo['email']).toBe('ceo@bar.com')
+		expect(ceo['primaryRoles']).toEqual(['CEO', 'CTO'])
+		expect(ceo['secondaryRoles']).toEqual([])
+		expect(ceo['manager']).toBe(null);
+		const vp = testStaff.next()
+		expect(vp['manager']).toEqual(ceo['email'])
 	})
 })
