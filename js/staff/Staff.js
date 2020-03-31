@@ -1,9 +1,9 @@
 import { TsvExt } from '../lib'
 
 const Staff = class extends TsvExt {
-  static headers = ['Email', 'Family Name', 'Given Name', 'Start Date', 'Primary Roles', 'Secondary Roles', 'Manager']
-  static keys = ['email', 'familyName', 'givenName', 'startDate', 'primaryRoles', 'secondaryRoles', 'manager']
-  static multis = {'primaryRoles': true, 'secondaryRoles': true}
+  static headers = [ 'Email', 'Family Name', 'Given Name', 'Start Date', 'Primary Roles', 'Secondary Roles', 'Managers' ]
+  static keys = [ 'email', 'familyName', 'givenName', 'startDate', 'primaryRoles', 'secondaryRoles', 'managers' ]
+  static multis = { 'primaryRoles' : true, 'secondaryRoles' : true, 'managers' : true }
 
 	constructor(fileName) {
     super(Staff.headers, Staff.keys, fileName, Staff.multis)
