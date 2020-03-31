@@ -23,3 +23,5 @@ class Glossary {
     return content
   }
 }
+
+export { Glossary }

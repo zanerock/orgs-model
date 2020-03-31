@@ -1,5 +1,6 @@
 import { Roles } from '../roles'
 import * as fs from 'fs'
+import { Glossary } from './lib/Glossary'
 
 const Policies = class {
   #docDir
