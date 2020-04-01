@@ -6,9 +6,11 @@ describe(`StaffTsv`, () => {
 		testStaffTsv = new StaffTsv(`./js/staff/test/staff.tsv`)
 	})
 
-	test('test file', () => expect(testStaffTsv).toBeTruthy())
+	test('detects duplicate emails on init', () =>
+		expect(() => new StaffTsv(`./js/staff/test/dupe_email_staff.tsv`).init()).
+			toThrow(/email.*ceo@foo.com/))
 
-	test('blank lines', () => expect(testStaffTsv.length).toBe(3))
+	test('filters header+blank lines', () => expect(testStaffTsv.length).toBe(3))
 
 	test(`fields`, () => {
 		const rows = testStaffTsv.getItems()

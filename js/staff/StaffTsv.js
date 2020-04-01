@@ -11,18 +11,13 @@ const StaffTsv = class extends TsvExt {
     super(StaffTsv.headers, StaffTsv.keys, fileName, StaffTsv.multis)
 	}
 
-  notUnique(data, item) {
-    let i
-    return -1 !== (i = data.findIndex((line) =>
-                                      line[0].toLowerCase() === item.email.toLowerCase()))
-           && `member with email '${item.email}' already exists at entry ${i + 1}.`
-  }
-
   matchKey = (line, key) => line[0] === key
 
   init() {
     return this.getItems().reduce(
 			(staff, item) => {
+        if (staff[item.email] !== undefined)
+          throw new Error(`member with email '${item.email}' already exists at entry ${item._pos + 1}.`)
 				staff[item.email] = new Staff(item)
 				return staff
 			}, {})
