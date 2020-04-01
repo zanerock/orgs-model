@@ -81,6 +81,11 @@ const TsvExt = class {
                             ? '-'
                             : v).join("\t")).join("\n")}\n`)
   }
+
+  // Generic find; assumes the first column is the key.
+  find(key) {
+		return data.find((line) => line[0] === key)
+	}
 }
 
 export { TsvExt }
