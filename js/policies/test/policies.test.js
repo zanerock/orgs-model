@@ -1,4 +1,4 @@
-import { Policies } from './policies'
+import { Policies } from '..'
 
 describe(`Policies`, () => {
 	test('addSourceFile remembers sources', () => {
