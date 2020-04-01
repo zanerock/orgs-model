@@ -10,5 +10,5 @@ describe(`RolesTsv`, () => {
 
 	test('ignore blank lines', () => expect(testRoles.length).toBe(4))
 
-	test(`properly sets fields`, () => expect(testRoles.getRows()[0]['name']).toBe('CEO'))
+	test(`properly sets fields`, () => expect(testRoles.getItems()[0]['name']).toBe('CEO'))
 })

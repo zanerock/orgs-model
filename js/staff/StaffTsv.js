@@ -21,7 +21,7 @@ const StaffTsv = class extends TsvExt {
   matchKey = (line, key) => line[0] === key
 
   init() {
-    return this.getRows().reduce(
+    return this.getItems().reduce(
 			(staff, item) => {
 				staff[item.email] = new Staff(item)
 				return staff

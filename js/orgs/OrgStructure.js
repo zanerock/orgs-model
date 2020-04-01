@@ -42,7 +42,7 @@ const OrgStructure = class {
 
     const orgRoles = this.getNodes().map(n => n.getName())
     // check all org role names reference defined roles
-    const undefinedRoles = orgRoles.filter((roleName) => roles[roleName] !== undefined)
+    const undefinedRoles = orgRoles.filter((roleName) => roles[roleName] === undefined)
     if (undefinedRoles.length > 0)
       throw new Error(`Found undefined role reference` +
                       `${undefinedRoles.length > 1 ? 's' : ''}: ${undefinedRoles.join(', ')}`)

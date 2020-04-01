@@ -11,7 +11,7 @@ describe(`StaffTsv`, () => {
 	test('blank lines', () => expect(testStaffTsv.length).toBe(3))
 
 	test(`fields`, () => {
-		const rows = testStaffTsv.getRows()
+		const rows = testStaffTsv.getItems()
 		const ceo = rows[0]
 		expect(ceo['email']).toBe('ceo@foo.com')
 		expect(ceo['primaryRoles']).toEqual(['CEO/', 'CTO/ceo@foo.com'])

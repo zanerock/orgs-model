@@ -44,7 +44,7 @@ const TsvExt = class {
 
   get length() { return this.data.length }
 
-  getRows() { return this.data.map((r, i) => item(this.keys, this.multis, r, i)) }
+  getItems() { return this.data.map((r, i) => item(this.keys, this.multis, r, i)) }
 
   add(item) {
     const line = []

@@ -8,6 +8,7 @@ describe('Organization', () => {
       `./js/roles/test/roles.tsv`,
       `./js/staff/test/staff.tsv`,
       `./js/orgs/test/org_structure.json`)
+    console.log(org)
   })
 
   test(`detects staff with invalid roles`, () => {

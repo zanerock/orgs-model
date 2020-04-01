@@ -11,7 +11,7 @@ describe(`PolicyCalendar`, () => {
 	test('ignore blank lines', () => expect(testPolicyCalendar.length).toBe(4))
 
 	test(`properly sets fields`, () => {
-		const item = testPolicyCalendar.getRows()[0]
+		const item = testPolicyCalendar.getItems()[0]
 		expect(item.itemName).toBe('Annual thing.')
 	})
 })
