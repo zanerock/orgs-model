@@ -4,15 +4,22 @@ const Role = class {
   }
 
   getName() { return this.item.name }
+
+  attachTo(staff, qualifiers) {
+    return new AttachedRole(this, staff, qualifiers)
+  }
 }
 
 const AttachedRole = class {
-  constructor(roles, staff) {
-    const roleName = staff.getRoleNames()
-    const baseRole = roles.getByName(roleName)
-    if (baseRole === undefined)
-      throw new Error(`Unable to find definition for structural row '${roleName}'.`)
+  constructor(baseRole, staff, qualifiers) {
+    qualifiers = (qualifiers !== undefined && qualifiers.split(/\s*;\s*/)) || []
+    this.baseRole = baseRole
+    this.acting = qualifiers.some(q => q === 'acting')
   }
+
+  getName() { return this.baseRole.getName() }
+
+  isActing() { return this.acting }
 }
 
 export { Role, AttachedRole }

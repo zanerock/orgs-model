@@ -14,7 +14,7 @@ describe(`StaffTsv`, () => {
 		const rows = testStaffTsv.getItems()
 		const ceo = rows[0]
 		expect(ceo['email']).toBe('ceo@foo.com')
-		expect(ceo['primaryRoles']).toEqual(['CEO/', 'CTO/ceo@foo.com'])
+		expect(ceo['primaryRoles']).toEqual(['CEO/', 'CTO/ceo@foo.com/acting'])
 		expect(ceo['secondaryRoles']).toEqual([])
 		const dev = rows[1]
 		expect(dev['primaryRoles']).toEqual(['Developer/' + ceo['email']])

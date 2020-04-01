@@ -1,6 +1,7 @@
 const Staff = class {
-  constructor(item, org) {
+  constructor(item) {
     this.item = item
+    this.attachedRoles = {} // keyed by role name
     this.managers = {} // managers keyed by our role names
     this.reportsByReportRole = {} // roles keyed to reports role names
   }
@@ -20,6 +21,10 @@ const Staff = class {
         if (orgNode === undefined)
           throw new Error(`Staff '${s.getEmail()}' claims non-existent role '${roleName}'.`)
 
+        // attach the role
+        s.attachedRoles[roleName] = org.roles[roleName].attachTo(s, roleQualifiers)
+
+        // TODO: migrate the manager to the AttachedRole
         // set manager and add ourselves to their reports
         if (orgNode.getParent() !== null) {
           const roleManager = org.getStaffMember(roleManagerEmail)
@@ -48,7 +53,9 @@ const Staff = class {
   getStartDate() { return this.item.startDate }
   setStartDate(v) { this.item.startDate = v }
 
-  getRoleNames() { return Object.keys(this.managers) }
+  getRoleNames() { return Object.keys(this.attachedRoles) }
+
+  getAttachedRoleByName(roleName) { return this.attachedRoles[roleName] }
 
   getManagerByRoleName(roleName) { return this.managers[roleName] }
   getManagers() { return Object.values(this.manangers) }
