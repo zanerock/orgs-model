@@ -1,22 +1,22 @@
 import { TsvExt } from '../lib'
 
-const Staff = class extends TsvExt {
+const StaffTsv = class extends TsvExt {
   static headers = [ 'Email', 'Family Name', 'Given Name', 'Start Date', 'Primary Roles', 'Secondary Roles' ]
   static keys = [ 'email', 'familyName', 'givenName', 'startDate', 'primaryRoles', 'secondaryRoles' ]
   static multis = { 'primaryRoles' : true, 'secondaryRoles' : true, 'managers' : true }
 
 	constructor(fileName) {
-    super(Staff.headers, Staff.keys, fileName, Staff.multis)
+    super(StaffTsv.headers, StaffTsv.keys, fileName, StaffTsv.multis)
 	}
 
   notUnique(data, item) {
     let i
     return -1 !== (i = data.findIndex((line) =>
                                       line[0].toLowerCase() === item.email.toLowerCase()))
-           && `Staff member with email '${item.email}' already exists at entry ${i + 1}.`
+           && `member with email '${item.email}' already exists at entry ${i + 1}.`
   }
 
   matchKey = (line, key) => line[0] === key
 }
 
-export { Staff }
+export { StaffTsv }
