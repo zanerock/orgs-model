@@ -36,6 +36,12 @@ describe('Organization', () => {
     expect(ceo.getGivenName()).toEqual('CEO')
   })
 
+  test(`loads basic role data`, () => {
+    let role = org.getRole('CTO')
+    expect(role).not.toBe(undefined)
+    expect(role.getName()).toEqual('CTO')
+  })
+
   describe(`hydrates org chart`, () => {
 
     test.each`
