@@ -2,10 +2,12 @@ import * as fs from 'fs'
 import TSV from 'tsv'
 
 /**
- * Converts array-string data to an actual object
+ * Converts array-string data to an intermediate object. Handles the special '-' <=> null and muti-part field
+ * conversions to arrays.
  */
 const item = function(keys, multis, fields, pos) {
-  if (keys.length !== fields.length) throw new Error(`Found ${keys.length} keys but ${fields.length} fields.`)
+  if (keys.length !== fields.length)
+    throw new Error(`Found ${keys.length} keys but ${fields.length} fields at item ${pos} (${fields[0]}).`)
 
   const item = { _pos: pos }
   for (let i = 0; i < fields.length; i += 1) {
@@ -38,24 +40,11 @@ const TsvExt = class {
     this.keys = keys
     this.multis = multis || {}
     this.data = filteredLines.length > 0 ? TSV.parse(filteredLines.join("\n")) : []
-    this.reset()
   }
 
   get length() { return this.data.length }
 
-  getRows() { return [...this.data] }
-
-  // deprecated; use 'getRows()'
-  reset() { this.cursor = -1 }
-
-  // deprecated; use 'getRows()'
-  next() {
-    this.cursor += 1
-    const l = this.data.length
-    const cursor = this.cursor;
-    if (this.cursor >= this.data.length) return undefined
-    else return item(this.keys, this.multis, this.data[this.cursor], this.cursor)
-  }
+  getRows() { return this.data.map((r, i) => item(this.keys, this.multis, r, i)) }
 
   add(item) {
     const line = []

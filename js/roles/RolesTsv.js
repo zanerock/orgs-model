@@ -20,11 +20,12 @@ const RolesTsv = class extends TsvExt {
 	/**
 	* Turns the 'row' data into minimal Row objects.
 	*/
-	hydrate() { return this.data.reduce(
-		(roles, row) => {
-			roles[row.name] = new Role(row) //  TODO: clone item to protect data
-			return roles
-		}, {})
+	hydrate() {
+		return this.data.reduce(
+			(roles, row) => {
+				roles[row.name] = new Role(row) //  TODO: clone item to protect data
+				return roles
+			}, {})
 	}
 }
 

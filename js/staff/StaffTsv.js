@@ -1,3 +1,5 @@
+import { Staff } from './Staff'
+
 import { TsvExt } from '../lib'
 
 const StaffTsv = class extends TsvExt {
@@ -17,6 +19,14 @@ const StaffTsv = class extends TsvExt {
   }
 
   matchKey = (line, key) => line[0] === key
+
+  hydrate() {
+    return this.getRows().reduce(
+			(staff, row) => {
+				staff[row.email] = new Staff(row) //  TODO: clone item to protect data
+				return staff
+			}, {})
+  }
 }
 
 export { StaffTsv }

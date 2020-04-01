@@ -5,12 +5,6 @@ const hydrateOrg = (org) => {
 }
 
 const hydrateStaff = (org) => {
-  org.staffTsv.reset()
-  // TODO: just expose the data through clone so array funcs available
-  let s; while ((s = org.staffTsv.next()) !== undefined) {
-    org.staff[s.email] = new Staff(s)
-  }
-
   Object.values(org.staff).forEach(s => { // initialize the structural data
     s.item.primaryRoles.forEach(rSpec => {
       const [roleName] = rSpec.split(/\//)
