@@ -1,8 +1,39 @@
 const Staff = class {
-  constructor(item) {
+  constructor(item, org) {
     this.item = item
-    this.managers = {}
-    this.reports = {}
+    this.managers = {} // managers keyed by our role names
+    this.reportsByRole = {} // roles keyed to reports role names
+  }
+
+  /**
+   * Fully defines the staff data. This is done as a static method to allow us to retrieve staff my name and cross-link
+   * managers with reports. In the underlying datastructure, reports are linked to managers and not vice-a-versa, so we
+   * have to pre-define the universe of staff individuals in prep for / before fully defining each..
+   */
+  static hydrate(org) {
+    Object.values(org.staff).forEach(s => {
+      s.item.primaryRoles.forEach(rSpec => {
+        const [roleName, roleManagerEmail, roleQualifiers] = rSpec.split(/\//)
+
+        // verify good roleName
+        const orgNode = org.orgStructure.getNodeByRoleName(roleName)
+        if (orgNode === undefined)
+          throw new Error(`Staff '${s.getEmail()}' claims non-existent role '${roleName}'.`)
+
+        // set manager and add ourselves to their reports
+        if (orgNode.getParent() !== null) {
+          const roleManager = org.getStaffMember(roleManagerEmail)
+          if (roleManager === undefined)
+            throw new Error(`No such manager '${roleManagerEmail}' found while loading staff member '${s.getEmail()}'.`)
+
+          s.managers[roleName] = roleManager
+          if (roleManager.reportsByRole[roleName] === undefined)
+            roleManager.reportsByRole[roleName] = []
+          roleManager.reportsByRole[roleName].push(s)
+        }
+        else s.managers[roleName] = null
+      })
+    })
   }
 
   getEmail() { return this.item.email }
@@ -22,9 +53,9 @@ const Staff = class {
   getManagerByRoleName(roleName) { return this.managers[roleName] }
   getManagers() { return Object.values(this.manangers) }
 
-  getReportsByRoleName(roleName) { return this.reports[roleName] }
+  getReportsByRoleName(roleName) { return this.reportsByRole[roleName] }
   getReports() {
-    return Object.values(this.reports).reduce((acc, reps) => acc.concat(reps), []).
+    return Object.values(this.reportsByRole).reduce((acc, reps) => acc.concat(reps), []).
       filter(rep => rep.getEmail() !== this.getEmail())
   }
 }

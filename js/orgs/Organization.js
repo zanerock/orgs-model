@@ -1,17 +1,14 @@
 import { OrgStructure } from './OrgStructure'
 
 import { RolesTsv } from '../roles'
-import { StaffTsv } from '../staff'
-import * as setup from './lib/org-setup'
+import { Staff, StaffTsv } from '../staff'
 
 const Organization = class {
-  // TODO: it should logically be roles, orgStruct, staff
   constructor(rolesTsvPath, staffTsvPath, orgStructurePath) {
     this.roles = new RolesTsv(rolesTsvPath).hydrate()
-    this.staff = new StaffTsv(staffTsvPath).hydrate()
     this.orgStructure = new OrgStructure(orgStructurePath, this.roles)
-
-    setup.hydrateOrg(this)
+    this.staff = new StaffTsv(staffTsvPath).init(this)
+    Staff.hydrate(this)
   }
 
   getStaffMember(email) { return this.staff[email] }

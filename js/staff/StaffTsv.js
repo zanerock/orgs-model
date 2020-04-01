@@ -20,10 +20,10 @@ const StaffTsv = class extends TsvExt {
 
   matchKey = (line, key) => line[0] === key
 
-  hydrate() {
+  init() {
     return this.getRows().reduce(
-			(staff, row) => {
-				staff[row.email] = new Staff(row) //  TODO: clone item to protect data
+			(staff, item) => {
+				staff[item.email] = new Staff(item)
 				return staff
 			}, {})
   }

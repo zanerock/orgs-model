@@ -23,7 +23,7 @@ const RolesTsv = class extends TsvExt {
 	hydrate() {
 		return this.data.reduce(
 			(roles, row) => {
-				roles[row.name] = new Role(row) //  TODO: clone item to protect data
+				roles[row.name] = new Role(row)
 				return roles
 			}, {})
 	}
