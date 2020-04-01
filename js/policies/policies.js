@@ -1,4 +1,4 @@
-import { Roles } from '../roles'
+import { RolesTsv } from '../roles'
 import * as fs from 'fs'
 import { Glossary } from './lib/Glossary'
 
@@ -28,7 +28,7 @@ const Policies = class {
 
     // TODO: allom multiple role files to be merged
     const rolesFile = this.findFile(this.rolesFile)
-    this.roles = new Roles(rolesFile)
+    this.roles = new RolesTsv(rolesFile)
     return this.roles
   }
 

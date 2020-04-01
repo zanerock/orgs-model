@@ -1,11 +1,11 @@
 import { TsvExt } from '../lib'
 
-const Roles = class extends TsvExt {
+const RolesTsv = class extends TsvExt {
 	static headers = ['Name', 'Application', 'Super-role', 'Description', 'Notes']
 	static keys = ['name', 'application', 'superRole', 'description', 'notes']
 
 	constructor(fileName) {
-		super(Roles.headers, Roles.keys, fileName)
+		super(RolesTsv.headers, RolesTsv.keys, fileName)
 	}
 
 	notUnique(data, item) {
@@ -17,4 +17,4 @@ const Roles = class extends TsvExt {
 	matchKey = (line, key) => line[0] === key
 }
 
-export { Roles }
+export { RolesTsv }

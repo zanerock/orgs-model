@@ -1,12 +1,12 @@
 import { Organization, OrgStructure } from '../'
-import { Roles } from '../../roles'
+import { RolesTsv } from '../../roles'
 import { StaffTsv } from '../../staff'
 
 describe('Organization', () => {
   let org
   beforeAll(() => {
     org = new Organization(
-      new Roles(`./js/roles/test/roles.tsv`),
+      new RolesTsv(`./js/roles/test/roles.tsv`),
       new StaffTsv(`./js/staff/test/staff.tsv`),
       new OrgStructure(`./js/orgs/test/org_structure.json`))
   })
@@ -14,7 +14,7 @@ describe('Organization', () => {
   test(`detects staff with invalid roles`, () => {
     expect(() =>
       new Organization(
-        new Roles(`./js/roles/test/roles.tsv`),
+        new RolesTsv(`./js/roles/test/roles.tsv`),
         new StaffTsv(`./js/staff/test/bad_role_staff.tsv`),
         new OrgStructure(`./js/orgs/test/org_structure.json`))).
       toThrow(/badrole@foo\.com.*Bad Role/)
@@ -23,7 +23,7 @@ describe('Organization', () => {
   test(`detects staff with invalid manaagers`, () => {
     expect(() =>
       new Organization(
-        new Roles(`./js/roles/test/roles.tsv`),
+        new RolesTsv(`./js/roles/test/roles.tsv`),
         new StaffTsv(`./js/staff/test/bad_manager_staff.tsv`),
         new OrgStructure(`./js/orgs/test/org_structure.json`))).
       toThrow(/nosuchmngr@foo\.com.*badmanager@foo\.com/)
