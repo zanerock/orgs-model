@@ -14,6 +14,6 @@ describe(`Policies`, () => {
     policies.setRolesFile('test_data.tsv')
     policies.addSourceFile('./js/roles/test_data.tsv')
     const roles = policies.getRoles()
-    expect(roles.data).toHaveLength(1)
+    expect(roles.data).toHaveLength(4)
   })
 })

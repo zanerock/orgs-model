@@ -84,7 +84,7 @@ const TsvExt = class {
 
   // Generic find; assumes the first column is the key.
   find(key) {
-		return data.find((line) => line[0] === key)
+		return this.data.find((line) => line[0] === key)
 	}
 }
 

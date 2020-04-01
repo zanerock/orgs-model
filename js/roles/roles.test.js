@@ -7,10 +7,10 @@ describe(`Roles`, () => {
 	})
 
 	test('parses test file', () => expect(testRoles).toBeTruthy())
-	test('ignore blank lines', () => expect(testRoles.length).toBe(1))
+	test('ignore blank lines', () => expect(testRoles.length).toBe(4))
 	test(`properly sets fields`, () => {
 		testRoles.reset()
 		const role = testRoles.next()
-		expect(role['name']).toBe('RoleA')
+		expect(role['name']).toBe('CEO')
 	})
 })
