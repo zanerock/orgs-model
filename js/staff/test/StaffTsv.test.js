@@ -1,9 +1,9 @@
-import { StaffTsv } from './StaffTsv'
+import { StaffTsv } from '../StaffTsv'
 
 describe(`StaffTsv`, () => {
 	let testStaffTsv
 	beforeAll(() => {
-		testStaffTsv = new StaffTsv(`./js/staff/test_data.tsv`)
+		testStaffTsv = new StaffTsv(`./js/staff/test/staff.tsv`)
 	})
 
 	test('test file', () => expect(testStaffTsv).toBeTruthy())

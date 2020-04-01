@@ -3,7 +3,7 @@ import { OrgStructure } from '../OrgStructure'
 describe(`OrgStructure`, () => {
   let orgStructure
   beforeAll(() => {
-    orgStructure = new OrgStructure(`${__dirname}/../../../js/orgs/test/org_structure.json`)
+    orgStructure = new OrgStructure(`./js/orgs/test/org_structure.json`)
   })
 
 	test(`successfull loads test file`, () => {
@@ -20,12 +20,12 @@ describe(`OrgStructure`, () => {
   })
 
   test(`detects duplicate roles in structure`, () => {
-    expect(() => new OrgStructure(`${__dirname}/../../../js/orgs/test/dupe_org_structure.json`)).
+    expect(() => new OrgStructure(`./js/orgs/test/dupe_org_structure.json`)).
       toThrow(/non-unique.*CEO/)
   })
 
   test(`detects bad manager-role reference`, () => {
-    expect(() => new OrgStructure(`${__dirname}/../../../js/orgs/test/bad_manager_org_structure.json`)).
+    expect(() => new OrgStructure(`./js/orgs/test/bad_manager_org_structure.json`)).
       toThrow(/Invalid.*Bad Manager/)
   })
 

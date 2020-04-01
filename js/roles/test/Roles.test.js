@@ -1,9 +1,9 @@
-import { Roles } from './roles'
+import { Roles } from '../roles'
 
 describe(`Roles`, () => {
 	let testRoles
 	beforeAll(() => {
-		testRoles = new Roles(`./js/roles/test_data.tsv`)
+		testRoles = new Roles(`./js/roles/test/roles.tsv`)
 	})
 
 	test('parses test file', () => expect(testRoles).toBeTruthy())
