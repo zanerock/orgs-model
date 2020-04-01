@@ -1,1 +1,1 @@
-export * from './policies'
+export * from './Policies'
