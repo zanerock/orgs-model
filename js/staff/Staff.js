@@ -3,7 +3,6 @@ const Staff = class {
     this.item = item
     this.managers = {}
     this.reports = {}
-    this.roles = []
   }
 
   getEmail() { return this.item.email }
@@ -17,6 +16,8 @@ const Staff = class {
 
   getStartDate() { return this.item.startDate }
   setStartDate(v) { this.item.startDate = v }
+
+  getRoleNames() { return Object.keys(this.managers) }
 
   getManagerByRoleName(roleName) { return this.managers[roleName] }
   getManagers() { return Object.values(this.manangers) }

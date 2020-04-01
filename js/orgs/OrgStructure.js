@@ -20,7 +20,7 @@ const Node = class {
 }
 
 const OrgStructure = class {
-  constructor(fileName) {
+  constructor(fileName, roles) {
     const nodes = JSON.parse(fs.readFileSync(fileName)).map(r => new Node(r))
     this.roots = []
 
@@ -32,16 +32,25 @@ const OrgStructure = class {
       else {
         const parent = nodes.find(n => n.name === node.parentName)
         if (parent === undefined)
-          throw new Error(`Invalid org structure. Role '${node.name}' references non-existent manager role '${node.parentName}'.`)
+          throw new Error(`Invalid org structure. Role '${node.name}' references ` +
+                          `non-existent manager role '${node.parentName}'.`)
 
         node.parent = parent
         parent.children.push(node)
       }
     })
 
-    let roles = this.getNodes().map(n => n.getName())
-    if ((roles = roles.filter((name, index) => roles.indexOf(name) !== index )).length !== 0)
-      throw new Error(`Found non-unique roles in org structure: ${roles.join(', ')}`)
+    const orgRoles = this.getNodes().map(n => n.getName())
+    // check all org role names reference defined roles
+    const undefinedRoles = orgRoles.filter((roleName) => roles[roleName] !== undefined)
+    if (undefinedRoles.length > 0)
+      throw new Error(`Found undefined role reference` +
+                      `${undefinedRoles.length > 1 ? 's' : ''}: ${undefinedRoles.join(', ')}`)
+    // check for duplicate org roles
+    const dupeRoles = orgRoles.filter((name, index) => orgRoles.indexOf(name) !== index )
+    if (dupeRoles.length > 0)
+      throw new Error(`Found non-unique role${dupeRoles.length > 1 ? 's' : ''} ` +
+                      `references in org structure: ${dupeRoles.join(', ')}`)
   }
 
   getRoots() { return this.roots }

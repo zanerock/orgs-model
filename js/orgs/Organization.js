@@ -1,46 +1,23 @@
-import { Staff } from '../staff'
+import { OrgStructure } from './OrgStructure'
+import { RolesTsv } from '../roles'
+import { StaffTsv } from '../staff'
+import * as setup from './lib/org-setup'
 
 const Organization = class {
-  constructor(rolesTsv, staffTsv, orgStructure) {
+  // TODO: it should logically be roles, orgStruct, staff
+  constructor(rolesTsvPath, staffTsvPath, orgStructurePath) {
+    this.roles = new RolesTsv(rolesTsvPath).hydrate()
+    this.orgStructure = new OrgStructure(orgStructurePath, this.roles)
+
+    this.staffTsv = new StaffTsv(staffTsvPath)
     this.staff = {}
 
-    // let's hydrate
-    staffTsv.reset()
-    let s; while ((s = staffTsv.next()) !== undefined) {
-      this.staff[s.email] = new Staff(s)
-    }
-
-    Object.values(this.staff).forEach(s => { // initialize the structural data
-      s.item.primaryRoles.forEach(rSpec => {
-        const [roleName] = rSpec.split(/\//)
-        const orgNode = orgStructure.getNodeByRoleName(roleName)
-        if (orgNode === undefined)
-          throw new Error(`Staff '${s.getEmail()}' claims non-existent role '${roleName}'.`)
-
-        orgNode.getChildren().forEach(reportsRole => s.reports[reportsRole.getName()] = [])
-      })
-    })
-
-    Object.values(this.staff).forEach(s => {
-      s.item.primaryRoles.forEach(rSpec => {
-        const [roleName, roleManagerEmail, roleQualifiers] = rSpec.split(/\//)
-
-        const orgNode = orgStructure.getNodeByRoleName(roleName)
-        // roles already verified in the first pass
-
-        if (orgNode.getParent() !== null) {
-          const roleManager = this.getStaffMember(roleManagerEmail)
-          if (roleManager === undefined)
-            throw new Error(`No such manager '${roleManagerEmail}' found while loading staff member '${s.getEmail()}'.`)
-
-          s.managers[roleName] = roleManager
-          roleManager.reports[roleName].push(s)
-        }
-      })
-    })
+    setup.hydrateOrg(this)
   }
 
   getStaffMember(email) { return this.staff[email] }
+
+  getRole(name) { return this.roles[name] }
 }
 
 export { Organization }

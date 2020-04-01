@@ -43,8 +43,12 @@ const TsvExt = class {
 
   get length() { return this.data.length }
 
+  getRows() { return [...this.data] }
+
+  // deprecated; use 'getRows()'
   reset() { this.cursor = -1 }
 
+  // deprecated; use 'getRows()'
   next() {
     this.cursor += 1
     const l = this.data.length

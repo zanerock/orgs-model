@@ -1,9 +1,12 @@
+import { RolesTsv } from '../../roles'
 import { OrgStructure } from '../OrgStructure'
 
 describe(`OrgStructure`, () => {
+  let roles
   let orgStructure
   beforeAll(() => {
-    orgStructure = new OrgStructure(`./js/orgs/test/org_structure.json`)
+    roles = new RolesTsv(`./js/roles/test/roles.tsv`).hydrate()
+    orgStructure = new OrgStructure(`./js/orgs/test/org_structure.json`, roles)
   })
 
 	test(`successfull loads test file`, () => {
@@ -20,12 +23,12 @@ describe(`OrgStructure`, () => {
   })
 
   test(`detects duplicate roles in structure`, () => {
-    expect(() => new OrgStructure(`./js/orgs/test/dupe_org_structure.json`)).
+    expect(() => new OrgStructure(`./js/orgs/test/dupe_org_structure.json`, roles)).
       toThrow(/non-unique.*CEO/)
   })
 
   test(`detects bad manager-role reference`, () => {
-    expect(() => new OrgStructure(`./js/orgs/test/bad_manager_org_structure.json`)).
+    expect(() => new OrgStructure(`./js/orgs/test/bad_manager_org_structure.json`, roles)).
       toThrow(/Invalid.*Bad Manager/)
   })
 
