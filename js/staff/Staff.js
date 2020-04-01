@@ -2,7 +2,7 @@ const Staff = class {
   constructor(item, org) {
     this.item = item
     this.managers = {} // managers keyed by our role names
-    this.reportsByRole = {} // roles keyed to reports role names
+    this.reportsByReportRole = {} // roles keyed to reports role names
   }
 
   /**
@@ -27,9 +27,9 @@ const Staff = class {
             throw new Error(`No such manager '${roleManagerEmail}' found while loading staff member '${s.getEmail()}'.`)
 
           s.managers[roleName] = roleManager
-          if (roleManager.reportsByRole[roleName] === undefined)
-            roleManager.reportsByRole[roleName] = []
-          roleManager.reportsByRole[roleName].push(s)
+          if (roleManager.reportsByReportRole[roleName] === undefined)
+            roleManager.reportsByReportRole[roleName] = []
+          roleManager.reportsByReportRole[roleName].push(s)
         }
         else s.managers[roleName] = null
       })
@@ -53,9 +53,9 @@ const Staff = class {
   getManagerByRoleName(roleName) { return this.managers[roleName] }
   getManagers() { return Object.values(this.manangers) }
 
-  getReportsByRoleName(roleName) { return this.reportsByRole[roleName] }
+  getReportsByRoleName(roleName) { return this.reportsByReportRole[roleName] }
   getReports() {
-    return Object.values(this.reportsByRole).reduce((acc, reps) => acc.concat(reps), []).
+    return Object.values(this.reportsByReportRole).reduce((acc, reps) => acc.concat(reps), []).
       filter(rep => rep.getEmail() !== this.getEmail())
   }
 }
