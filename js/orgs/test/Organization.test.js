@@ -68,6 +68,17 @@ describe('Organization', () => {
     })
   })
 
+  describe(`getStaffByRoleName`, () => {
+    test(`returns array of staff matching role`, () => {
+      const staff = org.getStaffByRoleName('Developer')
+      expect(staff).toHaveLength(2)
+      expect(staff.findIndex(s => s.getEmail() === 'dev@foo.com')).not.toEqual(-1)
+      expect(staff.findIndex(s => s.getEmail() === 'uidev@foo.com')).not.toEqual(-1)
+    })
+
+    test(`returns empty array with no matching staff`, () => expect(org.getStaffByRoleName('blah')).toEqual([]))
+  })
+
   describe('generateOrgChartData', () => {
     test(`for debang/OrgChart`, () => {
       // console.log(JSON.stringify(org.generateOrgChartData('debang/OrgChart')))
@@ -79,6 +90,10 @@ describe('Organization', () => {
       // console.log(JSON.stringify(org.generateOrgChartData('google-chart')))
       const expected = [["ceo@foo.com/CEO",""],["ceo@foo.com/CTO","ceo@foo.com/CEO"],["dev@foo.com/Developer","ceo@foo.com/CTO"],["uidev@foo.com/Developer","ceo@foo.com/CTO"],["test@foo.com/Tester","ceo@foo.com/CTO"]]
       expect(org.generateOrgChartData('google-chart')).toEqual(expected)
+    })
+
+    test(`raises exception when presented with unknown chart style`, () => {
+      expect(() => org.generateOrgChartData('blah')).toThrow(/blah.*is not supported/i)
     })
   })
 })

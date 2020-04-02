@@ -16,7 +16,7 @@ const Organization = class {
 
   getStaffMember(email) { return this.staff[email] }
 
-  getStaffByRoleName(roleName) { return Objects.values(this.staff).filter(s => s.hasRole(roleName)) }
+  getStaffByRoleName(roleName) { return Object.values(this.staff).filter(s => s.hasRole(roleName)) }
 
   getManagingRoleByManagedRoleName(roleName) {
     return this.orgStructure.getNodeByRoleName(roleName).getParent()
@@ -75,7 +75,7 @@ const Organization = class {
 
       return data
     }
-    else throw new Error(`Uknown chart data style: '${style}'`)
+    else throw new Error(`Org chart style '${style}' is not supported.`)
   }
 }
 
