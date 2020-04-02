@@ -9,11 +9,15 @@ const Node = class {
   }
 
   getName() { return this.name }
+
   getParent() { return this.parent }
+
   getChildren() { return this.children }
+
   getDescendents() {
     return this.children.reduce((desc, child) => desc.concat(child.getDescendents()), [...this.children])
   }
+  
   getTreeNodes() {
     return this.children.reduce((desc, child) => desc.concat(child.getTreeNodes()), [this])
   }
@@ -53,7 +57,7 @@ const OrgStructure = class {
                       `references in org structure: ${dupeRoles.join(', ')}`)
   }
 
-  getRoots() { return this.roots }
+  getRoots() { return [...this.roots] }
 
   getNodes() {
     return this.roots.reduce((nodes, root) => nodes.concat(root.getTreeNodes()), [])

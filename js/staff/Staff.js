@@ -44,6 +44,8 @@ const Staff = class {
   getEmail() { return this.item.email }
   setEmail(v) { this.item.email = v }
 
+  getFullName() { return `${this.getGivenName()} ${this.getFamilyName()}` } // TODO: i18n...
+
   getFamilyName() { return this.item.familyName }
   setFamilyName(v) { this.item.familyName = v }
 
@@ -53,11 +55,16 @@ const Staff = class {
   getStartDate() { return this.item.startDate }
   setStartDate(v) { this.item.startDate = v }
 
+  hasRole(roleName) { return Boolean(this.attachedRoles[roleName]) }
+
   getRoleNames() { return Object.keys(this.attachedRoles) }
 
   getAttachedRoleByName(roleName) { return this.attachedRoles[roleName] }
 
+  getAttachedRoles() { return Object.values(this.attachedRoles) }
+
   getManagerByRoleName(roleName) { return this.managers[roleName] }
+
   getManagers() { return Object.values(this.manangers) }
 
   getReportsByRoleName(roleName) { return this.reportsByReportRole[roleName] }

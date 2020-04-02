@@ -43,7 +43,6 @@ describe('Organization', () => {
   })
 
   describe(`hydrates org chart`, () => {
-
     test.each`
     email | roleName | managerEmail
     ${'ceo@foo.com'} | ${'CTO'} | ${'ceo@foo.com'}
@@ -66,6 +65,20 @@ describe('Organization', () => {
     ${'dev@foo.com'} | ${0}
     `(`$email has $reportCount total reports`, ({email, roleName, managerName, reportCount}) => {
       expect(org.getStaffMember(email).getReports()).toHaveLength(reportCount)
+    })
+  })
+
+  describe('generateOrgChartData', () => {
+    test(`for debang/OrgChart`, () => {
+      // console.log(JSON.stringify(org.generateOrgChartData('debang/OrgChart')))
+      const expected = {"id":"ceo@foo.com/CEO","name":"CEO Foo","title":"CEO","children":[{"id":"ceo@foo.com/CTO","name":"CEO Foo","title":"CTO","children":[{"id":"dev@foo.com/Developer","name":"Dev Bar","title":"Developer"},{"id":"uidev@foo.com/Developer","name":"UI Bar","title":"Developer"},{"id":"test@foo.com/Tester","name":"Test Baz","title":"Tester"}]}]}
+      expect(org.generateOrgChartData('debang/OrgChart')).toEqual(expected)
+    })
+
+    test(`for GoogleCharts org chart`, () => {
+      // console.log(JSON.stringify(org.generateOrgChartData('google-chart')))
+      const expected = [["ceo@foo.com/CEO",""],["ceo@foo.com/CTO","ceo@foo.com/CEO"],["dev@foo.com/Developer","ceo@foo.com/CTO"],["uidev@foo.com/Developer","ceo@foo.com/CTO"],["test@foo.com/Tester","ceo@foo.com/CTO"]]
+      expect(org.generateOrgChartData('google-chart')).toEqual(expected)
     })
   })
 })
