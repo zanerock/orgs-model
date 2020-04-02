@@ -14,7 +14,7 @@ const Staff = class {
   static hydrate(org) {
     Object.values(org.staff).forEach(s => {
       s.item.primaryRoles.forEach(rSpec => {
-        const [roleName, roleManagerEmail, roleQualifiers] = rSpec.split(/\//)
+        const [roleName, roleManagerEmail, roleParameters] = rSpec.split(/\//)
 
         // verify good roleName
         const orgNode = org.orgStructure.getNodeByRoleName(roleName)
@@ -22,7 +22,7 @@ const Staff = class {
           throw new Error(`Staff '${s.getEmail()}' claims non-existent role '${roleName}'.`)
 
         // attach the role
-        s.attachedRoles[roleName] = org.roles[roleName].attachTo(s, roleQualifiers)
+        s.attachedRoles[roleName] = org.roles[roleName].attachTo(s, roleParameters)
 
         // TODO: migrate the manager to the AttachedRole
         // set manager and add ourselves to their reports

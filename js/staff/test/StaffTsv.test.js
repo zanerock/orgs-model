@@ -10,7 +10,7 @@ describe(`StaffTsv`, () => {
 		expect(() => new StaffTsv(`./js/staff/test/dupe_email_staff.tsv`).init()).
 			toThrow(/email.*ceo@foo.com/))
 
-	test('filters header+blank lines', () => expect(testStaffTsv.length).toBe(3))
+	test('filters header+blank lines', () => expect(testStaffTsv.length).toBe(4))
 
 	test(`fields`, () => {
 		const rows = testStaffTsv.getItems()
