@@ -1,5 +1,6 @@
-import { Roles } from '../roles'
+import { RolesTsv } from '../roles'
 import * as fs from 'fs'
+import { Glossary } from './lib/Glossary'
 
 const Policies = class {
   #docDir
@@ -27,7 +28,7 @@ const Policies = class {
 
     // TODO: allom multiple role files to be merged
     const rolesFile = this.findFile(this.rolesFile)
-    this.roles = new Roles(rolesFile)
+    this.roles = new RolesTsv(rolesFile)
     return this.roles
   }
 
@@ -50,7 +51,8 @@ const Policies = class {
     const roles = this.getRoles()
 
     const glossary = new Glossary()
-    glossary.addTermsFromIterator(roles)
+    if (roles) glossary.addTermsFromIterator(roles)
+    // TODO: else warn
 
     fs.writeFileSync(`${this.docDir}/Glossary.md`, glossary.generateContent())
   }

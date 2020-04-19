@@ -1,11 +1,12 @@
+import { Role } from './Role'
 import { TsvExt } from '../lib'
 
-const Roles = class extends TsvExt {
+const RolesTsv = class extends TsvExt {
 	static headers = ['Name', 'Application', 'Super-role', 'Description', 'Notes']
 	static keys = ['name', 'application', 'superRole', 'description', 'notes']
 
 	constructor(fileName) {
-		super(Roles.headers, Roles.keys, fileName)
+		super(RolesTsv.headers, RolesTsv.keys, fileName)
 	}
 
 	notUnique(data, item) {
@@ -15,6 +16,17 @@ const Roles = class extends TsvExt {
 	}
 
 	matchKey = (line, key) => line[0] === key
+
+	/**
+	* Turns the 'row' data into minimal Row objects.
+	*/
+	hydrate() {
+		return this.getItems().reduce(
+			(roles, item) => {
+				roles[item.name] = new Role(item)
+				return roles
+			}, {})
+	}
 }
 
-export { Roles }
+export { RolesTsv }
