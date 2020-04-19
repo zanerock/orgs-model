@@ -1,7 +1,8 @@
 // JSONLoop is a trivial rework of https://github.com/dabeng/JSON-Loop cc9bf8d3ec9d366160
-const JSONLoop = class {
-  #nodes = []
 
+let nodes = [] // used as temp workpad
+
+const JSONLoop = class {
   constructor(obj, idPropertyName, childrenPropertyName) {
     this.id = idPropertyName;
     this.children = childrenPropertyName;
