@@ -18,8 +18,12 @@ const Organization = class {
 
   getStaffByRoleName(roleName) { return Object.values(this.staff).filter(s => s.hasRole(roleName)) }
 
-  getManagingRoleByManagedRoleName(roleName) {
-    return this.orgStructure.getNodeByRoleName(roleName).getPrimMngr()
+  hasStaffInRole(email, roleName) {
+    return this.getStaffByRoleName(roleName).some(s => s.getEmail() === email)
+  }
+
+  getManagingRolesByManagedRoleName(roleName) {
+    return this.orgStructure.getNodeByRoleName(roleName).getPossibleMngrs()
   }
 
   generateOrgChartData(style='debang/OrgChart') {
@@ -31,10 +35,16 @@ const Organization = class {
         s.getAttachedRoles().forEach(r => {
           const myKey = `${s.getEmail()}/${r.getName()}`
           const manager = s.getManagerByRoleName(r.getName())
-          const managerKey = (manager
-            ? `${manager.getEmail()}/${this.getManagingRoleByManagedRoleName(r.getName()).getName()}`
-            : '')
-          result.push([myKey, managerKey])
+          if (!manager) result.push([myKey, ''])
+          else {
+            const mngrEmail = manager.getEmail()
+            const managingRole = this.getManagingRolesByManagedRoleName(r.getName()).find(mngrRole =>
+              this.hasStaffInRole(mngrEmail, mngrRole.getName())
+            )
+            if (!managingRole) throw new Error(`Could not find manager ${mngrEmail}/${r.getName()}`)
+            const managerKey = `${mngrEmail}/${managingRole.getName()}`
+            result.push([myKey, managerKey])
+          }
         })
       })
 
@@ -67,7 +77,7 @@ const Organization = class {
         else {
           var jsonloop = new JSONLoop(data, 'id', 'children')
           jsonloop.findNodeById(data, item.parent_id, function(err, node) {
-            if (err) throw new Error(err)
+            if (err) throw new Error(`Error finding '${item.parent_id}'; ${err}`)
             else {
               childNodes.push(item)
               if (node.children) {
@@ -93,10 +103,11 @@ const Organization = class {
             node.hideName = true
 
             if (parent.children.length === 1 || node.children === undefined) {
-              parent.titles.push(...node.titles)
-              parent.ids.push(...node.ids)
+              parent.titles.push(...node.titles) // parent inherits collapsed node's titles
+              parent.ids.push(...node.ids) // and ids
+              // If 'node' is only child collapsing into parrent, just cut it out
               if (parent.children.length === 1) parent.children = node.children
-              else {
+              else { // Else, just cut the child out
                 parent.children.splice(parent.children.findIndex((t) => t === node), 1)
               }
             }
