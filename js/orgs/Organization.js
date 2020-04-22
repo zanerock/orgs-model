@@ -35,7 +35,7 @@ const Organization = class {
         s.getAttachedRoles().forEach(r => {
           const myKey = `${s.getEmail()}/${r.getName()}`
           const manager = s.getManagerByRoleName(r.getName())
-          if (!manager) result.push([myKey, ''])
+          if (!manager) result.push([myKey, '', r.getQualifier()])
           else {
             const mngrEmail = manager.getEmail()
             const managingRole = this.getManagingRolesByManagedRoleName(r.getName()).find(mngrRole =>
@@ -43,7 +43,7 @@ const Organization = class {
             )
             if (!managingRole) throw new Error(`Could not find manager ${mngrEmail}/${r.getName()}`)
             const managerKey = `${mngrEmail}/${managingRole.getName()}`
-            result.push([myKey, managerKey])
+            result.push([myKey, managerKey, r.getQualifier()])
           }
         })
       })
@@ -56,7 +56,12 @@ const Organization = class {
       const seedData = this.
         generateOrgChartData('google-chart').
         map(row => {
-          const [ email, roleName ] = row[0].split(/\//)
+          let [ email, roleName ] = row[0].split(/\//)
+          const qualifier = row[2]
+          if (qualifier) {
+            roleName = roleName.replace(/^(Senior )?/, `$1${qualifier} `)
+          }
+
           const staffMember = this.getStaffMember(email)
           return {
             id: row[0],

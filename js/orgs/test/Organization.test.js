@@ -85,13 +85,13 @@ describe('Organization', () => {
   describe('generateOrgChartData', () => {
     test(`for debang/OrgChart`, () => {
       // console.log(JSON.stringify(org.generateOrgChartData('debang/OrgChart')))
-      const expected = {"id":"ceo@foo.com/CEO","ids":["ceo@foo.com/CEO","ceo@foo.com/CTO"],"parent_id":"","email":"ceo@foo.com","name":"CEO Foo","titles":["CEO","CTO"],"children":[{"id":"dev@foo.com/Developer","ids":["dev@foo.com/Developer"],"parent_id":"ceo@foo.com/CTO","email":"dev@foo.com","name":"Dev Bar","titles":["Developer"],"children":[{"id":"uidev@foo.com/Developer","ids":["uidev@foo.com/Developer"],"parent_id":"dev@foo.com/Developer","email":"uidev@foo.com","name":"UI Bar","titles":["Developer"]}]},{"id":"test@foo.com/Tester","ids":["test@foo.com/Tester"],"parent_id":"ceo@foo.com/CTO","email":"test@foo.com","name":"Test Baz","titles":["Tester"]}]}
+      const expected = {"id":"ceo@foo.com/CEO","ids":["ceo@foo.com/CEO","ceo@foo.com/CTO"],"parent_id":"","email":"ceo@foo.com","name":"CEO Foo","titles":["CEO","CTO"],"children":[{"id":"dev@foo.com/Developer","ids":["dev@foo.com/Developer"],"parent_id":"ceo@foo.com/CTO","email":"dev@foo.com","name":"Dev Bar","titles":["Developer"],"children":[{"id":"uidev@foo.com/Developer","ids":["uidev@foo.com/Developer"],"parent_id":"dev@foo.com/Developer","email":"uidev@foo.com","name":"UI Bar","titles":["UI Developer"]}]},{"id":"test@foo.com/Tester","ids":["test@foo.com/Tester"],"parent_id":"ceo@foo.com/CTO","email":"test@foo.com","name":"Test Baz","titles":["Tester"]}]}
       expect(org.generateOrgChartData('debang/OrgChart')).toEqual(expected)
     })
 
     test(`for GoogleCharts org chart`, () => {
       console.log(JSON.stringify(org.generateOrgChartData('google-chart')))
-      const expected = [["ceo@foo.com/CEO",""],["ceo@foo.com/CTO","ceo@foo.com/CEO"],["dev@foo.com/Developer","ceo@foo.com/CTO"],["uidev@foo.com/Developer","dev@foo.com/Developer"],["test@foo.com/Tester","ceo@foo.com/CTO"]]
+      const expected = [["ceo@foo.com/CEO","",null],["ceo@foo.com/CTO","ceo@foo.com/CEO",null],["dev@foo.com/Developer","ceo@foo.com/CTO",null],["uidev@foo.com/Developer","dev@foo.com/Developer","UI"],["test@foo.com/Tester","ceo@foo.com/CTO",null]]
       expect(org.generateOrgChartData('google-chart')).toEqual(expected)
     })
 
