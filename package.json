@@ -1,6 +1,6 @@
 {
   "name": "@liquid-labs/policies-model",
-  "version": "1.0.0-beta.25",
+  "version": "1.0.0-beta.26",
   "description": "Model definitions library for Liquid Policy.",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
