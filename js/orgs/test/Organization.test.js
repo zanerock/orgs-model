@@ -81,8 +81,8 @@ describe('Organization', () => {
 
   describe('generateOrgChartData', () => {
     test(`for debang/OrgChart`, () => {
-      // console.log(JSON.stringify(org.generateOrgChartData('debang/OrgChart')))
-      const expected = {"id":"ceo@foo.com/CEO","name":"CEO Foo","title":"CEO","children":[{"id":"ceo@foo.com/CTO","name":"CEO Foo","title":"CTO","children":[{"id":"dev@foo.com/Developer","name":"Dev Bar","title":"Developer"},{"id":"uidev@foo.com/Developer","name":"UI Bar","title":"Developer"},{"id":"test@foo.com/Tester","name":"Test Baz","title":"Tester"}]}]}
+      //console.log(JSON.stringify(org.generateOrgChartData('debang/OrgChart')))
+      const expected = {"id":"ceo@foo.com/CEO","ids":["ceo@foo.com/CEO","ceo@foo.com/CTO"],"parent_id":"","email":"ceo@foo.com","name":"CEO Foo","titles":["CEO","CTO"],"children":[{"id":"dev@foo.com/Developer","ids":["dev@foo.com/Developer"],"parent_id":"ceo@foo.com/CTO","email":"dev@foo.com","name":"Dev Bar","titles":["Developer"]},{"id":"uidev@foo.com/Developer","ids":["uidev@foo.com/Developer"],"parent_id":"ceo@foo.com/CTO","email":"uidev@foo.com","name":"UI Bar","titles":["Developer"]},{"id":"test@foo.com/Tester","ids":["test@foo.com/Tester"],"parent_id":"ceo@foo.com/CTO","email":"test@foo.com","name":"Test Baz","titles":["Tester"]}]}
       expect(org.generateOrgChartData('debang/OrgChart')).toEqual(expected)
     })
 
