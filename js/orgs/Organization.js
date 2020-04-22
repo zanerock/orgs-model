@@ -19,7 +19,7 @@ const Organization = class {
   getStaffByRoleName(roleName) { return Object.values(this.staff).filter(s => s.hasRole(roleName)) }
 
   getManagingRoleByManagedRoleName(roleName) {
-    return this.orgStructure.getNodeByRoleName(roleName).getParent()
+    return this.orgStructure.getNodeByRoleName(roleName).getPrimMngr()
   }
 
   generateOrgChartData(style='debang/OrgChart') {

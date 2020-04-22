@@ -26,7 +26,7 @@ const Staff = class {
 
         // TODO: migrate the manager to the AttachedRole
         // set manager and add ourselves to their reports
-        if (orgNode.getParent() !== null) {
+        if (orgNode.getPrimMngr() !== null) {
           const roleManager = org.getStaffMember(roleManagerEmail)
           if (roleManager === undefined)
             throw new Error(`No such manager '${roleManagerEmail}' found while loading staff member '${s.getEmail()}'.`)

@@ -1,6 +1,6 @@
 [
   ["CEO", null],
   ["CTO", "CEO"],
-  ["Developer", "CTO"],
+  ["Developer", "CTO", ["Developer"]],
   ["Tester", "CTO"]
 ]

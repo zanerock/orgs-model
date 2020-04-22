@@ -1,23 +1,28 @@
 import * as fs from 'fs'
 
 const Node = class {
-  constructor([name, parentName]) {
+  constructor([name, primMngrName, possibleMngrNames]) {
     this.name = name
-    this.parentName = parentName
-    this.parent = undefined
+    this.primMngrName = primMngrName
+    this.primMngr = undefined
+    this.possibleMngrNames = possibleMngrNames || []
+    if (primMngrName) this.possibleMngrNames.unshift(primMngrName)
+    this.possibleMngrs = []
     this.children = []
   }
 
   getName() { return this.name }
 
-  getParent() { return this.parent }
+  getPrimMngr() { return this.primMngr }
+
+  getPossibleMngrs() { return this.possibleMngrs }
 
   getChildren() { return this.children }
 
   getDescendents() {
     return this.children.reduce((desc, child) => desc.concat(child.getDescendents()), [...this.children])
   }
-  
+
   getTreeNodes() {
     return this.children.reduce((desc, child) => desc.concat(child.getTreeNodes()), [this])
   }
@@ -29,18 +34,27 @@ const OrgStructure = class {
     this.roots = []
 
     nodes.forEach(node => {
-      if (node.parentName === null) {
-        node.parent = null // which is not undefined, but positively null
+      if (node.primMngrName === null) {
+        node.primMngr = null // which is not undefined, but positively null
         this.roots.push(node)
       }
       else {
-        const parent = nodes.find(n => n.name === node.parentName)
-        if (parent === undefined)
+        const primMngr = nodes.find(n => n.name === node.primMngrName)
+        if (primMngr === undefined)
           throw new Error(`Invalid org structure. Role '${node.name}' references ` +
-                          `non-existent manager role '${node.parentName}'.`)
+                          `non-existent primary manager role '${node.primMngrName}'.`)
 
-        node.parent = parent
-        parent.children.push(node)
+        node.primMngr = primMngr
+        primMngr.children.push(node)
+
+        node.possibleMngrNames.forEach(mngrName => {
+          const mngr = nodes.find(n => n.name === mngrName)
+          if (mngr === undefined)
+            throw new Error(`Invalid org structure. Role '${node.name}' references ` +
+                            `non-existent possible manager role '${mngrName}'.`)
+
+          node.possibleMngrs.push(mngr)
+        })
       }
     })
 
