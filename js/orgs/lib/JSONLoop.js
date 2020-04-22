@@ -45,7 +45,7 @@ const JSONLoop = class {
   }
 
   findNodeById(obj, id, callback) {
-    if (obj[this.id] === id) {
+    if (obj[this.id] === id || obj['ids'].some((testId) => testId === id)) {
       this.count = this.total + 0;
       callback(null, obj);
     } else {
@@ -159,33 +159,17 @@ const JSONLoop = class {
   }
 
   findParent(obj, node, callback, needCleanNode)  {
-    var that = this;
-    if (this.count === 1) {
-      this.count = this.total + 0;
-      callback('its parent node does not exist', null);
-    } else {
-      this.count--;
-      if (typeof obj[this.children] !== 'undefined') {
-        var notFind = true;
-        obj[this.children].forEach(function(item) {
-          if (item[that.id] === node[that.id]) {
-            that.count = that.total + 0;
-            if (needCleanNode) {
-              callback(null, that.generateClone(obj));
-            } else {
-              callback(null, obj);
-            }
-            notFind = false;
-            return false;
-          }
-        });
-        if (notFind) {
-          obj[this.children].forEach(function(item) {
-            that.findParent(item, node, callback);
-          });
+    const that = this;
+    this.findNodeById(obj, node.parent_id, (err, parent) => {
+      if (err) callback(`Could not find parent. ${err}`, null)
+      else {
+        if (needCleanNode) {
+          callback(null, that.generateClone(parent));
+        } else {
+          callback(null, parent);
         }
       }
-    }
+    })
   }
 
   findSiblings(obj, node, callback) {
