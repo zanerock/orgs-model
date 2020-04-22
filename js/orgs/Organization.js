@@ -43,17 +43,25 @@ const Organization = class {
     else if (style === 'debang/OrgChart') {
       // Converts flat/tabular (Staff, Manager) to a JSON tree, allowing for the same staff member to appear at multiple
       // notes using conversion algorithm from debang demos: https://codepen.io/dabeng/pen/mRZpLK
-      const seedData = this.generateOrgChartData('google-chart').map(row => {
-        const [ email, roleName ] = row[0].split(/\//)
-        const staffMember = this.getStaffMember(email)
-        return { id: row[0], parent_id: row[1], email: email, name: staffMember.getFullName(), titles: [roleName] }
-      })
+      const seedData = this.
+        generateOrgChartData('google-chart').
+        map(row => {
+          const [ email, roleName ] = row[0].split(/\//)
+          const staffMember = this.getStaffMember(email)
+          return {
+            id: row[0],
+            ids: [row[0]],
+            parent_id: row[1],
+            email: email,
+            name: staffMember.getFullName(),
+            titles: [roleName]
+          }
+        })
       var data = {}
       var childNodes = []
 
       seedData.forEach((item, index) => {
         if (!item.parent_id) {
-          delete item.parent_id
           Object.assign(data, item)
         }
         else {
@@ -61,7 +69,6 @@ const Organization = class {
           jsonloop.findNodeById(data, item.parent_id, function(err, node) {
             if (err) throw new Error(err)
             else {
-              delete item.parent_id
               childNodes.push(item)
               if (node.children) {
                 node.children.push(item)
@@ -76,14 +83,23 @@ const Organization = class {
         }
       })
 
-      // now, collapse staff member roles to same staff in parent role if only child
+      // now, collapse staff member roles to same staff in parent role if only child or sub-node has no children.
       childNodes.forEach(node => {
         const jsonloop = new JSONLoop(data, 'id', 'children')
         jsonloop.findParent(data, node, (err, parent) => {
           if (err) throw new Error(`Could not find parent for '${node.id}'; is chart valid?`)
-          if (parent && node.email === parent.email && parent.children.length === 1) {
-            parent.titles.push(...node.titles)
-            parent.children = node.children
+
+          if (parent && node.email === parent.email) {
+            node.hideName = true
+
+            if (parent.children.length === 1 || node.children === undefined) {
+              parent.titles.push(...node.titles)
+              parent.ids.push(...node.ids)
+              if (parent.children.length === 1) parent.children = node.children
+              else {
+                parent.children.splice(parent.children.findIndex((t) => t === node), 1)
+              }
+            }
           }
         })
       })
