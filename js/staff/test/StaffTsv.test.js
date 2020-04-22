@@ -21,4 +21,16 @@ describe(`StaffTsv`, () => {
 		const dev = rows[1]
 		expect(dev['primaryRoles']).toEqual(['Developer/' + ceo['email']])
 	})
+
+	test('writes as expected', () => {
+		const out = testStaffTsv.writeString()
+		// console.log(out)
+		const expected = `Email	Family Name	Given Name	Start Date	Primary Roles	Secondary Roles
+ceo@foo.com	Foo	CEO	2019-06-17	CEO/, CTO/ceo@foo.com/acting	-
+dev@foo.com	Bar	Dev	2019-06-18	Developer/ceo@foo.com	In House Counsel
+uidev@foo.com	Bar	UI	2019-08-20	Developer/dev@foo.com/qual:UI	-
+test@foo.com	Baz	Test	2019-07-10	Tester/ceo@foo.com	-
+`
+		expect(out).toEqual(expected)
+	})
 })

@@ -65,13 +65,16 @@ const TsvExt = class {
     else return null
   }
 
+  writeString() {
+    return `${this.headers.join("\t")}\n` +
+      `${this.data.map((line) =>
+         line.map(v => v === '' || (Array.isArray(v) && v.length === 0)
+           ? '-'
+           : v).join("\t")).join("\n")}\n`
+  }
+
   write() {
-    fs.writeFileSync(this.fileName,
-                     `${this.headers.join("\t")}\n` +
-                     `${this.data.map((line) =>
-                          line.map(v => v === ''
-                            ? '-'
-                            : v).join("\t")).join("\n")}\n`)
+    fs.writeFileSync(this.fileName, this.writeString())
   }
 
   // Generic find; assumes the first column is the key.
