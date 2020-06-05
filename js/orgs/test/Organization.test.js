@@ -71,6 +71,15 @@ describe('Organization', () => {
     })
   })
 
+  describe(`getStaff`, () => {
+    test(`returns a list of 4 staff`, () => {
+      const staff = org.getStaff()
+      expect(staff).toHaveLength(4)
+      expect(staff.findIndex(s => s.getEmail() === 'dev@foo.com')).not.toEqual(-1)
+      expect(staff.findIndex(s => s.getEmail() === 'uidev@foo.com')).not.toEqual(-1)
+    })
+  })
+
   describe(`getStaffByRoleName`, () => {
     test(`returns array of staff matching role`, () => {
       const staff = org.getStaffByRoleName('Developer')

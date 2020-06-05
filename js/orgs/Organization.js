@@ -14,6 +14,8 @@ const Organization = class {
 
   getRole(name) { return this.roles[name] }
 
+  getStaff() { return Object.values(this.staff) }
+
   getStaffMember(email) { return this.staff[email] }
 
   getStaffByRoleName(roleName) { return Object.values(this.staff).filter(s => s.hasRole(roleName)) }
