@@ -35,7 +35,7 @@ const Policies = class {
   findFile(baseName) {
     const re = new RegExp(`/${baseName}$`)
     const results = this.sourceFiles.filter((f) => f.match(re))
-    if (results.length > 1) throw new Error(`Found multiple files matching '${baseName}'`)
+    if (results.length > 1) throw new Error(`Found multiple files matching '${baseName}' (${results})`)
     else if (results.length === 0) return null
     else return results[0]
   }
