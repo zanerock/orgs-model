@@ -1,4 +1,4 @@
-Email	Family Name	Given Name	Start Date	Primary Roles	Secondary
-ceo@foo.com	Foo	CEO	2019-06-17	CEO/, CTO/ceo@foo.com	-
-dev@foo.com	Bar	Dev	2019-06-18	Developer/ceo@foo.com	In House Counsel
-badmanager@foo.com	Baz	Test	2019-07-10	Tester/nosuchmngr@foo.com	-
+Email	Family Name	Given Name	Start Date	Primary Roles	Secondary	Employment Status
+ceo@foo.com	Foo	CEO	2019-06-17	CEO/, CTO/ceo@foo.com	-	employee
+dev@foo.com	Bar	Dev	2019-06-18	Developer/ceo@foo.com	In House Counsel	employee
+badmanager@foo.com	Baz	Test	2019-07-10	Tester/nosuchmngr@foo.com	-	contractor

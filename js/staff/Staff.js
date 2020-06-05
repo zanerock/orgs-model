@@ -55,6 +55,9 @@ const Staff = class {
   getStartDate() { return this.item.startDate }
   setStartDate(v) { this.item.startDate = v }
 
+  getEmploymentStatus() { return this.item.employmentStatus }
+  setEmploymentStatus(v) { this.item.employmentStatus = v }
+
   hasRole(roleName) { return Boolean(this.attachedRoles[roleName]) }
 
   getRoleNames() { return Object.keys(this.attachedRoles) }

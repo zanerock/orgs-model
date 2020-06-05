@@ -3,8 +3,8 @@ import { Staff } from './Staff'
 import { TsvExt } from '../lib'
 
 const StaffTsv = class extends TsvExt {
-  static headers = [ 'Email', 'Family Name', 'Given Name', 'Start Date', 'Primary Roles', 'Secondary Roles' ]
-  static keys = [ 'email', 'familyName', 'givenName', 'startDate', 'primaryRoles', 'secondaryRoles' ]
+  static headers = [ 'Email', 'Family Name', 'Given Name', 'Start Date', 'Primary Roles', 'Secondary Roles', 'Employment Status' ]
+  static keys = [ 'email', 'familyName', 'givenName', 'startDate', 'primaryRoles', 'secondaryRoles', 'employmentStatus' ]
   static multis = { 'primaryRoles' : true, 'secondaryRoles' : true, 'managers' : true }
 
 	constructor(fileName) {

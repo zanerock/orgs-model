@@ -90,7 +90,6 @@ describe('Organization', () => {
     })
 
     test(`for GoogleCharts org chart`, () => {
-      console.log(JSON.stringify(org.generateOrgChartData('google-chart')))
       const expected = [["ceo@foo.com/CEO","",null],["ceo@foo.com/CTO","ceo@foo.com/CEO",null],["dev@foo.com/Developer","ceo@foo.com/CTO",null],["uidev@foo.com/Developer","dev@foo.com/Developer","UI"],["test@foo.com/Tester","ceo@foo.com/CTO",null]]
       expect(org.generateOrgChartData('google-chart')).toEqual(expected)
     })
