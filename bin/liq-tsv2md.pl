@@ -29,7 +29,14 @@ while (<$fd>) {
   }
 
   $statement =~ s/\\n/\n/g;
-  $output .= "* <a id=\"$uuid\">$statement</a>".( !$refs || $refs eq '-' ? '' : " _($refs)_")."\n";
+  # TODO: This is a bit of a hack; were seeing '^M' invisible chars in git diff; for now, just clean up lingering non-
+  # printable characters
+  !$refs || $refs =~ s/[^[:print:]]+//g;
+  # Note, GitHub adds 'user-content' to the id. (Whatever the reasons, it's a bad idea, but nothing we can do.)
+  # However, they use JS to patch the behavior so that a '#user-content-xyz' and '#xyz' link work the same. A previous
+  # version generated '<a id=', which seemed exempt from the 'user-content' mangling, but also caused render issues on
+  # BitBucket. So, everything seems to be working OK now, but just in case it crops up, here's the note.
+  $output .= "* <span id=\"$uuid\">$statement</span>".( !$refs || $refs eq '-' ? '' : " _($refs)_")."\n";
   $anyIncluded = 1;
 }
 close $fd;
