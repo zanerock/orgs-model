@@ -1,19 +1,19 @@
-import { StaffTsv } from '../StaffTsv'
+import { Staff } from '../Staff'
 
-describe(`StaffTsv`, () => {
-	let testStaffTsv
+describe(`Staff`, () => {
+	let testStaff
 	beforeAll(() => {
-		testStaffTsv = new StaffTsv(`./js/staff/test/staff.tsv`)
+		testStaff = new Staff(`./js/staff/test/staff.tsv`)
 	})
 
 	test('detects duplicate emails on init', () =>
-		expect(() => new StaffTsv(`./js/staff/test/dupe_email_staff.tsv`).init()).
+		expect(() => new Staff(`./js/staff/test/dupe_email_staff.tsv`).init()).
 			toThrow(/email.*ceo@foo.com/))
 
-	test('filters header+blank lines', () => expect(testStaffTsv.length).toBe(4))
+	test('filters header+blank lines', () => expect(testStaff.length).toBe(4))
 
 	test(`fields`, () => {
-		const rows = testStaffTsv.getItems()
+		const rows = testStaff.getItems()
 		const ceo = rows[0]
 		expect(ceo['email']).toBe('ceo@foo.com')
 		expect(ceo['primaryRoles']).toEqual(['CEO/', 'CTO/ceo@foo.com/acting'])
@@ -24,7 +24,7 @@ describe(`StaffTsv`, () => {
 	})
 
 	test('writes as expected', () => {
-		const out = testStaffTsv.writeString()
+		const out = testStaff.writeString()
 		// console.log(out)
 		const expected = `Email	Family Name	Given Name	Start Date	Primary Roles	Secondary Roles	Employment Status
 ceo@foo.com	Foo	CEO	2019-06-17	CEO/, CTO/ceo@foo.com/acting	-	employee

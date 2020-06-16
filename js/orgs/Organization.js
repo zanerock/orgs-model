@@ -2,14 +2,14 @@ import { OrgStructure } from './OrgStructure'
 import { JSONLoop } from './lib/JSONLoop'
 
 import { RolesTsv } from '../roles'
-import { StaffMember, StaffTsv } from '../staff'
+import { StaffMember, Staff } from '../staff'
 
 const Organization = class {
   constructor(rolesTsvPath, staffTsvPath, orgStructurePath) {
     this.roles = new RolesTsv(rolesTsvPath).hydrate()
     this.orgStructure = new OrgStructure(orgStructurePath, this.roles)
-    this.staff = new StaffTsv(staffTsvPath).init(this)
-    StaffTsv.hydrate(this)
+    this.staff = new Staff(staffTsvPath).init(this)
+    Staff.hydrate(this)
   }
 
   getRole(name) { return this.roles[name] }

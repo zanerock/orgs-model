@@ -2,13 +2,13 @@ import { StaffMember } from './StaffMember'
 
 import { TsvExt } from '../lib'
 
-const StaffTsv = class extends TsvExt {
+const Staff = class extends TsvExt {
   static headers = [ 'Email', 'Family Name', 'Given Name', 'Start Date', 'Primary Roles', 'Secondary Roles', 'Employment Status' ]
   static keys = [ 'email', 'familyName', 'givenName', 'startDate', 'primaryRoles', 'secondaryRoles', 'employmentStatus' ]
   static multis = { 'primaryRoles' : true, 'secondaryRoles' : true, 'managers' : true }
 
 	constructor(fileName) {
-    super(StaffTsv.headers, StaffTsv.keys, fileName, StaffTsv.multis)
+    super(Staff.headers, Staff.keys, fileName, Staff.multis)
 	}
 
   matchKey = (line, key) => line[0] === key
@@ -59,4 +59,4 @@ const StaffTsv = class extends TsvExt {
   }
 }
 
-export { StaffTsv }
+export { Staff }

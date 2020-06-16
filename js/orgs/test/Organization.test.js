@@ -1,5 +1,5 @@
 import { Organization } from '../'
-import { StaffTsv } from '../../staff'
+import { Staff } from '../../staff'
 
 describe('Organization', () => {
   let org
