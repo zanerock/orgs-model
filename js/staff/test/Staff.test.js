@@ -1,6 +1,6 @@
 import { Organization } from '../../orgs'
 
-describe(`Staff`, () => {
+describe(`StaffMember`, () => {
   let org
   beforeAll(() => {
     org = new Organization(
