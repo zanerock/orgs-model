@@ -4,7 +4,7 @@ import { Roles } from '..'
 describe('Role', () => {
   let roles
   beforeAll(() => {
-    roles = new Roles('./js/roles/test/roles.tsv').hydrate()
+    roles = new Roles('./js/roles/test/roles.json').hydrate()
   })
 
   test.each`

@@ -11,7 +11,7 @@ const Policies = class {
 
   constructor() {
     this.sourceFiles = []
-    this.rolesFile = 'roles.tsv'
+    this.rolesFile = 'roles.json'
     this.terms = []
   }
 

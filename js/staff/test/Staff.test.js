@@ -8,15 +8,15 @@ describe('Staff', () => {
   let testStaff
   beforeAll(() => {
     const org = new Organization(
-      './js/roles/test/roles.tsv',
-      './js/staff/test/staff.tsv',
+      './js/roles/test/roles.json',
+      './js/staff/test/staff.json',
       './js/orgs/test/org_structure.json')
     // TODO: the way we end up hydrating kinda breaks unit test isolation?
     testStaff = org.getStaff()
   })
 
   test('detects duplicate emails on init', () =>
-    expect(() => new Staff('./js/staff/test/dupe_email_staff.tsv').init())
+    expect(() => new Staff('./js/staff/test/dupe_email_staff.json').init())
       .toThrow(/email.*ceo@foo.com/))
 
   test('filters header+blank lines', () => expect(testStaff.getAll()).toHaveLength(4))
@@ -43,7 +43,7 @@ describe('Staff', () => {
     const out = testStaff.toString()
     // console.log(out)
     const data = JSON.parse(out)
-    const expected = JSON.parse(fs.readFileSync('./js/staff/test/staff.tsv'))
+    const expected = JSON.parse(fs.readFileSync('./js/staff/test/staff.json'))
 
     expect(data).toEqual(expected)
   })

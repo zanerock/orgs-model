@@ -5,8 +5,8 @@ describe('StaffMember', () => {
   let org
   beforeAll(() => {
     org = new Organization(
-      './js/roles/test/roles.tsv',
-      './js/staff/test/staff.tsv',
+      './js/roles/test/roles.json',
+      './js/staff/test/staff.json',
       './js/orgs/test/org_structure.json')
   })
 

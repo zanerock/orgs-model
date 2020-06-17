@@ -12,8 +12,8 @@ describe('Policies', () => {
 
   test('can get Roles', () => {
     const policies = new Policies()
-    policies.setRolesFile('roles.tsv')
-    policies.addSourceFile('./js/roles/test/roles.tsv')
+    policies.setRolesFile('roles.json')
+    policies.addSourceFile('./js/roles/test/roles.json')
     const roles = policies.getAttachedRoles()
     expect(roles.getAll()).toHaveLength(6)
   })

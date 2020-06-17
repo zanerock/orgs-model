@@ -5,14 +5,14 @@ describe('AttachedRole', () => {
   let org
   beforeAll(() => {
     org = new Organization(
-      './js/roles/test/roles.tsv',
-      './js/staff/test/staff.tsv',
+      './js/roles/test/roles.json',
+      './js/staff/test/staff.json',
       './js/orgs/test/org_structure.json')
   })
 
   test('detects invalid qualifications', () => {
-    expect(() => new Organization('./js/roles/test/roles.tsv',
-      './js/staff/test/invalid_qualifier_staff.tsv',
+    expect(() => new Organization('./js/roles/test/roles.json',
+      './js/staff/test/invalid_qualifier_staff.json',
       './js/orgs/test/org_structure.json'))
       .toThrow(/non-qualifiable role.*CTO.*ceo@foo\.com/)
   })
