@@ -21,7 +21,9 @@
     "build": "catalyst-scripts build",
     "pretest": "catalyst-scripts pretest",
     "test": "catalyst-scripts test",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "lint": "catalyst-scripts lint",
+    "lint-fix": "catalyst-scripts lint-fix"
   },
   "repository": {
     "type": "git",
