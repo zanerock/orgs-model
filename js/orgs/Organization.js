@@ -1,51 +1,50 @@
 import { OrgStructure } from './OrgStructure'
 import { JSONLoop } from './lib/JSONLoop'
 
-import { RolesTsv } from '../roles'
-import { StaffMember, Staff } from '../staff'
+import { Roles } from '../roles'
+import { Staff } from '../staff'
 
 const Organization = class {
-  constructor(rolesTsvPath, staffTsvPath, orgStructurePath) {
-    this.roles = new RolesTsv(rolesTsvPath).hydrate()
+  constructor(rolesJsonPath, staffJsonPath, orgStructurePath) {
+    this.roles = new Roles(rolesJsonPath)
+    this.roles.hydrate()
     this.orgStructure = new OrgStructure(orgStructurePath, this.roles)
-    this.staff = new Staff(staffTsvPath).init(this)
-    Staff.hydrate(this)
+    this.staff = new Staff(staffJsonPath)
+    this.staff.hydrate(this)
   }
 
-  getRole(name) { return this.roles[name] }
+  getRoles() { return this.roles }
 
-  getStaff() { return Object.values(this.staff) }
-
-  getStaffMember(email) { return this.staff[email] }
-
-  getStaffByRoleName(roleName) { return Object.values(this.staff).filter(s => s.hasRole(roleName)) }
+  getStaff() { return this.staff }
 
   hasStaffInRole(email, roleName) {
-    return this.getStaffByRoleName(roleName).some(s => s.getEmail() === email)
+    return this.getStaff().getByRoleName(roleName).some(s => s.getEmail() === email)
   }
 
   getManagingRolesByManagedRoleName(roleName) {
     return this.orgStructure.getNodeByRoleName(roleName).getPossibleMngrs()
   }
 
-  generateOrgChartData(style='debang/OrgChart') {
+  generateOrgChartData(style = 'debang/OrgChart') {
     if (style === 'google-chart') {
       const result = []
-      // luckily, the google org chart doesn't care whether we specify the nodes in order or not, so it's a simple
+      // luckily, the google org chart doesn't care whetStaffher we specify the nodes in order or not, so it's a simple
       // transform
-      Object.values(this.staff).forEach(s => {
+      Object.values(this.getStaff().getAll()).forEach(s => {
         s.getAttachedRoles().forEach(r => {
-          const myKey = `${s.getEmail()}/${r.getName()}`
-          const manager = s.getManagerByRoleName(r.getName())
-          if (!manager) result.push([myKey, '', r.getQualifier()])
-          else {
-            const mngrEmail = manager.getEmail()
-            const managingRole = this.getManagingRolesByManagedRoleName(r.getName()).find(mngrRole =>
-              this.hasStaffInRole(mngrEmail, mngrRole.getName())
-            )
-            if (!managingRole) throw new Error(`Could not find manager ${mngrEmail}/${r.getName()}`)
-            const managerKey = `${mngrEmail}/${managingRole.getName()}`
-            result.push([myKey, managerKey, r.getQualifier()])
+          if (r.isTitular()) {
+            const myKey = `${s.getEmail()}/${r.getName()}`
+            const manager = s.getAttachedRole(r.getName()).getManager()
+            if (!manager) result.push([myKey, '', r.getQualifier()])
+            else {
+              const mngrEmail = manager.getEmail()
+              const managingRole = this.getManagingRolesByManagedRoleName(r.getName()).find(mngrRole =>
+                this.hasStaffInRole(mngrEmail, mngrRole.getName())
+              )
+              if (!managingRole) throw new Error(`Could not find manager ${mngrEmail}/${r.getName()}`)
+              const managerKey = `${mngrEmail}/${managingRole.getName()}`
+              result.push([myKey, managerKey, r.getQualifier()])
+            }
           }
         })
       })
@@ -55,23 +54,23 @@ const Organization = class {
     else if (style === 'debang/OrgChart') {
       // Converts flat/tabular (Staff, Manager) to a JSON tree, allowing for the same staff member to appear at multiple
       // notes using conversion algorithm from debang demos: https://codepen.io/dabeng/pen/mRZpLK
-      const seedData = this.
-        generateOrgChartData('google-chart').
-        map(row => {
-          let [ email, roleName ] = row[0].split(/\//)
+      const seedData = this
+        .generateOrgChartData('google-chart')
+        .map(row => {
+          let [email, roleName] = row[0].split(/\//)
           const qualifier = row[2]
           if (qualifier) {
             roleName = roleName.replace(/^(Senior )?/, `$1${qualifier} `)
           }
 
-          const staffMember = this.getStaffMember(email)
+          const staffMember = this.getStaff().get(email)
           return {
-            id: row[0],
-            ids: [row[0]],
-            parent_id: row[1],
-            email: email,
-            name: staffMember.getFullName(),
-            titles: [roleName]
+            id        : row[0],
+            ids       : [row[0]],
+            parent_id : row[1],
+            email     : email,
+            name      : staffMember.getFullName(),
+            titles    : [roleName]
           }
         })
       var data = {}
@@ -89,11 +88,9 @@ const Organization = class {
               childNodes.push(item)
               if (node.children) {
                 node.children.push(item)
-                var b = 2;
               }
               else {
-                node.children = [ item ]
-                var a = 1
+                node.children = [item]
               }
             }
           })

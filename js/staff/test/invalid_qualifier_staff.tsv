@@ -1,5 +1,13 @@
-Email	Family Name	Given Name	Start Date	Primary Roles	Secondary	Employment Status
-
-ceo@foo.com	Foo	CEO	2019-06-17	CEO/, CTO/ceo@foo.com/acting; qual:Invalid	-	employee
-dev@foo.com	Bar	Dev	2019-06-18	Developer/ceo@foo.com	In House Counsel	employee
-test@foo.com	Baz	Test	2019-07-10	Tester/ceo@foo.com	-	contractor
+[
+  {
+    "email": "ceo@foo.com",
+    "familyName": "Foo",
+    "givenName": "CEO",
+    "startDate": "2019-06-17",
+    "roles": [
+      { "name": "CEO" },
+      { "name": "CTO", "manager": "ceo@foo.com", "acting": true, "qualifier": "Invalid" }
+    ],
+    "employmentStatus": "employee"
+  }
+]

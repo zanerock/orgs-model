@@ -6,10 +6,9 @@ import TSV from 'tsv'
  * conversions to arrays.
  */
 const item = function(keys, multis, fields, pos) {
-  if (keys.length !== fields.length)
-    throw new Error(`Found ${keys.length} keys but ${fields.length} fields at item ${pos} (${fields[0]}).`)
+  if (keys.length !== fields.length) { throw new Error(`Found ${keys.length} keys but ${fields.length} fields at item ${pos} (${fields[0]}).`) }
 
-  const item = { _pos: pos }
+  const item = { _pos : pos }
   for (let i = 0; i < fields.length; i += 1) {
     item[keys[i]] = (multis[keys[i]]
       ? (fields[i] === '' || fields[i] === '-' ? [] : fields[i].split(/\s*,\s*/))
@@ -31,7 +30,7 @@ const TsvExt = class {
     this.fileName = fileName
 
     const contents = fs.readFileSync(fileName, 'utf8')
-    const lines = contents.split("\n")
+    const lines = contents.split('\n')
     lines.shift() // remove headers line
     // allow blank lines (which are ignored)
     const filteredLines = lines.filter((line) => !line.match(/^\s*$/))
@@ -39,7 +38,7 @@ const TsvExt = class {
     TSV.header = false
     this.keys = keys
     this.multis = multis || {}
-    this.data = filteredLines.length > 0 ? TSV.parse(filteredLines.join("\n")) : []
+    this.data = filteredLines.length > 0 ? TSV.parse(filteredLines.join('\n')) : []
   }
 
   get length() { return this.data.length }
@@ -54,7 +53,7 @@ const TsvExt = class {
       if (field === undefined) throw new Error(`Item does not define key '${key}'.`)
       line.push(field)
     })
-    let failDesc;
+    let failDesc
     if (this.notUnique && (failDesc = this.notUnique(this.data.slice(), item))) throw new Error(failDesc)
     this.data.push(line)
   }
@@ -66,11 +65,11 @@ const TsvExt = class {
   }
 
   writeString() {
-    return `${this.headers.join("\t")}\n` +
-      `${this.data.map((line) =>
-         line.map(v => v === '' || (Array.isArray(v) && v.length === 0)
-           ? '-'
-           : v).join("\t")).join("\n")}\n`
+    return `${this.headers.join('\t')}\n`
+      + `${this.data.map((line) =>
+        line.map(v => v === '' || (Array.isArray(v) && v.length === 0)
+          ? '-'
+          : v).join('\t')).join('\n')}\n`
   }
 
   write() {
@@ -79,8 +78,8 @@ const TsvExt = class {
 
   // Generic find; assumes the first column is the key.
   find(key) {
-		return this.data.find((line) => line[0] === key)
-	}
+    return this.data.find((line) => line[0] === key)
+  }
 }
 
 export { TsvExt }

@@ -1,14 +1,16 @@
-import { RolesTsv } from '..'
+/* globals beforeAll describe expect test */
+import { Roles } from '..'
 
-describe(`RolesTsv`, () => {
-	let testRoles
-	beforeAll(() => {
-		testRoles = new RolesTsv(`./js/roles/test/roles.tsv`)
-	})
+describe('Roles', () => {
+  let testRoles
+  beforeAll(() => {
+    testRoles = new Roles('./js/roles/test/roles.tsv').hydrate()
+  })
 
-	test('parses test file', () => expect(testRoles).toBeTruthy())
+  test('parses test file', () => {
+    expect(testRoles).toBeTruthy()
+    expect(testRoles.getAll()).toHaveLength(6)
+  })
 
-	test('ignore blank lines', () => expect(testRoles.length).toBe(4))
-
-	test(`properly sets fields`, () => expect(testRoles.getItems()[0]['name']).toBe('CEO'))
+  test('properly sets fields', () => expect(testRoles.getAll()[0].getName()).toBe('CEO'))
 })

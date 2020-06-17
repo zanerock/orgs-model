@@ -7,8 +7,8 @@ class Glossary {
     this.terms.push([term, definition])
   }
 
-  addTermsFromIterator({it, termKey='name', descKey='description'}) {
-    if (!it) return;
+  addTermsFromIterator({ it, termKey = 'name', descKey = 'description' }) {
+    if (!it) return
     it.reset()
     let i; while ((i = it.next())) {
       this.addTerm(i[termKey], i[descKey])
@@ -16,10 +16,10 @@ class Glossary {
   }
 
   generateContent() {
-    let content = "# Glossary\n\n<dl>"
+    let content = '# Glossary\n\n<dl>'
     this.terms.sort((a, b) => a[0].localeCompare(b[0]))
-    this.terms.forEach(([term, def]) => content += `  <dt>${term}</dt>\n  <dd>${def}</dd>\n\n`)
-    content += "</dl>\n"
+    this.terms.forEach(([term, def]) => { content += `  <dt>${term}</dt>\n  <dd>${def}</dd>\n\n` })
+    content += '</dl>\n'
 
     return content
   }

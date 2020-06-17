@@ -1,4 +1,4 @@
-import { RolesTsv } from '../roles'
+import { Roles } from '../roles'
 import * as fs from 'fs'
 import { Glossary } from './lib/Glossary'
 
@@ -7,9 +7,9 @@ const Policies = class {
   #roles
   #rolesFile
   #terms
-	sourceFiles
+  sourceFiles
 
-	constructor() {
+  constructor() {
     this.sourceFiles = []
     this.rolesFile = 'roles.tsv'
     this.terms = []
@@ -23,12 +23,12 @@ const Policies = class {
     this.rolesFile = name
   }
 
-  getRoles() {
+  getAttachedRoles() {
     if (this.roles !== undefined) return this.roles
 
     // TODO: allom multiple role files to be merged
     const rolesFile = this.findFile(this.rolesFile)
-    this.roles = new RolesTsv(rolesFile)
+    this.roles = new Roles(rolesFile).hydrate()
     return this.roles
   }
 
@@ -48,7 +48,7 @@ const Policies = class {
     if (this.docDir === undefined) throw new Error('No document directory defined.')
     if (!fs.existsSync(this.docDir)) throw new Error(`Target document dir '${this.docDir}' does not exist.`)
 
-    const roles = this.getRoles()
+    const roles = this.getAttachedRoles()
 
     const glossary = new Glossary()
     if (roles) glossary.addTermsFromIterator(roles)

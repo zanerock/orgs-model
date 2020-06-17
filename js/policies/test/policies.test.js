@@ -1,9 +1,10 @@
+/* globals describe expect test */
 import { Policies } from '..'
 
-describe(`Policies`, () => {
-	test('addSourceFile remembers sources', () => {
+describe('Policies', () => {
+  test('addSourceFile remembers sources', () => {
     const policies = new Policies()
-    const testPath = testPath
+    const testPath = 'testPath'
     policies.addSourceFile(testPath)
     expect(policies.sourceFiles).toHaveLength(1)
     expect(policies.sourceFiles[0]).toBe(testPath)
@@ -13,7 +14,7 @@ describe(`Policies`, () => {
     const policies = new Policies()
     policies.setRolesFile('roles.tsv')
     policies.addSourceFile('./js/roles/test/roles.tsv')
-    const roles = policies.getRoles()
-    expect(roles.data).toHaveLength(4)
+    const roles = policies.getAttachedRoles()
+    expect(roles.getAll()).toHaveLength(6)
   })
 })

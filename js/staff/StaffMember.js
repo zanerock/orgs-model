@@ -1,44 +1,42 @@
 const StaffMember = class {
-  constructor(item) {
-    this.item = item
-    this.attachedRoles = {} // keyed by role name
-    this.managers = {} // managers keyed by our role names
+  constructor(record) {
+    Object.assign(this, record)
+
+    this.attachedRolesByName = {}
     this.reportsByReportRole = {} // roles keyed to reports role names
   }
 
-  getEmail() { return this.item.email }
-  setEmail(v) { this.item.email = v }
+  getEmail() { return this.email }
+  setEmail(v) { this.email = v }
 
   getFullName() { return `${this.getGivenName()} ${this.getFamilyName()}` } // TODO: i18n...
 
-  getFamilyName() { return this.item.familyName }
-  setFamilyName(v) { this.item.familyName = v }
+  getFamilyName() { return this.familyName }
+  setFamilyName(v) { this.familyName = v }
 
-  getGivenName() { return this.item.givenName }
-  setGivenName(v) { this.item.givenName = v }
+  getGivenName() { return this.givenName }
+  setGivenName(v) { this.givenName = v }
 
-  getStartDate() { return this.item.startDate }
-  setStartDate(v) { this.item.startDate = v }
+  getStartDate() { return this.startDate }
+  setStartDate(v) { this.startDate = v }
 
-  getEmploymentStatus() { return this.item.employmentStatus }
-  setEmploymentStatus(v) { this.item.employmentStatus = v }
+  getEmploymentStatus() { return this.employmentStatus }
+  setEmploymentStatus(v) { this.employmentStatus = v }
 
-  hasRole(roleName) { return Boolean(this.attachedRoles[roleName]) }
+  getRoleNames() { return this.roles.map((r) => r.name) }
 
-  getRoleNames() { return Object.keys(this.attachedRoles) }
+  hasRole(roleName) { return Boolean(this.attachedRolesByName[roleName]) }
 
-  getAttachedRoleByName(roleName) { return this.attachedRoles[roleName] }
+  getAttachedRoles() { return this.roles.slice() }
 
-  getAttachedRoles() { return Object.values(this.attachedRoles) }
+  getAttachedRole(roleName) { return this.attachedRolesByName[roleName] }
 
-  getManagerByRoleName(roleName) { return this.managers[roleName] }
-
-  getManagers() { return Object.values(this.manangers) }
+  getManagers() { return this.roles.map((r) => r.manager) }
 
   getReportsByRoleName(roleName) { return this.reportsByReportRole[roleName] || [] }
   getReports() {
-    return Object.values(this.reportsByReportRole).reduce((acc, reps) => acc.concat(reps), []).
-      filter(rep => rep.getEmail() !== this.getEmail())
+    return Object.values(this.reportsByReportRole).reduce((acc, reps) => acc.concat(reps), [])
+      .filter(rep => rep.getEmail() !== this.getEmail())
   }
 }
 

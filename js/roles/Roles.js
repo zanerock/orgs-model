@@ -1,32 +1,38 @@
+import * as fs from 'fs'
+
 import { Role } from './Role'
-import { TsvExt } from '../lib'
 
-const RolesTsv = class extends TsvExt {
-	static headers = ['Name', 'Application', 'Super-role', 'Description', 'Notes']
-	static keys = ['name', 'application', 'superRole', 'description', 'notes']
+const Roles = class {
+  constructor(fileName) {
+    const data = JSON.parse(fs.readFileSync(fileName))
+    this.list = data.map((rec) => new Role(rec))
+    this.map = this.list.reduce((acc, role, i) => {
+      if (acc[role.getName()] !== undefined) {
+        throw new Error(`Role with name '${role.name}' already exists at entry ${i}.`)
+      }
+      acc[role.getName()] = role
+      return acc
+    }, {})
+  }
 
-	constructor(fileName) {
-		super(RolesTsv.headers, RolesTsv.keys, fileName)
-	}
+  getAll() { return this.list.slice() }
 
-	notUnique(data, item) {
-		let i
-		return -1 !== (i = data.findIndex((line) => line[0].toLowerCase() === item.name.toLowerCase()))
-			&& `Role with name '${item.name}' already exists at entry ${i}.`
-	}
+  get(name) { return this.map[name] }
 
-	matchKey = (line, key) => line[0] === key
+  /**
+  * Swaps out the 'super role' name for the actual super role object.
+  */
+  hydrate() {
+    this.list.forEach((role, i) => {
+      if (role.superRole !== undefined) {
+        const superRole = this.get(role.superRole)
+        if (superRole === undefined) { throw new Error(`Could not find super-role '${role.superRole}' for role '${role.getName()}' (entry ${i}).`) }
+        role.superRole = superRole
+      }
+    })
 
-	/**
-	* Turns the 'row' data into minimal Row objects.
-	*/
-	hydrate() {
-		return this.getItems().reduce(
-			(roles, item) => {
-				roles[item.name] = new Role(item)
-				return roles
-			}, {})
-	}
+    return this
+  }
 }
 
-export { RolesTsv }
+export { Roles }
