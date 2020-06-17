@@ -46,7 +46,6 @@ const Staff = class {
           // orgNode.getPrimMngr() !== null
         }
 
-
         let roleManager = null
         if (rec.manager) {
           // Then replace manager ID with manager object and add ourselves to their reports
