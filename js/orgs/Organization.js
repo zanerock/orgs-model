@@ -41,7 +41,9 @@ const Organization = class {
               const managingRole = this.getManagingRolesByManagedRoleName(r.getName()).find(mngrRole =>
                 this.hasStaffInRole(mngrEmail, mngrRole.getName())
               )
-              if (!managingRole) throw new Error(`Could not find manager ${mngrEmail}/${r.getName()}`)
+              if (!managingRole) {
+                throw new Error(`Could not find manager ${mngrEmail}/${r.getName()} for ${myKey}.`)
+              }
               const managerKey = `${mngrEmail}/${managingRole.getName()}`
               result.push([myKey, managerKey, r.getQualifier()])
             }
