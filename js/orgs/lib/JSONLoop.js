@@ -4,208 +4,215 @@ let nodes = [] // used as temp workpad
 
 const JSONLoop = class {
   constructor(obj, idPropertyName, childrenPropertyName) {
-    this.id = idPropertyName;
-    this.children = childrenPropertyName;
-    this.count = 0;
-    this.countNodes(obj);
-    this.total = this.count + 0;
+    this.id = idPropertyName
+    this.children = childrenPropertyName
+    this.count = 0
+    this.countNodes(obj)
+    this.total = this.count + 0
   }
 
   isEmpty(obj) {
-    for(var property in obj) {
-      return false;
+    for (var property in obj) { // eslint-disable-line guard-for-in
+      return false
     }
-    return true;
+    return true
   }
 
   countNodes(obj) {
-    var that = this;
-    this.count++;
-    return function() {
+    var that = this
+    this.count++
+    return (function() {
       if (!obj || that.isEmpty(obj)) {
-        return false;
-      } else {
+        return false
+      }
+      else {
         if (obj[that.children]) {
           obj[that.children].forEach(function(child) {
-            that.countNodes(child);
-          });
+            that.countNodes(child)
+          })
         }
       }
-    }();
+    }())
   }
 
   generateClone(obj) {
-    var target = {};
+    var target = {}
     for (var i in obj) {
       if (i !== this.children) {
-        target[i] = obj[i];
+        target[i] = obj[i]
       }
     }
-    return target;
+    return target
   }
 
   findNodeById(obj, id, callback) {
-    if (obj[this.id] === id || obj['ids'].some((testId) => testId === id)) {
-      this.count = this.total + 0;
-      callback(null, obj);
-    } else {
+    if (obj[this.id] === id || obj.ids.some((testId) => testId === id)) {
+      this.count = this.total + 0
+      callback(null, obj)
+    }
+    else {
       if (this.count === 1) {
-        this.count = this.total + 0;
-        callback('the node does not exist', null);
+        this.count = this.total + 0
+        callback(new Error('the node does not exist'))
       }
-      this.count--;
+      this.count--
       if (obj[this.children]) {
-        var that = this;
+        var that = this
         obj[this.children].forEach(function(node) {
-          that.findNodeById(node, id, callback);
-        });
+          that.findNodeById(node, id, callback)
+        })
       }
     }
   }
 
   matchConditions(obj, conditions) {
-    var flag = true;
+    var flag = true
     Object.keys(conditions).forEach(function(item) {
       if (typeof conditions[item] === 'string' || typeof conditions[item] === 'number') {
         if (obj[item] !== conditions[item]) {
-          flag = false;
-          return false;
+          flag = false
+          return false
         }
-      } else if (conditions[item] instanceof RegExp) {
+      }
+      else if (conditions[item] instanceof RegExp) {
         if (!conditions[item].test(obj[item])) {
-          flag = false;
-          return false;
+          flag = false
+          return false
         }
-      } else if (typeof conditions[item] === 'object') {
+      }
+      else if (typeof conditions[item] === 'object') {
         Object.keys(conditions[item]).forEach(function(subitem) {
           switch (subitem) {
-            case '>': {
-              if (!(obj[item] > conditions[item][subitem])) {
-                flag = false;
-                return false;
-              }
-              break;
+          case '>': {
+            if (!(obj[item] > conditions[item][subitem])) {
+              flag = false
+              return false
             }
-            case '<': {
-              if (!(obj[item] < conditions[item][subitem])) {
-                flag = false;
-                return false;
-              }
-              break;
-            }
-            case '>=': {
-              if (!(obj[item] >= conditions[item][subitem])) {
-                flag = false;
-                return false;
-              }
-              break;
-            }
-            case '<=': {
-              if (!(obj[item] <= conditions[item][subitem])) {
-                flag = false;
-                return false;
-              }
-              break;
-            }
-            case '!==': {
-              if (!(obj[item] !== conditions[item][subitem])) {
-                flag = false;
-                return false;
-              }
-              break;
-            }
+            break
           }
-        });
+          case '<': {
+            if (!(obj[item] < conditions[item][subitem])) {
+              flag = false
+              return false
+            }
+            break
+          }
+          case '>=': {
+            if (!(obj[item] >= conditions[item][subitem])) {
+              flag = false
+              return false
+            }
+            break
+          }
+          case '<=': {
+            if (!(obj[item] <= conditions[item][subitem])) {
+              flag = false
+              return false
+            }
+            break
+          }
+          case '!==': {
+            if (!(obj[item] !== conditions[item][subitem])) {
+              flag = false
+              return false
+            }
+            break
+          }
+          }
+        })
         if (!flag) {
-          return false;
+          return false
         }
       }
-    });
+    })
     if (!flag) {
-      return false;
+      return false
     }
-    return true;
+    return true
   }
 
-  findNodes(obj, conditions, callback)  {
-    var that = this;
-    var copy = []; // ths shallow copy of nodes array
-    return function(obj, conditions, callback) {
+  findNodes(obj, conditions, callback) {
+    var that = this
+    var copy = [] // ths shallow copy of nodes array
+    return (function(obj, conditions, callback) {
       if (that.matchConditions(obj, conditions)) {
-        nodes.push(obj);
+        nodes.push(obj)
         if (that.count === 1) {
-          that.count = that.total + 0;
-          copy = nodes.slice(0);
-          nodes = [];
-          callback(null, copy);
+          that.count = that.total + 0
+          copy = nodes.slice(0)
+          nodes = []
+          callback(null, copy)
         }
-        that.count--;
-      } else {
+        that.count--
+      }
+      else {
         if (that.count === 1) {
-          that.count = that.total + 0;
-          copy = nodes.slice(0);
-          nodes = [];
-          callback(null, copy);
+          that.count = that.total + 0
+          copy = nodes.slice(0)
+          nodes = []
+          callback(null, copy)
         }
-        that.count--;
+        that.count--
         if (obj[that.children]) {
-
           obj[that.children].forEach(function(child) {
-            that.findNodes(child, conditions, callback);
-          });
+            that.findNodes(child, conditions, callback)
+          })
         }
       }
-    }(obj, conditions, callback);
+    }(obj, conditions, callback))
   }
 
-  findParent(obj, node, callback, needCleanNode)  {
-    const that = this;
+  findParent(obj, node, callback, needCleanNode) {
+    const that = this
     this.findNodeById(obj, node.parent_id, (err, parent) => {
-      if (err) callback(`Could not find parent. ${err}`, null)
+      if (err) callback(new Error(`Could not find parent. ${err}`))
       else {
         if (needCleanNode) {
-          callback(null, that.generateClone(parent));
-        } else {
-          callback(null, parent);
+          callback(null, that.generateClone(parent))
+        }
+        else {
+          callback(null, parent)
         }
       }
     })
   }
 
   findSiblings(obj, node, callback) {
-    var that = this;
+    var that = this
     this.findParent(obj, node, function(err, parent) {
       if (err) {
-        callback('its sibling nodes do not exist', null);
-      } else {
-        var siblings = [];
+        callback(new Error('its sibling nodes do not exist'))
+      }
+      else {
+        var siblings = []
         parent[that.children].forEach(function(item) {
           if (item[that.id] !== node[that.id]) {
-            siblings.push(that.generateClone(item));
+            siblings.push(that.generateClone(item))
           }
-        });
-        callback(null, siblings);
+        })
+        callback(null, siblings)
       }
-    }, false);
+    }, false)
   }
 
-  findAncestors(obj, node, callback)  {
-    var that = this;
+  findAncestors(obj, node, callback) {
+    var that = this
     if (node[this.id] === obj[this.id]) {
-      var copy = nodes.slice(0);
-      nodes = [];
-      callback(null, copy);
-    } else {
-      this.findParent(obj, node, function(err, parent) {
-      if (err) {
-        callback('its ancestor nodes do not exist', null);
-      } else {
-        nodes.push(parent);
-        that.findAncestors(obj, parent, callback);
-      }
-    });
+      var copy = nodes.slice(0)
+      nodes = []
+      callback(null, copy)
     }
-
+    else {
+      this.findParent(obj, node, function(err, parent) {
+        if (err) {
+          callback(new Error('its ancestor nodes do not exist'))
+        }
+        else {
+          nodes.push(parent)
+          that.findAncestors(obj, parent, callback)
+        }
+      })
+    }
   }
 }
 

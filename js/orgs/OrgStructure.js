@@ -40,18 +40,20 @@ const OrgStructure = class {
       }
       else {
         const primMngr = nodes.find(n => n.name === node.primMngrName)
-        if (primMngr === undefined)
-          throw new Error(`Invalid org structure. Role '${node.name}' references ` +
-                          `non-existent primary manager role '${node.primMngrName}'.`)
+        if (primMngr === undefined) {
+          throw new Error(`Invalid org structure. Role '${node.name}' references `
+                          + `non-existent primary manager role '${node.primMngrName}'.`)
+        }
 
         node.primMngr = primMngr
         primMngr.children.push(node)
 
         node.possibleMngrNames.forEach(mngrName => {
           const mngr = nodes.find(n => n.name === mngrName)
-          if (mngr === undefined)
-            throw new Error(`Invalid org structure. Role '${node.name}' references ` +
-                            `non-existent possible manager role '${mngrName}'.`)
+          if (mngr === undefined) {
+            throw new Error(`Invalid org structure. Role '${node.name}' references `
+                            + `non-existent possible manager role '${mngrName}'.`)
+          }
 
           node.possibleMngrs.push(mngr)
         })
@@ -60,15 +62,17 @@ const OrgStructure = class {
 
     const orgRoles = this.getNodes().map(n => n.getName())
     // check all org role names reference defined roles
-    const undefinedRoles = orgRoles.filter((roleName) => roles[roleName] === undefined)
-    if (undefinedRoles.length > 0)
-      throw new Error(`Found undefined role reference` +
-                      `${undefinedRoles.length > 1 ? 's' : ''}: ${undefinedRoles.join(', ')}`)
+    const undefinedRoles = orgRoles.filter((roleName) => roles.get(roleName) === undefined)
+    if (undefinedRoles.length > 0) {
+      throw new Error('Found undefined role reference'
+                      + `${undefinedRoles.length > 1 ? 's' : ''}: ${undefinedRoles.join(', ')}`)
+    }
     // check for duplicate org roles
-    const dupeRoles = orgRoles.filter((name, index) => orgRoles.indexOf(name) !== index )
-    if (dupeRoles.length > 0)
-      throw new Error(`Found non-unique role${dupeRoles.length > 1 ? 's' : ''} ` +
-                      `references in org structure: ${dupeRoles.join(', ')}`)
+    const dupeRoles = orgRoles.filter((name, index) => orgRoles.indexOf(name) !== index)
+    if (dupeRoles.length > 0) {
+      throw new Error(`Found non-unique role${dupeRoles.length > 1 ? 's' : ''} `
+                      + `references in org structure: ${dupeRoles.join(', ')}`)
+    }
   }
 
   getRoots() { return [...this.roots] }
@@ -78,7 +82,7 @@ const OrgStructure = class {
   }
 
   getNodeByRoleName(name) {
-    return this.getNodes().find(n => n.getName() == name)
+    return this.getNodes().find(n => n.getName() === name)
   }
 }
 

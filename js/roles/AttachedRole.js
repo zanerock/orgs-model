@@ -1,23 +1,24 @@
-const AttachedRole = class {
-  constructor(baseRole, staffMember, parameters) {
-    parameters = (parameters !== undefined && parameters.split(/\s*;\s*/)) || []
-    this.baseRole = baseRole
-    this.acting = parameters.some(p => p === 'acting')
-    const qualifierCapt = parameters.reduce((result, p) => result || /qual:([^,]+)/.exec(p), null)
-    this.qualifier = null
-    if (qualifierCapt) this.qualifier = qualifierCapt[1].trim()
-    if (!baseRole.isQualifiable() && this.qualifier)
-      throw new Error(`Attempt to qualify non-qualifiable role '${baseRole.getName()}' `+
-                      `for staff member '${staffMember.getEmail()}'.`)
+import { Role } from './Role'
+
+const AttachedRole = class extends Role {
+  constructor(baseRole, rec, manager, staffMember) {
+    super(baseRole)
+    if (!baseRole.isQualifiable() && rec.qualifier !== undefined) {
+      throw new Error(`Attempt to qualify non-qualifiable role '${baseRole.getName()}' `
+                      + `for staff member '${staffMember.getEmail()}'.`)
+    }
+
+    Object.assign(this, rec)
+    this.manager = manager
   }
 
-  getName() { return this.baseRole.getName() }
+  getManager() { return this.manager }
 
-  isActing() { return this.acting }
+  getQualifier() { return this.qualifier ? this.qualifier : null }
 
-  isQualifiable() { return this.baseRole.isQualifiable() }
+  getQualifiedName() { return `${this.getQualifier()} ${this.getName()}` }
 
-  getQualifier() { return this.qualifier }
+  isActing() { return this.acting ? true : false }
 }
 
 export { AttachedRole }

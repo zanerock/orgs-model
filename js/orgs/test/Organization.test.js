@@ -1,55 +1,55 @@
+/* globals beforeAll describe expect test */
 import { Organization } from '../'
-import { StaffTsv } from '../../staff'
 
 describe('Organization', () => {
   let org
   beforeAll(() => {
     org = new Organization(
-      `./js/roles/test/roles.tsv`,
-      `./js/staff/test/staff.tsv`,
-      `./js/orgs/test/org_structure.json`)
+      './js/roles/test/roles.json',
+      './js/staff/test/staff.json',
+      './js/orgs/test/org_structure.json')
   })
 
-  test(`detects staff with invalid roles`, () => {
+  test('detects staff with invalid roles', () => {
     expect(() =>
       new Organization(
-        `./js/roles/test/roles.tsv`,
-        `./js/staff/test/bad_role_staff.tsv`,
-        `./js/orgs/test/org_structure.json`)).
-      toThrow(/badrole@foo\.com.*Bad Role/)
+        './js/roles/test/roles.json',
+        './js/staff/test/bad_role_staff.json',
+        './js/orgs/test/org_structure.json'))
+      .toThrow(/badrole@foo\.com.*Bad Role/)
   })
 
-  test(`detects staff with invalid manaagers`, () => {
+  test('detects staff with invalid manaagers', () => {
     expect(() =>
       new Organization(
-        `./js/roles/test/roles.tsv`,
-        `./js/staff/test/bad_manager_staff.tsv`,
-        `./js/orgs/test/org_structure.json`)).
-      toThrow(/nosuchmngr@foo\.com.*badmanager@foo\.com/)
+        './js/roles/test/roles.json',
+        './js/staff/test/bad_manager_staff.json',
+        './js/orgs/test/org_structure.json'))
+      .toThrow(/nosuchmngr@foo\.com.*badmanager@foo\.com/)
   })
 
-  test(`successfully initializes with good data`, () => expect(org).not.toBe(undefined))
+  test('successfully initializes with good data', () => expect(org).not.toBe(undefined))
 
-  test(`loads basic staff data`, () => {
-    let ceo = org.getStaffMember('ceo@foo.com')
+  test('loads basic staff data', () => {
+    const ceo = org.getStaff().get('ceo@foo.com')
     expect(ceo).not.toBe(undefined)
     expect(ceo.getGivenName()).toEqual('CEO')
   })
 
-  test(`loads basic role data`, () => {
-    let role = org.getRole('CTO')
+  test('loads basic role data', () => {
+    const role = org.getRoles().get('CTO')
     expect(role).not.toBe(undefined)
     expect(role.getName()).toEqual('CTO')
   })
 
-  describe(`hydrates org chart`, () => {
+  describe('hydrates org chart', () => {
     test.each`
     email | roleName | managerEmail
     ${'ceo@foo.com'} | ${'CTO'} | ${'ceo@foo.com'}
     ${'dev@foo.com'} | ${'Developer'} | ${'ceo@foo.com'}
-    `(`$email as $roleName managed by $managerName`, ({email, roleName, managerEmail}) => {
-      expect(org.getStaffMember(email).getManagerByRoleName(roleName).getEmail()).toEqual(managerEmail)
-    })
+    `('$email as $roleName managed by $managerName', ({ email, roleName, managerEmail }) => {
+  expect(org.getStaff().get(email).getAttachedRole(roleName).getManager().getEmail()).toEqual(managerEmail)
+})
 
     test.each`
     managerEmail | roleName | reportCount
@@ -57,53 +57,53 @@ describe('Organization', () => {
     ${'ceo@foo.com'} | ${'Tester'} | ${1}
     ${'dev@foo.com'} | ${'Developer'} | ${1}
     ${'test@foo.com'} | ${'Developer'} | ${0}
-    `(`$managerEamil manages $reportCount $roleName staff`, ({managerEmail, roleName, managerName, reportCount}) => {
-      expect(org.getStaffMember(managerEmail).getReportsByRoleName(roleName)).toHaveLength(reportCount)
-    })
+    `('$managerEamil manages $reportCount $roleName staff', ({ managerEmail, roleName, managerName, reportCount }) => {
+  expect(org.getStaff().get(managerEmail).getReportsByRoleName(roleName)).toHaveLength(reportCount)
+})
 
     test.each`
     email | reportCount
     ${'ceo@foo.com'} | ${2}
     ${'dev@foo.com'} | ${1}
     ${'test@foo.com'} | ${0}
-    `(`$email has $reportCount total reports`, ({email, roleName, managerName, reportCount}) => {
-      expect(org.getStaffMember(email).getReports()).toHaveLength(reportCount)
-    })
+    `('$email has $reportCount total reports', ({ email, roleName, managerName, reportCount }) => {
+  expect(org.getStaff().get(email).getReports()).toHaveLength(reportCount)
+})
   })
 
-  describe(`getStaff`, () => {
-    test(`returns a list of 4 staff`, () => {
-      const staff = org.getStaff()
+  describe('getStaff', () => {
+    test('returns a list of 4 staff', () => {
+      const staff = org.getStaff().getAll()
       expect(staff).toHaveLength(4)
       expect(staff.findIndex(s => s.getEmail() === 'dev@foo.com')).not.toEqual(-1)
       expect(staff.findIndex(s => s.getEmail() === 'uidev@foo.com')).not.toEqual(-1)
     })
   })
 
-  describe(`getStaffByRoleName`, () => {
-    test(`returns array of staff matching role`, () => {
-      const staff = org.getStaffByRoleName('Developer')
+  describe('getByRoleName', () => {
+    test('returns array of staff matching role', () => {
+      const staff = org.getStaff().getByRoleName('Developer')
       expect(staff).toHaveLength(2)
       expect(staff.findIndex(s => s.getEmail() === 'dev@foo.com')).not.toEqual(-1)
       expect(staff.findIndex(s => s.getEmail() === 'uidev@foo.com')).not.toEqual(-1)
     })
 
-    test(`returns empty array with no matching staff`, () => expect(org.getStaffByRoleName('blah')).toEqual([]))
+    test('returns empty array with no matching staff', () => expect(org.getStaff().getByRoleName('blah')).toEqual([]))
   })
 
   describe('generateOrgChartData', () => {
-    test(`for debang/OrgChart`, () => {
+    test('for debang/OrgChart', () => {
       // console.log(JSON.stringify(org.generateOrgChartData('debang/OrgChart')))
-      const expected = {"id":"ceo@foo.com/CEO","ids":["ceo@foo.com/CEO","ceo@foo.com/CTO"],"parent_id":"","email":"ceo@foo.com","name":"CEO Foo","titles":["CEO","CTO"],"children":[{"id":"dev@foo.com/Developer","ids":["dev@foo.com/Developer"],"parent_id":"ceo@foo.com/CTO","email":"dev@foo.com","name":"Dev Bar","titles":["Developer"],"children":[{"id":"uidev@foo.com/Developer","ids":["uidev@foo.com/Developer"],"parent_id":"dev@foo.com/Developer","email":"uidev@foo.com","name":"UI Bar","titles":["UI Developer"]}]},{"id":"test@foo.com/Tester","ids":["test@foo.com/Tester"],"parent_id":"ceo@foo.com/CTO","email":"test@foo.com","name":"Test Baz","titles":["Tester"]}]}
+      const expected = { id : 'ceo@foo.com/CEO', ids : ['ceo@foo.com/CEO', 'ceo@foo.com/CTO'], parent_id : '', email : 'ceo@foo.com', name : 'CEO Foo', titles : ['CEO', 'CTO'], children : [{ id : 'dev@foo.com/Developer', ids : ['dev@foo.com/Developer'], parent_id : 'ceo@foo.com/CTO', email : 'dev@foo.com', name : 'Dev Bar', titles : ['Developer'], children : [{ id : 'uidev@foo.com/Developer', ids : ['uidev@foo.com/Developer'], parent_id : 'dev@foo.com/Developer', email : 'uidev@foo.com', name : 'UI Bar', titles : ['UI Developer'] }] }, { id : 'test@foo.com/Tester', ids : ['test@foo.com/Tester'], parent_id : 'ceo@foo.com/CTO', email : 'test@foo.com', name : 'Test Baz', titles : ['Tester'] }] }
       expect(org.generateOrgChartData('debang/OrgChart')).toEqual(expected)
     })
 
-    test(`for GoogleCharts org chart`, () => {
-      const expected = [["ceo@foo.com/CEO","",null],["ceo@foo.com/CTO","ceo@foo.com/CEO",null],["dev@foo.com/Developer","ceo@foo.com/CTO",null],["uidev@foo.com/Developer","dev@foo.com/Developer","UI"],["test@foo.com/Tester","ceo@foo.com/CTO",null]]
+    test('for GoogleCharts org chart', () => {
+      const expected = [['ceo@foo.com/CEO', '', null], ['ceo@foo.com/CTO', 'ceo@foo.com/CEO', null], ['dev@foo.com/Developer', 'ceo@foo.com/CTO', null], ['uidev@foo.com/Developer', 'dev@foo.com/Developer', 'UI'], ['test@foo.com/Tester', 'ceo@foo.com/CTO', null]]
       expect(org.generateOrgChartData('google-chart')).toEqual(expected)
     })
 
-    test(`raises exception when presented with unknown chart style`, () => {
+    test('raises exception when presented with unknown chart style', () => {
       expect(() => org.generateOrgChartData('blah')).toThrow(/blah.*is not supported/i)
     })
   })

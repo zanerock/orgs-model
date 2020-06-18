@@ -1,2 +1,2 @@
-export * from './StaffTsv'
 export * from './Staff'
+export * from './StaffMember'

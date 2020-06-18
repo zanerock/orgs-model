@@ -1,21 +1,13 @@
-import { AttachedRole } from './AttachedRole'
-
 const Role = class {
-  constructor(item) {
-    this.item = item
+  constructor(rec) {
+    Object.assign(this, rec)
   }
 
-  getName() { return this.item.name }
+  getName() { return this.name }
 
-  isQualifiable() {
-    const application = this.item.application
-    return Boolean(application && application.match(/(^|;)\s*qualifiable\s*(;|$)/))
-  }
+  isTitular() { return this.titular ? true : false }
 
-  attachTo(staff, parameters) {
-    return new AttachedRole(this, staff, parameters)
-  }
+  isQualifiable() { return this.qualifiable ? true : false }
 }
-
 
 export { Role }

@@ -1,4 +1,3 @@
-export * from './lib'
 export * from './orgs'
 export * from './policy-calendar'
 export * from './policies'
