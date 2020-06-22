@@ -1,5 +1,5 @@
 {
-  "name": "@liquid-labs/policies-model",
+  "name": "@liquid-labs/orgs-model",
   "version": "1.0.0-beta.32",
   "description": "Model definitions library for Liquid Policy.",
   "main": "dist/index.js",
@@ -28,14 +28,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/Liquid-Labs/policies-model.git"
+    "url": "git+ssh://git@github.com/Liquid-Labs/orgs-model.git"
   },
   "author": "Zane Rockenbaugh <zane@liquid-labs.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Liquid-Labs/policies-model/issues"
+    "url": "https://github.com/Liquid-Labs/orgs-model/issues"
   },
-  "homepage": "https://github.com/Liquid-Labs/policies-model#readme",
+  "homepage": "https://github.com/Liquid-Labs/orgs-model#readme",
   "devDependencies": {
     "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.27"
   },
