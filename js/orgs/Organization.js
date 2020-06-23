@@ -5,10 +5,11 @@ import { Roles } from '../roles'
 import { Staff } from '../staff'
 
 const Organization = class {
-  constructor(rolesJsonPath, staffJsonPath, orgStructurePath) {
-    this.roles = new Roles(rolesJsonPath)
+  constructor(dataPath, staffJsonPath) {
+    this.dataPath = dataPath
+    this.roles = new Roles(`${dataPath}/orgs/roles/roles.json`)
     this.roles.hydrate()
-    this.orgStructure = new OrgStructure(orgStructurePath, this.roles)
+    this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
     this.staff = new Staff(staffJsonPath)
     this.staff.hydrate(this)
   }
