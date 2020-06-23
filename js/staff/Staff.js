@@ -3,6 +3,8 @@ import * as fs from 'fs'
 import { StaffMember } from './StaffMember'
 import { AttachedRole } from '../roles'
 
+const roleRe = new RegExp('^HAS_[A-Z_]+_ROLE$')
+
 const Staff = class {
   constructor(fileName) {
     const data = JSON.parse(fs.readFileSync(fileName))
@@ -21,6 +23,34 @@ const Staff = class {
   get(email) { return this.map[email] }
 
   getByRoleName(roleName) { return this.list.filter(s => s.hasRole(roleName)) }
+
+  staffByCondition(condition){
+    const selectedStaff = []
+
+    this.getAll().forEach((member) => {
+      const parameters = {
+        SEC_TRIVIAL : 1,
+        ALWAYS      : 1,
+        NEVER       : 0
+      }
+
+      // TODO: test if leaving it 'true'/'false' works.
+      parameters.IS_EMPLOYEE = member.getEmploymentStatus() === 'employee' ? 1 : 0
+      parameters.IS_CONTRACTOR = member.getEmploymentStatus() === 'contractor' ? 1 : 0
+
+      member.getRoleNames().forEach(role =>
+        parameters[`HAS_${role.toUpperCase().replace(/ /, '_')}_ROLE`] = 1
+      )
+
+      const evaluator = new Evaluator({ parameters: parameters, zerosRes: [roleRe]})
+
+      if (evaluator.evalCondition(auditSpec.condition)) {
+        selectedStaff.push(member.getEmail())
+      }
+    })
+
+    return selectedStaff
+  }
 
   /**
    * Swaps out references to roles and managers by name and email (respectively) with the actual role and manager
