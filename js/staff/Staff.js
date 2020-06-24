@@ -44,6 +44,8 @@ const Staff = class {
         parameters[`HAS_${role.toUpperCase().replace(/ /, '_')}_ROLE`] = 1
       )
 
+      console.log('parameters', parameters)
+
       const evaluator = new Evaluator({ parameters: parameters, zerosRes: [roleRe]})
 
       if (evaluator.evalTruth(condition)) {
