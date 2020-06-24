@@ -40,7 +40,7 @@
     "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.27"
   },
   "dependencies": {
-    "@liquid-labs/condition-eval": "^1.0.0-alpha.2",
+    "@liquid-labs/condition-eval": "^1.0.0-alpha.3",
     "@liquid-labs/gucci-wrapper": "^1.0.0-alpha.2",
     "dotenv": "^8.2.0",
     "fs": "0.0.1-security"

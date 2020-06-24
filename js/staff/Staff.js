@@ -6,6 +6,9 @@ import { StaffMember } from './StaffMember'
 import { AttachedRole } from '../roles'
 
 const roleRe = new RegExp('^HAS_[A-Z_]+_ROLE$')
+const staffParameters = ['USES_CENTRALIZED_ANTIVIRUS', 'USES_CENTRALIZED_FIREWALL']
+const zeroRes = staffParameters.map(p => new RegExp(p))
+zeroRes.push(roleRe)
 
 const Staff = class {
   constructor(fileName) {
@@ -30,11 +33,13 @@ const Staff = class {
     const selectedStaff = []
 
     this.getAll().forEach((member) => {
-      const parameters = {
-        SEC_TRIVIAL : 1,
-        ALWAYS      : 1,
-        NEVER       : 0
-      }
+      const parameters = Object.assign(
+        {
+          SEC_TRIVIAL : 1,
+          ALWAYS      : 1,
+          NEVER       : 0
+        },
+        member.parameters)
 
       // TODO: test if leaving it 'true'/'false' works.
       parameters.IS_EMPLOYEE = member.getEmploymentStatus() === 'employee' ? 1 : 0
@@ -44,7 +49,7 @@ const Staff = class {
         parameters[`HAS_${role.toUpperCase().replace(/ /g, '_')}_ROLE`] = 1
       )
 
-      const evaluator = new Evaluator({ parameters: parameters, zerosRes: [roleRe]})
+      const evaluator = new Evaluator({ parameters: parameters, zerosRes: zeroRes})
 
       if (evaluator.evalTruth(condition)) {
         selectedStaff.push(member)
