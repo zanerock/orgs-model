@@ -41,10 +41,8 @@ const Staff = class {
       parameters.IS_CONTRACTOR = member.getEmploymentStatus() === 'contractor' ? 1 : 0
 
       member.getRoleNames().forEach(role =>
-        parameters[`HAS_${role.toUpperCase().replace(/ /, '_')}_ROLE`] = 1
+        parameters[`HAS_${role.toUpperCase().replace(/ /g, '_')}_ROLE`] = 1
       )
-
-      console.log('parameters', parameters)
 
       const evaluator = new Evaluator({ parameters: parameters, zerosRes: [roleRe]})
 

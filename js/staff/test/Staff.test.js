@@ -44,4 +44,17 @@ describe('Staff', () => {
 
     expect(data).toEqual(expected)
   })
+
+  describe('staffByCondition', () => {
+    test.each`
+    desc | condition | results
+    ${'employee status'} | ${'IS_EMPLOYEE'} | ${['ceo@foo.com', 'dev@foo.com']}
+    ${'contractor status'} | ${'IS_CONTRACTOR'} | ${['uidev@foo.com', 'test@foo.com']}
+    ${'titular roles'} | ${'HAS_CEO_ROLE'} | ${['ceo@foo.com']}
+    ${'designated roles'} | ${'HAS_SENSITIVE_DATA_HANDLER_ROLE'} | ${['dev@foo.com']}
+    `('filters $desc ($condition)', ({desc, condition, results}) => {
+      const members = testStaff.staffByCondition(condition)
+      expect(members.map(e => e.getEmail())).toEqual(results)
+    })
+  })
 })
