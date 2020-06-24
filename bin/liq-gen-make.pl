@@ -45,7 +45,7 @@ $common_make .= <<'EOF';
 .build:
 	mkdir -p $@
 
-.build/settings.yaml : settings.sh $(SETTINGS_CONV) | .build
+.build/settings.yaml : data/orgs/settings.sh $(SETTINGS_CONV) | .build
 	$(SETTINGS_CONV) "$@" "$<"
 
 .build/proj-maps.pl : $(POLICY_PROJECTS) $(PROJ_MAPPER) | .build
@@ -91,9 +91,9 @@ foreach my $source (split /\n/, $sources) {
 		@incs = map { s|^#\s*include\s*|node_modules/${project}/policy/|; s/ /\\ /g; chomp($_); "$_.tsv"; } @incs;
 
     $tsv = ".build/${common_path}/${safe_name}".'\ -\ items.tsv';
-    print "$tsv : $safe_items".' settings.sh '.join(' ', @incs).' $(TSV_FILTER) | .build'."\n";
+    print "$tsv : $safe_items".' ./data/orgs/settings.sh '.join(' ', @incs).' $(TSV_FILTER) | .build'."\n";
     print "\t".'rm -f "$@"'."\n";
-    print "\t".'$(TSV_FILTER) --settings=settings.sh "$<" "$@"'."\n";
+    print "\t".'$(TSV_FILTER) --settings=./data/orgs/settings.sh "$<" "$@"'."\n";
     print "\n";
 
     $tmpl = ".build/${common_path}/${safe_name}".'\ -\ items.tmpl';
