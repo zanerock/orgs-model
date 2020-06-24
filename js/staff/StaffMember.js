@@ -25,7 +25,7 @@ const StaffMember = class {
 
   getRoleNames() { return this.roles.map((r) => r.name) }
 
-  hasRole(roleName) { return Boolean(this.attachedRolesByName[roleName]) }
+  hasRole(roleName) { return this.attachedRolesByName[roleName] ? true : false }
 
   getAttachedRoles() { return this.roles.slice() }
 
