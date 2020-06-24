@@ -4,7 +4,7 @@ import { Roles } from '..'
 describe('Roles', () => {
   let testRoles
   beforeAll(() => {
-    testRoles = new Roles('./js/roles/test/roles.json').hydrate()
+    testRoles = new Roles('./js/test-data/orgs/roles/roles.json').hydrate()
   })
 
   test('parses test file', () => {

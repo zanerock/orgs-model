@@ -6,8 +6,8 @@ describe('OrgStructure', () => {
   let roles
   let orgStructure
   beforeAll(() => {
-    roles = new Roles('./js/roles/test/roles.json').hydrate()
-    orgStructure = new OrgStructure('./js/orgs/test/org_structure.json', roles)
+    roles = new Roles('./js/test-data/orgs/roles/roles.json').hydrate()
+    orgStructure = new OrgStructure('./js/test-data/orgs/org_structure.json', roles)
   })
 
   test('successfull loads test file', () => {
@@ -24,12 +24,12 @@ describe('OrgStructure', () => {
   })
 
   test('detects duplicate roles in structure', () => {
-    expect(() => new OrgStructure('./js/orgs/test/dupe_org_structure.json', roles))
+    expect(() => new OrgStructure('./js/test-data/orgs/org_structure-dupe.json', roles))
       .toThrow(/non-unique.*CEO/)
   })
 
   test('detects bad manager-role reference', () => {
-    expect(() => new OrgStructure('./js/orgs/test/bad_manager_org_structure.json', roles))
+    expect(() => new OrgStructure('./js/test-data/orgs/org_structure-bad-manager.json', roles))
       .toThrow(/Invalid.*Bad Manager/)
   })
 

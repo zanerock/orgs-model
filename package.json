@@ -1,7 +1,7 @@
 {
   "name": "@liquid-labs/orgs-model",
-  "version": "1.0.0-beta.32",
-  "description": "Model definitions library for Liquid Policy.",
+  "version": "1.0.0-beta.1",
+  "description": "Liquid organizations model.",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "files": [
@@ -40,9 +40,10 @@
     "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.27"
   },
   "dependencies": {
+    "@liquid-labs/condition-eval": "^1.0.0-alpha.2",
     "@liquid-labs/gucci-wrapper": "^1.0.0-alpha.2",
-    "fs": "0.0.1-security",
-    "tsv": "^0.2.0"
+    "dotenv": "^8.2.0",
+    "fs": "0.0.1-security"
   },
   "liquidDev": {
     "orgBase": "git@github.com:Liquid-Labs/Liquid-Labs.git",

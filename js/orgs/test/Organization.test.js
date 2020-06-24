@@ -4,27 +4,18 @@ import { Organization } from '../'
 describe('Organization', () => {
   let org
   beforeAll(() => {
-    org = new Organization(
-      './js/roles/test/roles.json',
-      './js/staff/test/staff.json',
-      './js/orgs/test/org_structure.json')
+    org = new Organization('./js/test-data', './js/staff/test/staff.json')
   })
 
   test('detects staff with invalid roles', () => {
     expect(() =>
-      new Organization(
-        './js/roles/test/roles.json',
-        './js/staff/test/bad_role_staff.json',
-        './js/orgs/test/org_structure.json'))
+      new Organization('./js/test-data', './js/staff/test/bad_role_staff.json'))
       .toThrow(/badrole@foo\.com.*Bad Role/)
   })
 
   test('detects staff with invalid manaagers', () => {
     expect(() =>
-      new Organization(
-        './js/roles/test/roles.json',
-        './js/staff/test/bad_manager_staff.json',
-        './js/orgs/test/org_structure.json'))
+      new Organization('./js/test-data', './js/staff/test/bad_manager_staff.json'))
       .toThrow(/nosuchmngr@foo\.com.*badmanager@foo\.com/)
   })
 

@@ -4,10 +4,7 @@ import { Organization } from '../../orgs'
 describe('StaffMember', () => {
   let org
   beforeAll(() => {
-    org = new Organization(
-      './js/roles/test/roles.json',
-      './js/staff/test/staff.json',
-      './js/orgs/test/org_structure.json')
+    org = new Organization('./js/test-data', './js/staff/test/staff.json')
   })
 
   test.each`
