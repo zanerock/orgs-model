@@ -1,5 +1,7 @@
 import * as fs from 'fs'
 
+import { Evaluator } from '@liquid-labs/condition-eval'
+
 import { StaffMember } from './StaffMember'
 import { AttachedRole } from '../roles'
 
@@ -44,8 +46,8 @@ const Staff = class {
 
       const evaluator = new Evaluator({ parameters: parameters, zerosRes: [roleRe]})
 
-      if (evaluator.evalCondition(auditSpec.condition)) {
-        selectedStaff.push(member.getEmail())
+      if (evaluator.evalTruth(condition)) {
+        selectedStaff.push(member)
       }
     })
 

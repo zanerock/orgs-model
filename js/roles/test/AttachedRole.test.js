@@ -4,16 +4,11 @@ import { Organization } from '../../orgs'
 describe('AttachedRole', () => {
   let org
   beforeAll(() => {
-    org = new Organization(
-      './js/roles/test/roles.json',
-      './js/staff/test/staff.json',
-      './js/orgs/test/org_structure.json')
+    org = new Organization( './js/test-data', './js/staff/test/staff.json')
   })
 
   test('detects invalid qualifications', () => {
-    expect(() => new Organization('./js/roles/test/roles.json',
-      './js/staff/test/invalid_qualifier_staff.json',
-      './js/orgs/test/org_structure.json'))
+    expect(() => new Organization('./js/test-data', './js/staff/test/invalid_qualifier_staff.json'))
       .toThrow(/non-qualifiable role.*CTO.*ceo@foo\.com/)
   })
 

@@ -7,10 +7,7 @@ import { Organization } from '../../orgs'
 describe('Staff', () => {
   let testStaff
   beforeAll(() => {
-    const org = new Organization(
-      './js/roles/test/roles.json',
-      './js/staff/test/staff.json',
-      './js/orgs/test/org_structure.json')
+    const org = new Organization('./js/test-data', './js/staff/test/staff.json')
     // TODO: the way we end up hydrating kinda breaks unit test isolation?
     testStaff = org.getStaff()
   })
