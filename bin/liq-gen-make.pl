@@ -2,6 +2,14 @@
 
 use strict; use warnings;
 
+my $SETTINGS_FILE;
+if (-f "./data/orgs/settings.sh") {
+	$SETTINGS_FILE="./data/orgs/settings.sh";
+}
+else {
+	$SETTINGS_FILE=".build/settings.sh";
+}
+
 my $OUT_DIR;
 if (scalar(@ARGV) == 1) {
 	$OUT_DIR=$ARGV[0];
@@ -39,18 +47,15 @@ $common_make .= <<"EOF";
 clean:
 	rm -rf .build/* $OUT_DIR/*
 
-EOF
-
-$common_make .= <<'EOF';
 .build:
-	mkdir -p $@
+	mkdir -p \$@
 
-.build/settings.yaml : data/orgs/settings.sh $(SETTINGS_CONV) | .build
-	$(SETTINGS_CONV) "$@" "$<"
+.build/settings.yaml : $SETTINGS_FILE \$(SETTINGS_CONV) | .build
+	\$(SETTINGS_CONV) "\$@" "\$<"
 
-.build/proj-maps.pl : $(POLICY_PROJECTS) $(PROJ_MAPPER) | .build
-	rm -f "$@"
-	$(PROJ_MAPPER) "$@" $(POLICY_PROJECTS)
+.build/proj-maps.pl : \$(POLICY_PROJECTS) \$(PROJ_MAPPER) | .build
+	rm -f "\$@"
+	\$(PROJ_MAPPER) "\$@" \$(POLICY_PROJECTS)
 
 EOF
 
@@ -91,9 +96,9 @@ foreach my $source (split /\n/, $sources) {
 		@incs = map { s|^#\s*include\s*|node_modules/${project}/policy/|; s/ /\\ /g; chomp($_); "$_.tsv"; } @incs;
 
     $tsv = ".build/${common_path}/${safe_name}".'\ -\ items.tsv';
-    print "$tsv : $safe_items".' ./data/orgs/settings.sh '.join(' ', @incs).' $(TSV_FILTER) | .build'."\n";
+    print "$tsv : $safe_items"." $SETTINGS_FILE ".join(' ', @incs).' $(TSV_FILTER) | .build'."\n";
     print "\t".'rm -f "$@"'."\n";
-    print "\t".'$(TSV_FILTER) --settings=./data/orgs/settings.sh "$<" "$@"'."\n";
+    print "\t".'$(TSV_FILTER) --settings="'.$SETTINGS_FILE.'" "$<" "$@"'."\n";
     print "\n";
 
     $tmpl = ".build/${common_path}/${safe_name}".'\ -\ items.tmpl';
