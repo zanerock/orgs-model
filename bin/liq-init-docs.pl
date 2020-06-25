@@ -57,6 +57,9 @@ open(my $out, ">", $output) or die "Couldn't open data file: $output ($!)";
 print $out "(\n";
 
 while (<$fd>) {
+  # TODO: extend the spec with a '+' or similar marker for inclusion, then replace it out of the file and build from
+  # the replaced file. This will avoid overloadin the '-''
+  # it's a hack, but we use the '-' to indicate whether it's an external or (no '-') internal template.
   /\{\{-\s*template\s+"([^"]+)"/ or next;
   /#no-dep/ and next;
   my $template = $1;
