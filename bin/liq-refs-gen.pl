@@ -1,5 +1,8 @@
 #!/usr/bin/env perl
 
+# Called from the generated main.makefile to create a map from an absolute gucci/godoc
+# '.devices.standards.SOME_STANDARD' style reference to a relative URL reference.
+
 use strict; use warnings;
 
 my $out = shift;
@@ -73,10 +76,11 @@ foreach my $path (@paths) {
       } @files;
   }
 
-  $tracker->{"files"} = \@files;
+  # Different packages may have the same structure, so files may build up.
+  push @{$tracker->{"files"}}, @files;
 }
 
-# use Data::Dumper; print Dumper($refs);
+# use Data::Dumper; print STDERR Dumper($refs);
 
 open my $fd, ">", "$out" or die "Could not open ouput: $out";
 
