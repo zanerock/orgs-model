@@ -93,7 +93,16 @@ foreach my $source (split /\n/, $sources) {
   my $tmpl = '';
   if (-e "$items") {
 		my @incs=`grep -E "^# *include +" "$items"`;
-		@incs = map { s|^#\s*include\s*|node_modules/${project}/policy/|; s/ /\\ /g; chomp($_); "$_.tsv"; } @incs;
+		@incs = map {
+			/^#\s*include\s+(.+)/;
+			my @res = `find ./node_modules/\@liquid-labs/ -path "*/policy-*/*" -path "*/$1.tsv"`;
+			if (scalar(@res) > 1) { die "Ambiguous include '$1' in '$source'."; }
+			if (scalar(@res) == 0) { die "Did not find include '$1' in '$source'."; }
+			$res[0] =~ s/ /\\ /g;
+			chomp($res[0]);
+			$res[0]; 
+		} @incs;
+			# s|^#\s*include\s*|node_modules/${project}/policy/|; s/ /\\ /g; chomp($_); "$_.tsv"; } @incs;
 
     $tsv = ".build/${common_path}/${safe_name}".'\ -\ items.tsv';
     print "$tsv : $safe_items"." $SETTINGS_FILE ".join(' ', @incs).' $(TSV_FILTER) | .build'."\n";

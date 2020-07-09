@@ -104,9 +104,13 @@ sub process_file {
 
     if ($line =~ /^#\s*include\s+(.+)$/) {
       my $include_file = "${1}.tsv";
-      my @parent_path_bits = split /\//, $file_name;
-      my $inc_path = "node_modules/".$parent_path_bits[1]."/".$parent_path_bits[2]."/policy";
-      $include_file = "${inc_path}/${include_file}";
+
+      # TODO: we are doing this work twice; here and in liq-gen-make
+			my @res = `find ./node_modules/\@liquid-labs/ -path "*/policy-*/*" -path "*/$include_file"`;
+			if (scalar(@res) > 1) { die "Ambiguous include $1 in $file_name."; }
+			if (scalar(@res) == 0) { die "Did not find include $1 in $file_name."; }
+			chomp($res[0]);
+			$include_file = $res[0];
       # print "Processing include: ${include_file}\n";
       process_file($include_file) or die "Failed while processing include at $lineno.\n";
     }
