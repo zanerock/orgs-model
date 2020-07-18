@@ -106,9 +106,9 @@ sub process_file {
       my $include_file = "${1}.tsv";
 
       # TODO: we are doing this work twice; here and in liq-gen-make
-			my @res = `find ./node_modules/\@liquid-labs/ -path "*/policy-*/*" -path "*/$include_file"`;
-			if (scalar(@res) > 1) { die "Ambiguous include $1 in $file_name."; }
-			if (scalar(@res) == 0) { die "Did not find include $1 in $file_name."; }
+			my @res = `find -L ./node_modules/\@liquid-labs/ -path "*/policy-*/*" -path "*/$include_file" -not -path "*@*@*"`;
+			if (scalar(@res) > 1) { die "Ambiguous include $1 in $file_name for standards filter."; }
+			if (scalar(@res) == 0) { die "Did not find include $1 in $file_name for standards filter."; }
 			chomp($res[0]);
 			$include_file = $res[0];
       # print "Processing include: ${include_file}\n";

@@ -95,12 +95,13 @@ foreach my $source (split /\n/, $sources) {
 		my @incs=`grep -E "^# *include +" "$items"`;
 		@incs = map {
 			/^#\s*include\s+(.+)/;
-			my @res = `find ./node_modules/\@liquid-labs/ -path "*/policy-*/*" -path "*/$1.tsv"`;
-			if (scalar(@res) > 1) { die "Ambiguous include '$1' in '$source'."; }
-			if (scalar(@res) == 0) { die "Did not find include '$1' in '$source'."; }
+			# print STDERR "\n".`pwd`."find -L ./node_modules/\@liquid-labs/ -path '*/policy-*/*' -path '*/$1.tsv' -not -path '*@*@*'\n".`find -L ./node_modules/\@liquid-labs/ -path "*/policy-*/*" -path "*/$1.tsv" -not -path "*@*@*"`."\n";
+			my @res = `find -L ./node_modules/\@liquid-labs/ -path "*/policy-*/*" -path "*/$1.tsv" -not -path "*@*@*"`;
+			if (scalar(@res) > 1) { die "Ambiguous include '$1' in '$source' for gen-make. (".join(", ", @res).")"; }
+			if (scalar(@res) == 0) { die "Did not find include '$1' in '$source' gen-make."; }
 			$res[0] =~ s/ /\\ /g;
 			chomp($res[0]);
-			$res[0]; 
+			$res[0];
 		} @incs;
 			# s|^#\s*include\s*|node_modules/${project}/policy/|; s/ /\\ /g; chomp($_); "$_.tsv"; } @incs;
 
