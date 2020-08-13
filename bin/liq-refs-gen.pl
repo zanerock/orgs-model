@@ -62,10 +62,12 @@ foreach my $path (@paths) {
   if ($is_my_package) {
     my $find_path = join('/', @adjustment);
     if (!$find_path) { $find_path = '.'; }
-    $find_str = `cd 'node_modules/\@${package}/policy/${rel_path}'; find '$find_path' -maxdepth 1 -name '*.md'`;
+    # There may be a merged folder combination which the source directories only partially reflect (and honce, the
+    # directory existence test).
+    $find_str = `test -d 'node_modules/\@${package}/policy/${rel_path}' && cd 'node_modules/\@${package}/policy/${rel_path}' && find '$find_path' -maxdepth 1 -name '*.md'`;
   }
   else {
-    $find_str = `cd "node_modules/\@${package}/policy/${exo_path}"; find . -maxdepth 1 -name "*.md"`;
+    $find_str = `test -d "node_modules/\@${package}/policy/${exo_path}" && cd "node_modules/\@${package}/policy/${exo_path}" && find . -maxdepth 1 -name "*.md"`;
   }
   my @files = split /\n/, $find_str;
 
