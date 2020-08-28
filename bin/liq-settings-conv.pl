@@ -5,8 +5,8 @@ use strict; use warnings;
 my $output = shift;
 my $input = shift;
 
-open my $fd, "<", $input;
-open my $out, ">", $output;
+open my $fd, "<", $input or die "Cannot open '$input' for input.";
+open my $out, ">", $output or die "Cannot open '$output' for output.";
 
 my $in_multiline = 0;
 
@@ -37,3 +37,6 @@ while (my $line = <$fd>) {
 
   print $out "$line\n";
 }
+
+close $fd;
+close $out;

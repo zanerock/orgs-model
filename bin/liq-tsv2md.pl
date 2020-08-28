@@ -17,6 +17,9 @@ while (<$fd>) {
   my ($uuid, $subSection, $statement, $absCondition, $indCondition, $auditCondition, $refs) = split(/\t/, "$_");
   $refs && chomp($refs);
 
+  # TODO: this is wonky.
+  #
+  # The deal here is that policy statements don't have an audit condition, so the 6th parameter is actually 'refs'.
   if ($file =~ /Policy/) {
     chomp($auditCondition) or warn "Missing ref spec in '$file' at line $.";
     $refs = $auditCondition;
