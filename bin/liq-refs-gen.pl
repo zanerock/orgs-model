@@ -14,7 +14,7 @@ my @paths = @ARGV;
 my $refs = { "dirs" => {}, "files" => [] };
 
 foreach my $path (@paths) {
-  my $is_my_package = (index($path, $my_package) != -1);
+  my $is_my_package = $path =~ m|/$my_package/|;
   my @bits = split /\//, $path;
   my $tracker = $refs;
   my $path_pivot = 0;
@@ -71,7 +71,7 @@ foreach my $path (@paths) {
   }
   my @files = split /\n/, $find_str;
 
-  if (!$is_my_package) {
+  if (!$is_my_package) { # TODO: why is this guarded on this? Don't we want to resolve our own files?
     @files = map {
         s|^\./||;
         join('/', @adjustment)."/$_";
