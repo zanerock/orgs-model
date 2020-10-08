@@ -93,9 +93,10 @@ sub print_refs {
 
   foreach my $file (@{$refs->{"files"}}) {
     my $var_name = uc $file;
-    $var_name =~ s/\.MD$//;
-    $var_name =~ s|.*/([^/]+)$|$1|;
-    $var_name =~ s/[\s_-]+/_/g;
+    $var_name =~ s/\.MD$//; # strip the extension
+    $var_name =~ s|.*/([^/]+)$|$1|; # get the file 'basename'
+    # converts each contiguous set of non-alpha numeric characters to a single '_'
+    $var_name =~ s/[^A-Z0-9]+/_/g;
 
     print $fd " " x ($depth * 2);
     # print $fd "${var_name}: ".join("/", @$path)."/${file}\n";
