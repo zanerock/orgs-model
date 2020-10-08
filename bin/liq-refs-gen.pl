@@ -93,9 +93,9 @@ sub print_refs {
 
   foreach my $file (@{$refs->{"files"}}) {
     my $var_name = uc $file;
-    $var_name =~ s/\.MD$//; #}{ # hack to fix Atom beautifier
-    $var_name =~ s|.*/([^/]+)$|$1|; #}{
-    $var_name =~ s/[\s_-]+/_/g; #}
+    $var_name =~ s/\.MD$//;
+    $var_name =~ s|.*/([^/]+)$|$1|;
+    $var_name =~ s/[\s_-]+/_/g;
 
     print $fd " " x ($depth * 2);
     # print $fd "${var_name}: ".join("/", @$path)."/${file}\n";
