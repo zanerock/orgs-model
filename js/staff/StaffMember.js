@@ -38,6 +38,8 @@ const StaffMember = class {
     return Object.values(this.reportsByReportRole).reduce((acc, reps) => acc.concat(reps), [])
       .filter(rep => rep.getEmail() !== this.getEmail())
   }
+
+  getParameters() { return this.parameters }
 }
 
 export { StaffMember }
