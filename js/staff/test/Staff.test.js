@@ -36,7 +36,7 @@ describe('Staff', () => {
     expect(dev.getAttachedRoles()[0].getManager().getEmail()).toBe('ceo@foo.com')
   })
 
-  test('writes as expected', () => {
+  test('toString()', () => {
     const out = testStaff.toString()
     // console.log(out)
     const data = JSON.parse(out)
