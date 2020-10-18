@@ -12,6 +12,7 @@ zeroRes.push(roleRe)
 
 const Staff = class {
   constructor(fileName) {
+    this.fileName = fileName
     const data = JSON.parse(fs.readFileSync(fileName))
     this.list = data.map((rec) => new StaffMember(rec))
     this.map = this.list.reduce((acc, member, i) => {
@@ -59,6 +60,30 @@ const Staff = class {
     return selectedStaff
   }
 
+  addData(memberData) {
+    console.log(`Staff: `, memberData)
+    this.list.push(new StaffMember(memberData))
+    this.hydrate(this.org)
+  }
+
+  remove(email) {
+    email = email.toLowerCase()
+    const matches = this.getAll().filter(member => member.email === email)
+
+    if (matches.length === 0) {
+      throw new Error(`Could not find staff member with email ${email}.`)
+    }
+    else if (matches.length > 1) {
+      throw new Error(`Staff database consistency error. Found multiple entires for '${email}'.`)
+    }
+
+    this.list = this.list.filter(member => member.email !== email)
+  }
+
+  write() {
+    fs.writeFileSync(this.fileName, this.toString())
+  }
+
   /**
    * Swaps out references to roles and managers by name and email (respectively) with the actual role and manager
    * objects.
@@ -68,6 +93,7 @@ const Staff = class {
 
     this.list.forEach((s) => {
       s.roles = s.roles.map((rec) => { // Yes, both maps AND has side effects. Suck it!
+        if (rec instanceof AttachedRole) return rec
         // Verify rec references a good role. Note, we check the 'orgStructure' because there may be a role defined
         // globally that isn't in use in the org.
         const role = org.getRoles().get(rec.name)
@@ -118,7 +144,8 @@ const Staff = class {
         givenName: s.getGivenName(),
         startDate: s.getStartDate(),
         roles: [],
-        employmentStatus: s.getEmploymentStatus()
+        employmentStatus: s.getEmploymentStatus(),
+        parameters: s.getParameters()
       }
       s.roles.forEach((attachedRole) => {
         const roleData = { name: attachedRole.getName() }
@@ -132,7 +159,7 @@ const Staff = class {
       return data
     })
 
-    return JSON.stringify(flatJson)
+    return JSON.stringify(flatJson, null, '  ')
   }
 }
 
