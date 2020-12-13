@@ -64,12 +64,10 @@ sub process_for_template_deps {
   open(my $fd, "<", $file) or die "Couldn't open input file: $file ($!)";
 
   while (<$fd>) {
-    # TODO: extend the spec with a '+' or similar marker for inclusion, then replace it out of the file and build from
-    # the replaced file. This will avoid overloadin the '-''
-    # it's a hack, but we use the '-' to indicate whether it's an external or (no '-') internal template.
-    /\{\{-\s*template\s+"([^"]+)"/ or next;
-    /#no-dep/ and next;
-    my $template = $1;
+    # TODO: Using the '-' to indicate 'an external template dependency' was an early. This is mantained for compatibility, but once we clean up and use the '{{/* exttmpl */}}' marker everywhere, remove support for hte '-' special meaning.
+    /(\{\{\/\*\s*exttmpl\s*\*\/\}\}\s*\{\{|\{\{-)\s*template\s+"([^"]+)"/ or next;
+    /#no-dep/ and next; # TODO: only necessary while supproting the '-' convention
+    my $template = $2;
     $template =~ s/^\s+|\s+$//g;
     # we don't currently support cross-including item lists; only the partner file can do that.
     next if $template =~ /- items$/;
