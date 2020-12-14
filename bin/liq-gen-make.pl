@@ -112,6 +112,7 @@ foreach my $source (split /\n/, $sources) {
   if (-e "$items") {
 		my @incs=`grep -E "^# *include +" "$items"`;
 		@incs = map {
+			chomp;
 			/^#\s*include\s+([^\r]+)/; # handle DOS-y files...
 			my @res = `find -L ./node_modules/\@liquid-labs/ -path "*/policy-*/*" -path "*/$1.tsv" -not -path "*@*@*"`;
 			if (scalar(@res) > 1) { die "Ambiguous include '$1' in '$source' for gen-make. (".join(", ", @res).")"; }
