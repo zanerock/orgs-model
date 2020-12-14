@@ -102,7 +102,7 @@ sub process_file {
 
     chomp $line;
 
-    if ($line =~ /^#\s*include\s+(.+)$/) {
+    if ($line =~ /^#\s*include\s+([^\r]+)$/) {
       my $include_file = "${1}.tsv";
 
       # TODO: we are doing this work twice; here and in liq-gen-make
