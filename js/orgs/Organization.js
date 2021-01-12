@@ -33,7 +33,7 @@ const Organization = class {
   generateOrgChartData(style = 'debang/OrgChart') {
     if (style === 'google-chart') {
       const result = []
-      // luckily, the google org chart doesn't care whetStaffher we specify the nodes in order or not, so it's a simple
+      // luckily, the google org chart doesn't care whether we specify the nodes in order or not, so it's a simple
       // transform
       Object.values(this.getStaff().getAll()).forEach(s => {
         s.getAttachedRoles().forEach(r => {
