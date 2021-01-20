@@ -22,6 +22,10 @@ const Organization = class {
     // the 'settings.sh' values are now availale on process.env
 
     // and here's the prototype new approach; the read function handles the 'exists' check
+    // TODO: the 'ORG_ID' is expected to be set from the old style settings.sh; we should take this in the constructor
+    if (process.env.ORG_ID === undefined) {
+      throw new Error(`Did not find expected 'ORG_ID' value in base settings file: ${settingsPath}`)
+    }
     this.innerState = fjson.read(`${dataPath}/orgs/${process.env.ORG_ID}.json`)
 
     this.dataPath = dataPath
