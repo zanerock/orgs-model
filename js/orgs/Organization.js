@@ -1,4 +1,6 @@
 import dotenv from 'dotenv'
+import * as fs from 'fs'
+import * as fjson from '@liquid-labs/federated-json'
 
 import { OrgStructure } from './OrgStructure'
 import { JSONLoop } from './lib/JSONLoop'
@@ -7,13 +9,25 @@ import { Roles } from '../roles'
 import { Staff } from '../staff'
 
 const Organization = class {
-  constructor(dataPath, staffJsonPath, suffix = '') {
-    dotenv.config({ path: `${dataPath}/orgs/settings${suffix}.sh` })
+  constructor(dataPath, staffJsonPath) {
+    const settingsPath = `${dataPath}/orgs/settings.sh`
+    if (!fs.existsSync(settingsPath)) {
+      throw new Error(`Did not find expected settings file: '${settingsPath}'`)
+    } // else continue
+    // first, we handle the original bash-centric approach, centered on individual settings
+    const envResult = dotenv.config({ path: settingsPath })
+    if (envResult.error) {
+      throw envResult.error
+    }
+    // the 'settings.sh' values are now availale on process.env
+
+    // and here's the prototype new approach; the read function handles the 'exists' check
+    this.innerState = fjson.read(`${dataPath}/orgs/${process.env.ORG_ID}.json`)
 
     this.dataPath = dataPath
-    this.roles = new Roles(`${dataPath}/orgs/roles/roles${suffix}.json`)
+    this.roles = new Roles(`${dataPath}/orgs/roles/roles.json`)
     this.roles.hydrate()
-    this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure${suffix}.json`, this.roles)
+    this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
     this.staff = new Staff(staffJsonPath)
     this.staff.hydrate(this)
   }
