@@ -8,24 +8,34 @@ import { JSONLoop } from './lib/JSONLoop'
 import { Roles } from '../roles'
 import { Staff } from '../staff'
 
+const loadBashSettings = (settingsPath, ...requiredParams) => {
+  if (!fs.existsSync(settingsPath)) {
+    throw new Error(`Did not find expected settings file: '${settingsPath}'`)
+  } // else continue
+  const envResult = dotenv.config({ path: settingsPath })
+  if (envResult.error) {
+    throw envResult.error
+  }
+
+  for (const reqParam of requiredParams) {
+    if (process.env[reqParam] === undefined) {
+      throw new Error(`Did not find expected '${reqParam}' value in settings file: ${settingsPath}`)
+    }
+  }
+}
+
 const Organization = class {
   constructor(dataPath, staffJsonPath) {
-    const settingsPath = `${dataPath}/orgs/settings.sh`
-    if (!fs.existsSync(settingsPath)) {
-      throw new Error(`Did not find expected settings file: '${settingsPath}'`)
-    } // else continue
+    const liqSettingsPath = `${process.env.HOME}/.liq/settings.sh`
+    loadBashSettings(liqSettingsPath, 'LIQ_PLAYGROUND')
+
     // first, we handle the original bash-centric approach, centered on individual settings
-    const envResult = dotenv.config({ path: settingsPath })
-    if (envResult.error) {
-      throw envResult.error
-    }
+    const orgSettingsPath = `${dataPath}/orgs/settings.sh`
+    // TODO: the 'ORG_ID' is expected to be set from the old style settings.sh; we should take this in the constructor
+    loadBashSettings(orgSettingsPath, 'ORG_ID')
     // the 'settings.sh' values are now availale on process.env
 
     // and here's the prototype new approach; the read function handles the 'exists' check
-    // TODO: the 'ORG_ID' is expected to be set from the old style settings.sh; we should take this in the constructor
-    if (process.env.ORG_ID === undefined) {
-      throw new Error(`Did not find expected 'ORG_ID' value in base settings file: ${settingsPath}`)
-    }
     this.innerState = fjson.read(`${dataPath}/orgs/${process.env.ORG_ID}.json`)
 
     this.dataPath = dataPath

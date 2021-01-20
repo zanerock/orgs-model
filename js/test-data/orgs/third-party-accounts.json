@@ -1,0 +1,7 @@
+{
+  "networks/acme-co": {
+    "registered-account-id": "acmeadmin@test-company.com",
+    "account-access": "group",
+    "emails": [ { "type": "main", "address": "acmeadmin@test-company.com" } ]
+  }
+}
