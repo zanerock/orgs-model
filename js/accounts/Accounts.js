@@ -1,5 +1,7 @@
-const list = (data) => {
-  for (const acctData of Object.keys(data?.thirdPartyAccounts || {})) {
-    console.log(acctData)
-  }
-}
+import { Account } from './Account'
+
+const list = (data) =>
+  Object.keys(data?.thirdPartyAccounts || {})
+    .map((key) => new Account(key, data.thirdPartyAccounts[key]))
+
+export { list }
