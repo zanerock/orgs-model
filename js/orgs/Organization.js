@@ -1,42 +1,14 @@
-import dotenv from 'dotenv'
-import * as fs from 'fs'
-import * as fjson from '@liquid-labs/federated-json'
-
 import { OrgStructure } from './OrgStructure'
 import { JSONLoop } from './lib/JSONLoop'
 
+import { AccountsAPI } from '../accounts'
 import { Roles } from '../roles'
 import { Staff } from '../staff'
-
-const loadBashSettings = (settingsPath, ...requiredParams) => {
-  if (!fs.existsSync(settingsPath)) {
-    throw new Error(`Did not find expected settings file: '${settingsPath}'`)
-  } // else continue
-  const envResult = dotenv.config({ path: settingsPath })
-  if (envResult.error) {
-    throw envResult.error
-  }
-
-  for (const reqParam of requiredParams) {
-    if (process.env[reqParam] === undefined) {
-      throw new Error(`Did not find expected '${reqParam}' value in settings file: ${settingsPath}`)
-    }
-  }
-}
+import { loadOrgState } from '../lib/org-state'
 
 const Organization = class {
   constructor(dataPath, staffJsonPath) {
-    const liqSettingsPath = `${process.env.HOME}/.liq/settings.sh`
-    loadBashSettings(liqSettingsPath, 'LIQ_PLAYGROUND')
-
-    // first, we handle the original bash-centric approach, centered on individual settings
-    const orgSettingsPath = `${dataPath}/orgs/settings.sh`
-    // TODO: the 'ORG_ID' is expected to be set from the old style settings.sh; we should take this in the constructor
-    loadBashSettings(orgSettingsPath, 'ORG_ID')
-    // the 'settings.sh' values are now availale on process.env
-
-    // and here's the prototype new approach; the read function handles the 'exists' check
-    this.innerState = fjson.read(`${dataPath}/orgs/${process.env.ORG_ID}.json`)
+    this.innerState = loadOrgState(dataPath)
 
     this.dataPath = dataPath
     this.roles = new Roles(`${dataPath}/orgs/roles/roles.json`)
@@ -44,6 +16,8 @@ const Organization = class {
     this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
     this.staff = new Staff(staffJsonPath)
     this.staff.hydrate(this)
+
+    this.accounts = new AccountsAPI(this)
   }
 
   getRoles() { return this.roles }
