@@ -1,4 +1,4 @@
-/* global describe expect test */
+/* global beforeAll describe expect test */
 
 import * as accounts from '../Accounts'
 import { loadOrgState } from '../../lib/org-state'
@@ -11,7 +11,7 @@ describe('Account', () => {
     test('lists account names', () => {
       const acctsList = accounts.list(orgState)
       expect(acctsList.length).toBe(1)
-      expect(acctsList[0].getName()).toBe("networks/acme-co")
+      expect(acctsList[0].getName()).toBe('networks/acme-co')
     })
   })
 })

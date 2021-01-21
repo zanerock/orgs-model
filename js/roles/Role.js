@@ -5,9 +5,9 @@ const Role = class {
 
   getName() { return this.name }
 
-  isTitular() { return this.titular ? true : false }
+  isTitular() { return !!this.titular }
 
-  isQualifiable() { return this.qualifiable ? true : false }
+  isQualifiable() { return !!this.qualifiable }
 }
 
 export { Role }

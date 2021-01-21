@@ -4,7 +4,7 @@ import { Organization } from '../../orgs'
 describe('AttachedRole', () => {
   let org
   beforeAll(() => {
-    org = new Organization( './js/test-data', './js/staff/test/staff.json')
+    org = new Organization('./js/test-data', './js/staff/test/staff.json')
   })
 
   test('detects invalid qualifications', () => {
