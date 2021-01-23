@@ -18,7 +18,7 @@ const AttachedRole = class extends Role {
 
   getQualifiedName() { return `${this.getQualifier()} ${this.getName()}` }
 
-  isActing() { return this.acting ? true : false }
+  isActing() { return !!this.acting }
 }
 
 export { AttachedRole }

@@ -30,7 +30,7 @@ const Staff = class {
 
   getByRoleName(roleName) { return this.list.filter(s => s.hasRole(roleName)) }
 
-  staffByCondition(condition){
+  staffByCondition(condition) {
     const selectedStaff = []
 
     this.getAll().forEach((member) => {
@@ -46,11 +46,11 @@ const Staff = class {
       parameters.IS_EMPLOYEE = member.getEmploymentStatus() === 'employee' ? 1 : 0
       parameters.IS_CONTRACTOR = member.getEmploymentStatus() === 'contractor' ? 1 : 0
 
-      member.getRoleNames().forEach(role =>
+      member.getRoleNames().forEach(role => {
         parameters[`HAS_${role.toUpperCase().replace(/ /g, '_')}_ROLE`] = 1
-      )
+      })
 
-      const evaluator = new Evaluator({ parameters: parameters, zerosRes: zeroRes})
+      const evaluator = new Evaluator({ parameters : parameters, zerosRes : zeroRes })
 
       if (evaluator.evalTruth(condition)) {
         selectedStaff.push(member)
@@ -61,7 +61,7 @@ const Staff = class {
   }
 
   addData(memberData) {
-    console.log(`Staff: `, memberData)
+    console.log('Staff: ', memberData)
     this.list.push(new StaffMember(memberData))
     this.hydrate(this.org)
   }
@@ -139,19 +139,19 @@ const Staff = class {
   toString() {
     const flatJson = this.list.map((s) => {
       const data = {
-        email: s.getEmail(),
-        familyName: s.getFamilyName(),
-        givenName: s.getGivenName(),
-        startDate: s.getStartDate(),
-        roles: [],
-        employmentStatus: s.getEmploymentStatus(),
-        parameters: s.getParameters()
+        email            : s.getEmail(),
+        familyName       : s.getFamilyName(),
+        givenName        : s.getGivenName(),
+        startDate        : s.getStartDate(),
+        roles            : [],
+        employmentStatus : s.getEmploymentStatus(),
+        parameters       : s.getParameters()
       }
       s.roles.forEach((attachedRole) => {
-        const roleData = { name: attachedRole.getName() }
+        const roleData = { name : attachedRole.getName() }
         if (attachedRole.getManager()) { roleData.manager = attachedRole.getManager().getEmail() }
         if (attachedRole.getQualifier()) { roleData.qualifier = attachedRole.getQualifier() }
-        if (attachedRole.isActing()) { roleData.acting=  attachedRole.isActing() }
+        if (attachedRole.isActing()) { roleData.acting = attachedRole.isActing() }
 
         data.roles.push(roleData)
       })

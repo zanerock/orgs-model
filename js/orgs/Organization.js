@@ -1,21 +1,23 @@
-import dotenv from 'dotenv'
-
 import { OrgStructure } from './OrgStructure'
 import { JSONLoop } from './lib/JSONLoop'
 
+import { AccountsAPI } from '../accounts'
 import { Roles } from '../roles'
 import { Staff } from '../staff'
+import { loadOrgState } from '../lib/org-state'
 
 const Organization = class {
-  constructor(dataPath, staffJsonPath, suffix = '') {
-    dotenv.config({ path: `${dataPath}/orgs/settings${suffix}.sh` })
+  constructor(dataPath, staffJsonPath) {
+    this.innerState = loadOrgState(dataPath)
 
     this.dataPath = dataPath
-    this.roles = new Roles(`${dataPath}/orgs/roles/roles${suffix}.json`)
+    this.roles = new Roles(`${dataPath}/orgs/roles/roles.json`)
     this.roles.hydrate()
-    this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure${suffix}.json`, this.roles)
+    this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
     this.staff = new Staff(staffJsonPath)
     this.staff.hydrate(this)
+
+    this.accounts = new AccountsAPI(this)
   }
 
   getRoles() { return this.roles }
@@ -33,7 +35,7 @@ const Organization = class {
   generateOrgChartData(style = 'debang/OrgChart') {
     if (style === 'google-chart') {
       const result = []
-      // luckily, the google org chart doesn't care whetStaffher we specify the nodes in order or not, so it's a simple
+      // luckily, the google org chart doesn't care whether we specify the nodes in order or not, so it's a simple
       // transform
       Object.values(this.getStaff().getAll()).forEach(s => {
         s.getAttachedRoles().forEach(r => {
