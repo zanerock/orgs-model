@@ -5,7 +5,7 @@ const AccountsAPI = class {
     this.org = org
   }
 
-  list() { accounts.list(this.org.innerState) }
+  list() { return accounts.list(this.org.innerState) }
 }
 
 export { AccountsAPI }
