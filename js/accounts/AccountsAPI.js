@@ -5,6 +5,8 @@ const AccountsAPI = class {
     this.org = org
   }
 
+  get(name) { return accounts.get(this.org.innerState, name) }
+
   list() { return accounts.list(this.org.innerState) }
 }
 
