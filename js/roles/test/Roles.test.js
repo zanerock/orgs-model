@@ -9,7 +9,7 @@ describe('Roles', () => {
 
   test('parses test file', () => {
     expect(testRoles).toBeTruthy()
-    expect(testRoles.getAll()).toHaveLength(6)
+    expect(testRoles.getAll()).toHaveLength(7)
   })
 
   test('properly sets fields', () => expect(testRoles.getAll()[0].getName()).toBe('CEO'))

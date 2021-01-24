@@ -1,9 +1,19 @@
-import { Account } from './Account'
+/**
+* Basic methods for accessing the accounts data.
+*/
 
-const get = (data, name) => data?.thirdPartyAccounts?.[name] && new Account(name, data.thirdPartyAccounts[name])
+/**
+* Retrieves a single account entry by name.
+*/
+const get = (data, name) => data?.thirdPartyAccounts?.[name] && toStandalone(data, name)
 
-const list = (data) =>
-  Object.keys(data?.thirdPartyAccounts || {})
-    .map((key) => new Account(key, data.thirdPartyAccounts[key]))
+const list = (data) => Object.keys(data?.thirdPartyAccounts || {}).map((key) => toStandalone(data, key))
+
+// helper/non-exported items
+/**
+* Creates a new/copy of the account data with an additional 'name' field. The name should be the key value which
+* pointed to the account data.
+*/
+const toStandalone = (data, name) => Object.assign({}, data.thirdPartyAccounts[name], { name })
 
 export { get, list }

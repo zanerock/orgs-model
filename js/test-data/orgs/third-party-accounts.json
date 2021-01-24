@@ -1,7 +1,9 @@
 {
   "networks/acme-co": {
-    "registered-id": "acmeadmin@test-company.com",
-    "access-type": "group",
-    "emails": [ { "type": "main", "address": "acmeadmin@test-company.com" } ]
+    "id": "acmeadmin@test-company.com",
+    "emails": [ { "type": "main", "address": "acmeadmin@test-company.com" } ],
+    "access": [
+      { "route": "role", "role": "Acme Admin" }
+    ]
   }
 }

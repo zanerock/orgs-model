@@ -10,21 +10,23 @@ describe('Account', () => {
   describe('get', () => {
     test('retrieves account by name', () => {
       const acct = accounts.get(orgState, 'networks/acme-co')
-      expect(acct).not.toBeNull()
-      expect(acct.getName()).toBe('networks/acme-co')
-      expect(acct.getAccessType()).toBe('group')
+      expect(acct).toBeTruthy()
+      expect(acct.id).toBe('acmeadmin@test-company.com')
+      expect(acct.name).toBe('networks/acme-co')
     })
 
-    test('returns null for unknown account', () => {
+    test('returns undefined for unknown account', () => {
       expect(accounts.get(orgState, 'no-such-account')).toBeUndefined()
     })
   })
 
   describe('list', () => {
-    test('lists account names', () => {
+    test('retrieves all known accounts by default', () => {
       const acctsList = accounts.list(orgState)
       expect(acctsList.length).toBe(1)
-      expect(acctsList[0].getName()).toBe('networks/acme-co')
+      const acct0 = acctsList.find((el) => el.name === 'networks/acme-co')
+      expect(acct0).toBeTruthy()
+      expect(acct0.name).toBe('networks/acme-co')
     })
   })
 })
