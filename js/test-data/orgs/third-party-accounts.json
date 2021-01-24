@@ -3,7 +3,14 @@
     "id": "acmeadmin@test-company.com",
     "emails": [ { "type": "main", "address": "acmeadmin@test-company.com" } ],
     "access": [
-      { "route": "role", "role": "Acme Admin" }
+      { "route": "role", "id": "Acme Admin" }
+    ]
+  },
+  "business/fax-co": {
+    "id": "faxcoadmin@test-company.com",
+    "emails": [ { "type": "main", "address": "faxcoadmin@test-company.com" } ],
+    "access": [
+      { "route": "role", "id": "Internal Support Admin" }
     ]
   }
 }

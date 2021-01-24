@@ -7,7 +7,7 @@
 */
 const get = (data, name) => data?.thirdPartyAccounts?.[name] && toStandalone(data, name)
 
-const list = (data) => Object.keys(data?.thirdPartyAccounts || {}).map((key) => toStandalone(data, key))
+const list = (data) => Object.keys(data?.thirdPartyAccounts || {}).sort().map((key) => toStandalone(data, key))
 
 // helper/non-exported items
 /**

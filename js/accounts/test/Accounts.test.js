@@ -21,12 +21,20 @@ describe('Account', () => {
   })
 
   describe('list', () => {
-    test('retrieves all known accounts by default', () => {
-      const acctsList = accounts.list(orgState)
-      expect(acctsList.length).toBe(1)
-      const acct0 = acctsList.find((el) => el.name === 'networks/acme-co')
-      expect(acct0).toBeTruthy()
-      expect(acct0.name).toBe('networks/acme-co')
+    var acctList
+    beforeAll(() => { acctList = accounts.list(orgState) })
+
+    test('retrieves all accounts by default', () => expect(acctList.length).toBe(2))
+
+    test('initializes member data with name', () => {
+      const acct = acctList.find((el) => el.name === 'networks/acme-co')
+      expect(acct).toBeTruthy()
+      expect(acct.name).toBe('networks/acme-co')
+    })
+
+    test('produces sorted results', () => {
+      const names = acctList.map((acct) => acct.name)
+      expect(names).toEqual(names.sort())
     })
   })
 })
