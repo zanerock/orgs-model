@@ -30,36 +30,6 @@ const Staff = class {
 
   getByRoleName(roleName) { return this.list.filter(s => s.hasRole(roleName)) }
 
-  staffByCondition(condition) {
-    const selectedStaff = []
-
-    this.getAll().forEach((member) => {
-      const parameters = Object.assign(
-        {
-          SEC_TRIVIAL : 1,
-          ALWAYS      : 1,
-          NEVER       : 0
-        },
-        member.parameters)
-
-      // TODO: test if leaving it 'true'/'false' works.
-      parameters.IS_EMPLOYEE = member.getEmploymentStatus() === 'employee' ? 1 : 0
-      parameters.IS_CONTRACTOR = member.getEmploymentStatus() === 'contractor' ? 1 : 0
-
-      member.getRoleNames().forEach(role => {
-        parameters[`HAS_${role.toUpperCase().replace(/ /g, '_')}_ROLE`] = 1
-      })
-
-      const evaluator = new Evaluator({ parameters : parameters, zerosRes : zeroRes })
-
-      if (evaluator.evalTruth(condition)) {
-        selectedStaff.push(member)
-      }
-    })
-
-    return selectedStaff
-  }
-
   addData(memberData) {
     console.log('Staff: ', memberData)
     this.list.push(new StaffMember(memberData))
@@ -80,9 +50,7 @@ const Staff = class {
     this.list = this.list.filter(member => member.email !== email)
   }
 
-  write() {
-    fs.writeFileSync(this.fileName, this.toString())
-  }
+  write() { fs.writeFileSync(this.fileName, this.toString()) }
 
   /**
    * Swaps out references to roles and managers by name and email (respectively) with the actual role and manager
@@ -162,5 +130,37 @@ const Staff = class {
     return JSON.stringify(flatJson, null, '  ')
   }
 }
+
+/**
+* Obligitory 'checkCondition' function provided by the API for processing inclusion or exclusion of Staff targets in
+* an audit. We do this weird 'defineProperty' thing because it effectively gives us a 'static const'
+*/
+const checkCondition = (condition, member) => {
+  const parameters = Object.assign(
+    {
+      SEC_TRIVIAL : 1,
+      ALWAYS      : 1,
+      NEVER       : 0
+    },
+    member.parameters)
+
+  // TODO: test if leaving it 'true'/'false' works.
+  parameters.IS_EMPLOYEE = member.getEmploymentStatus() === 'employee' ? 1 : 0
+  parameters.IS_CONTRACTOR = member.getEmploymentStatus() === 'contractor' ? 1 : 0
+
+  member.getRoleNames().forEach(role => {
+    parameters[`HAS_${role.toUpperCase().replace(/ /g, '_')}_ROLE`] = 1
+  })
+
+  const evaluator = new Evaluator({ parameters, zeroRes })
+  return evaluator.evalTruth(condition)
+}
+
+Object.defineProperty(Staff, 'checkCondition', {
+    value: checkCondition,
+    writable : false,
+    enumerable : true,
+    configurable : false
+})
 
 export { Staff }
