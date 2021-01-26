@@ -4,13 +4,23 @@
     "emails": [ { "type": "main", "address": "acmeadmin@test-company.com" } ],
     "access": [
       { "route": "role", "id": "Acme Admin" }
-    ]
+    ],
+    "sensitivity": "EXISTENTIAL",
+    "parameters": {
+      "REVIEW_PERIOD": 90,
+      "NETWORKING": 1
+    }
   },
   "business/fax-co": {
     "id": "faxcoadmin@test-company.com",
     "emails": [ { "type": "main", "address": "faxcoadmin@test-company.com" } ],
     "access": [
       { "route": "role", "id": "Internal Support Admin" }
-    ]
+    ],
+    "sensitivity": "LOW",
+    "parameters": {
+      "REVIEW_PERIOD": 360,
+      "BUSINESS": 1
+    }
   }
 }

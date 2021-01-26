@@ -53,8 +53,8 @@ describe('Staff', () => {
       ${'titular roles'} | ${'HAS_CEO_ROLE'} | ${['ceo@foo.com']}
       ${'designated roles'} | ${'HAS_SENSITIVE_DATA_HANDLER_ROLE'} | ${['dev@foo.com']}
     `('properly evaluates $desc ($condition)', ({ desc, condition, expectation }) => {
-  const members = testStaff.getAll().filter((member) => Staff.checkCondition(condition, member))
-  expect(members.map(e => e.getEmail())).toEqual(expectation)
-})
+      const members = testStaff.getAll().filter((member) => Staff.checkCondition(condition, member))
+      expect(members.map(e => e.getEmail())).toEqual(expectation)
+    })
   })
 })

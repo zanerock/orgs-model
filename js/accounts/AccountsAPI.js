@@ -1,3 +1,5 @@
+import { Evaluator } from '@liquid-labs/condition-eval'
+
 import * as accounts from './Accounts'
 
 const AccountsAPI = class {
@@ -19,11 +21,34 @@ const checkCondition = (condition, acct) => {
     {
       SEC_TRIVIAL : 1,
       ALWAYS      : 1,
-      NEVER       : 0
+      NEVER       : 0,
+      NONE:0,
+      LOW:1,
+      MODERATE:2,
+      HIGH:3,
+      EXISTENTIAL:4
     },
     acct.parameters)
 
-  const evaluator = new Evaluator({ parameters, zeroRes })
+  // TODO: create a handly conversion class/lib for the sensitivity codes; SensitivityCode?
+  const sensitivityCode = acct.sensitivity || 'EXISTENTIAL'
+
+  switch (sensitivityCode) {
+    case "NONE":
+      parameters.SENSITIVITY = 0; break;
+    case "LOW":
+      parameters.SENSITIVITY = 1; break;
+    case "MODERATE":
+      parameters.SENSITIVITY = 2; break;
+    case "HIGH":
+      parameters.SENSITIVITY = 3; break;
+    case "EXISTENTIAL":
+      parameters.SENSITIVITY = 4; break;
+    default:
+      throw new Error(`Unknown sensitivity code: '${sensitivityCode}'.`)
+  }
+  
+  const evaluator = new Evaluator({ parameters })
   return evaluator.evalTruth(condition)
 }
 
