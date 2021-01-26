@@ -28,7 +28,8 @@ const checkCondition = (condition, acct) => {
       HIGH:3,
       EXISTENTIAL:4
     },
-    acct.parameters)
+    acct.parameters
+  )
 
   // TODO: create a handly conversion class/lib for the sensitivity codes; SensitivityCode?
   const sensitivityCode = acct.sensitivity || 'EXISTENTIAL'
@@ -47,8 +48,11 @@ const checkCondition = (condition, acct) => {
     default:
       throw new Error(`Unknown sensitivity code: '${sensitivityCode}'.`)
   }
-  
-  const evaluator = new Evaluator({ parameters })
+
+  // configure the non-existent tags to 'zero' out
+  const zeroRes = [ /BUSINESS|NETWORKING/ ]
+
+  const evaluator = new Evaluator({ parameters, zeroRes })
   return evaluator.evalTruth(condition)
 }
 
