@@ -6,6 +6,8 @@ const AccountsAPI = class {
   constructor(org) {
     this.org = org
     this.checkCondition = AccountsAPI.checkCondition
+
+    this.key = 'name'
   }
 
   get(name) { return accounts.get(this.org.innerState, name) }

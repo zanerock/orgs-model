@@ -1,9 +1,9 @@
 {
   "networks/acme-co": {
-    "id": "acmeadmin@test-company.com",
+    "loginId": "acmeadmin@test-company.com",
     "emails": [ { "type": "main", "address": "acmeadmin@test-company.com" } ],
     "access": [
-      { "route": "role", "id": "Acme Admin" }
+      { "route": "role", "name": "Acme Admin" }
     ],
     "sensitivity": "EXISTENTIAL",
     "parameters": {
@@ -12,10 +12,10 @@
     }
   },
   "business/fax-co": {
-    "id": "faxcoadmin@test-company.com",
+    "loginId": "faxcoadmin@test-company.com",
     "emails": [ { "type": "main", "address": "faxcoadmin@test-company.com" } ],
     "access": [
-      { "route": "role", "id": "Internal Support Admin" }
+      { "route": "role", "name": "Internal Support Admin" }
     ],
     "sensitivity": "LOW",
     "parameters": {
