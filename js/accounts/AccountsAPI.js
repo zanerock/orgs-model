@@ -5,6 +5,7 @@ import * as accounts from './Accounts'
 const AccountsAPI = class {
   constructor(org) {
     this.org = org
+    this.checkCondition = AccountsAPI.checkCondition
   }
 
   get(name) { return accounts.get(this.org.innerState, name) }

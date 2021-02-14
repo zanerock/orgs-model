@@ -22,6 +22,10 @@ const Staff = class {
       acc[member.getEmail()] = member
       return acc
     }, {})
+
+    this.checkCondition = Staff.checkCondition
+
+    this.key = 'email'
   }
 
   // TODO: depracated
