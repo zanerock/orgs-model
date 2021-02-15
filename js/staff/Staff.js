@@ -23,7 +23,7 @@ const Staff = class {
       return acc
     }, {})
 
-    this.checkCondition = Staff.checkCondition
+    this.checkCondition = checkCondition
 
     this.key = 'email'
   }
@@ -139,7 +139,7 @@ const Staff = class {
 
 /**
 * Obligitory 'checkCondition' function provided by the API for processing inclusion or exclusion of Staff targets in
-* an audit. We do this weird 'defineProperty' thing because it effectively gives us a 'static const'
+* an audit.
 */
 const checkCondition = (condition, member) => {
   const parameters = Object.assign(
@@ -161,12 +161,5 @@ const checkCondition = (condition, member) => {
   const evaluator = new Evaluator({ parameters, zeroRes })
   return evaluator.evalTruth(condition)
 }
-
-Object.defineProperty(Staff, 'checkCondition', {
-    value: checkCondition,
-    writable : false,
-    enumerable : true,
-    configurable : false
-})
 
 export { Staff }
