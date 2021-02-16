@@ -5,7 +5,9 @@ import { Evaluator } from '@liquid-labs/condition-eval'
 import { Role } from './Role'
 
 const Roles = class {
-  constructor(fileName) {
+  constructor(org, fileName) {
+    this.org = org
+
     const data = JSON.parse(fs.readFileSync(fileName))
     this.items = data.map((rec) => new Role(rec))
     this.map = this.items.reduce((acc, role, i) => {
@@ -25,6 +27,10 @@ const Roles = class {
   list() { return this.items.slice() }
 
   get(name) { return this.map[name] }
+
+  getStaffInRole(roleName) {
+    return org.staff.list().filter((s) => s.roles.some((r) => r.name === roleName))
+  }
 
   /**
   * Swaps out the 'super role' name for the actual super role object.
