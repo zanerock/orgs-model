@@ -162,4 +162,6 @@ const checkCondition = (condition, member) => {
   return evaluator.evalTruth(condition)
 }
 
+Staff.checkCondition = checkCondition
+
 export { Staff }
