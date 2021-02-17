@@ -11,7 +11,7 @@ describe('Account', () => {
     test('retrieves account by name', () => {
       const acct = accounts.get(orgState, 'networks/acme-co')
       expect(acct).toBeTruthy()
-      expect(acct.id).toBe('acmeadmin@test-company.com')
+      expect(acct.loginId).toBe('acmeadmin@test-company.com')
       expect(acct.name).toBe('networks/acme-co')
     })
 

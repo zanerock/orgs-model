@@ -11,7 +11,7 @@ const Organization = class {
     this.innerState = loadOrgState(dataPath)
 
     this.dataPath = dataPath
-    this.roles = new Roles(`${dataPath}/orgs/roles/roles.json`)
+    this.roles = new Roles(this, `${dataPath}/orgs/roles/roles.json`)
     this.roles.hydrate()
     this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
     this.staff = new Staff(staffJsonPath)
@@ -20,9 +20,19 @@ const Organization = class {
     this.accounts = new AccountsAPI(this)
   }
 
+  // TODO: deprecated; just use 'org.roles'
   getRoles() { return this.roles }
 
+  // TODO: deprecated; just use 'org.staff'
   getStaff() { return this.staff }
+
+  getSetting(key) { return process.env[key] }
+
+  requireSetting(key) {
+    const value = this.getSetting(key)
+    if (value === undefined) { throw new Error(`No such company setting '${key}'.`) }
+    return value
+  }
 
   hasStaffInRole(email, roleName) {
     return this.getStaff().getByRoleName(roleName).some(s => s.getEmail() === email)

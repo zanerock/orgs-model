@@ -6,7 +6,7 @@ describe('OrgStructure', () => {
   let roles
   let orgStructure
   beforeAll(() => {
-    roles = new Roles('./js/test-data/orgs/roles/roles.json').hydrate()
+    roles = new Roles({}, './js/test-data/orgs/roles/roles.json').hydrate()
     orgStructure = new OrgStructure('./js/test-data/orgs/org_structure.json', roles)
   })
 
