@@ -21,7 +21,7 @@
     "build": "catalyst-scripts build",
     "pretest": "catalyst-scripts pretest",
     "test": "catalyst-scripts test",
-    "preversion": "npm test && npm lint",
+    "preversion": "npm test && npm run lint",
     "postversion": "git push && git push --tags",
     "lint": "catalyst-scripts lint",
     "lint:fix": "catalyst-scripts lint-fix"
