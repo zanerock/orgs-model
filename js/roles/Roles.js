@@ -29,7 +29,7 @@ const Roles = class {
   get(name) { return this.map[name] }
 
   getStaffInRole(roleName) {
-    return org.staff.list().filter((s) => s.roles.some((r) => r.name === roleName))
+    return this.org.staff.list().filter((s) => s.roles.some((r) => r.name === roleName))
   }
 
   /**

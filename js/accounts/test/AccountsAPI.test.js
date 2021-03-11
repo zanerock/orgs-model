@@ -1,3 +1,5 @@
+/* global beforeAll describe expect test */
+
 import { AccountsAPI } from '../AccountsAPI'
 import { Organization } from '../../orgs/Organization'
 
@@ -15,13 +17,13 @@ describe('AccountsAPI', () => {
     test.each`
       desc | condition | expectation
       ${'existential sensitivity'} | ${'SENSITIVITY == EXISTENTIAL'} | ${['networks/acme-co']}
-      ${'greater than none'}|${'SENSITIVITY > NONE'}|${['business/fax-co','networks/acme-co']}
+      ${'greater than none'}|${'SENSITIVITY > NONE'}|${['business/fax-co', 'networks/acme-co']}
       ${'parameter tags'}|${'BUSINESS'}|${['business/fax-co']}
       ${'parameter numbers'}|${'REVIEW_PERIOD == 360'}|${['business/fax-co']}
     `('properly evaluates $desc ($condition)', ({ desc, condition, expectation }) => {
-      const accts = acctList.filter((acct) => AccountsAPI.checkCondition(condition, acct))
-      expect(accts.map(e => e.name)).toEqual(expectation)
-    })
+  const accts = acctList.filter((acct) => AccountsAPI.checkCondition(condition, acct))
+  expect(accts.map(e => e.name)).toEqual(expectation)
+})
 
     test('complains of unknown parameters', () =>
       expect(() => AccountsAPI.checkCondition('BLAH', acctList[0]))

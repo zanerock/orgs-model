@@ -25,11 +25,11 @@ const checkCondition = (condition, acct) => {
       SEC_TRIVIAL : 1,
       ALWAYS      : 1,
       NEVER       : 0,
-      NONE:0,
-      LOW:1,
-      MODERATE:2,
-      HIGH:3,
-      EXISTENTIAL:4
+      NONE        : 0,
+      LOW         : 1,
+      MODERATE    : 2,
+      HIGH        : 3,
+      EXISTENTIAL : 4
     },
     acct.parameters
   )
@@ -38,32 +38,32 @@ const checkCondition = (condition, acct) => {
   const sensitivityCode = acct.sensitivity || 'EXISTENTIAL'
 
   switch (sensitivityCode) {
-    case "NONE":
-      parameters.SENSITIVITY = 0; break;
-    case "LOW":
-      parameters.SENSITIVITY = 1; break;
-    case "MODERATE":
-      parameters.SENSITIVITY = 2; break;
-    case "HIGH":
-      parameters.SENSITIVITY = 3; break;
-    case "EXISTENTIAL":
-      parameters.SENSITIVITY = 4; break;
-    default:
-      throw new Error(`Unknown sensitivity code: '${sensitivityCode}'.`)
+  case 'NONE':
+    parameters.SENSITIVITY = 0; break
+  case 'LOW':
+    parameters.SENSITIVITY = 1; break
+  case 'MODERATE':
+    parameters.SENSITIVITY = 2; break
+  case 'HIGH':
+    parameters.SENSITIVITY = 3; break
+  case 'EXISTENTIAL':
+    parameters.SENSITIVITY = 4; break
+  default:
+    throw new Error(`Unknown sensitivity code: '${sensitivityCode}'.`)
   }
 
   // configure the non-existent tags to 'zero' out
-  const zeroRes = [ /BUSINESS|NETWORKING/ ]
+  const zeroRes = [/BUSINESS|NETWORKING/]
 
   const evaluator = new Evaluator({ parameters, zeroRes })
   return evaluator.evalTruth(condition)
 }
 
 Object.defineProperty(AccountsAPI, 'checkCondition', {
-    value: checkCondition,
-    writable : false,
-    enumerable : true,
-    configurable : false
+  value        : checkCondition,
+  writable     : false,
+  enumerable   : true,
+  configurable : false
 })
 
 export { AccountsAPI }
