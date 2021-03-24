@@ -72,7 +72,7 @@ const Organization = class {
     }
     else if (style === 'debang/OrgChart') {
       // Converts flat/tabular (Staff, Manager) to a JSON tree, allowing for the same staff member to appear at multiple
-      // notes using conversion algorithm from debang demos: https://codepen.io/dabeng/pen/mRZpLK
+      // nodes using conversion algorithm from debang demos: https://codepen.io/dabeng/pen/mRZpLK
       const seedData = this
         .generateOrgChartData('google-chart')
         .map(row => {
