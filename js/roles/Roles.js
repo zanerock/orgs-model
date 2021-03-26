@@ -27,7 +27,7 @@ const Roles = class {
   list() { return this.items.slice() }
 
   get(name, opts) {
-    const {required, errMsgGen} = opts || {}
+    const { required, errMsgGen } = opts || {}
     const result = this.map[name]
     if (result === undefined && required) {
       throw new Error(errMsgGen?.(name) || `Did not find requried role '${name}'.`)

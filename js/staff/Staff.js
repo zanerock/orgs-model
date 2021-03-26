@@ -72,8 +72,8 @@ const Staff = class {
         // globally that isn't in use in the org.
         const role = org.getRoles().get(rec.name,
           {
-            required: true,
-            errMsgGen: (name) => `Staff member '${s.getEmail()}' claims unknown role '${name}'.`
+            required  : true,
+            errMsgGen : (name) => `Staff member '${s.getEmail()}' claims unknown role '${name}'.`
           })
 
         roles.push(convertRoleToAttached(s, rec, role, this.org))
@@ -151,11 +151,11 @@ const processImpliedRoles = (roles, s, rec, role, org) => {
   for (const impliedRoleName of role.implies || []) {
     const impliedRole = org.getRoles().get(impliedRoleName,
       {
-        required: true,
-        errMsgGen: (name) => `Staff member '${s.getEmail()}' claims unknown role '${name}' (by implication).`
+        required  : true,
+        errMsgGen : (name) => `Staff member '${s.getEmail()}' claims unknown role '${name}' (by implication).`
       })
 
-    const impliedRec = { "name": impliedRoleName, "manager": s.getEmail() }
+    const impliedRec = { name : impliedRoleName, manager : s.getEmail() }
     roles.push(convertRoleToAttached(s, impliedRec, impliedRole, org))
     processImpliedRoles(roles, s, impliedRec, impliedRole, org)
   }

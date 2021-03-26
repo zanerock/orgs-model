@@ -61,8 +61,8 @@ const OrgStructure = class {
 
       const role = roles.get(node.name,
         {
-          required: true,
-          errMsgGen: (name) => `Could not find ${implied ? 'implied ' : ''}role '${name}' while building org structure.`
+          required  : true,
+          errMsgGen : (name) => `Could not find ${implied ? 'implied ' : ''}role '${name}' while building org structure.`
         })
       for (const impliedRoleName of role.implies || []) {
         // implied roles are handled by inserting the implied roles as managed by the super-role. When the org chart is
