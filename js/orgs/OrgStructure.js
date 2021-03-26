@@ -33,7 +33,7 @@ const OrgStructure = class {
     const nodes = JSON.parse(fs.readFileSync(fileName)).map(r => new Node(r))
     this.roots = []
 
-    nodes.forEach(node => {
+    const processNode = (node, implied = false) => {
       if (node.primMngrName === null) {
         node.primMngr = null // which is not undefined, but positively null
         this.roots.push(node)
@@ -58,7 +58,23 @@ const OrgStructure = class {
           node.possibleMngrs.push(mngr)
         })
       }
-    })
+
+      const role = roles.get(node.name,
+        {
+          required: true,
+          errMsgGen: (name) => `Could not find ${implied ? 'implied ' : ''}role '${name}' while building org structure.`
+        })
+      for (const impliedRoleName of role.implies || []) {
+        // implied roles are handled by inserting the implied roles as managed by the super-role. When the org chart is
+        // generated, these will collapse into a single entry listing multiple roles and using the super role as the
+        // title.
+        processNode(new Node([impliedRoleName, role.name, null]), true)
+      }
+    }
+
+    for (const node of nodes) {
+      processNode(node)
+    }
 
     const orgRoles = this.getNodes().map(n => n.getName())
     // check all org role names reference defined roles

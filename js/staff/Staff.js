@@ -66,42 +66,20 @@ const Staff = class {
     this.org = org
 
     this.members.forEach((s) => {
-      s.roles = s.roles.map((rec) => { // Yes, both maps AND has side effects. Suck it!
+      s.roles = s.roles.reduce((roles, rec) => { // Yes, both maps AND has side effects. Suck it!
         if (rec instanceof AttachedRole) return rec
         // Verify rec references a good role. Note, we check the 'orgStructure' because there may be a role defined
         // globally that isn't in use in the org.
-        const role = org.getRoles().get(rec.name)
-        if (role === undefined) {
-          throw new Error(`Staff member '${s.getEmail()}' claims unknown role '${rec.name}'.`)
-        }
-        if (role.isTitular()) {
-          const orgNode = org.orgStructure.getNodeByRoleName(rec.name)
-          if (orgNode === undefined) {
-            throw new Error(`Staff member '${s.getEmail()}' claims role '${rec.name}' not used in this org.`)
-          }
-          // TODO: check the prim manager from the org structure persective
-          // orgNode.getPrimMngr() !== null
-        }
+        const role = org.getRoles().get(rec.name,
+          {
+            required: true,
+            errMsgGen: (name) => `Staff member '${s.getEmail()}' claims unknown role '${name}'.`
+          })
 
-        let roleManager = null
-        if (rec.manager) {
-          // Then replace manager ID with manager object and add ourselves to their reports
-          roleManager = org.getStaff().get(rec.manager)
-          if (roleManager === undefined) {
-            throw new Error(`No such manager '${rec.manager}' found while loading staff member '${s.getEmail()}'.`)
-          }
-
-          // Add ourselves to the manager's reports
-          if (roleManager.reportsByReportRole[role.name] === undefined) {
-            roleManager.reportsByReportRole[role.name] = []
-          }
-          roleManager.reportsByReportRole[role.name].push(s)
-        }
-
-        const attachedRole = new AttachedRole(role, rec, roleManager, s)
-        s.attachedRolesByName[role.name] = attachedRole
-        return attachedRole
-      }) // StaffMember roles map
+        roles.push(convertRoleToAttached(s, rec, role, this.org))
+        processImpliedRoles(roles, s, rec, role, this.org)
+        return roles
+      }, []) // StaffMember roles reduce
     }) // StaffMember iteration
 
     return this
@@ -134,6 +112,52 @@ const Staff = class {
     })
 
     return JSON.stringify(flatJson, null, '  ')
+  }
+}
+
+const convertRoleToAttached = (s, rec, role, org) => {
+  if (role.isTitular()) {
+    // notice we check 'rec', not 'role'; role may be implied.
+    const orgNode = org.orgStructure.getNodeByRoleName(rec.name)
+    if (orgNode === undefined) {
+      throw new Error(`Staff member '${s.getEmail()}' claims role '${rec.name}' not used in this org.`)
+    }
+    // TODO: check the prim manager from the org structure persective
+    // orgNode.getPrimMngr() !== null
+  }
+
+  // TODO: this is only valid for titular roles, yeah? nest this if...
+  let roleManager = null
+  if (rec.manager) {
+    // Then replace manager ID with manager object and add ourselves to their reports
+    roleManager = org.getStaff().get(rec.manager)
+    if (roleManager === undefined) {
+      throw new Error(`No such manager '${rec.manager}' found while loading staff member '${s.getEmail()}'.`)
+    }
+
+    // Add ourselves to the manager's reports
+    if (roleManager.reportsByReportRole[role.name] === undefined) {
+      roleManager.reportsByReportRole[role.name] = []
+    }
+    roleManager.reportsByReportRole[role.name].push(s)
+  }
+
+  const attachedRole = new AttachedRole(role, rec, roleManager, s)
+  s.attachedRolesByName[role.name] = attachedRole
+  return attachedRole
+}
+
+const processImpliedRoles = (roles, s, rec, role, org) => {
+  for (const impliedRoleName of role.implies || []) {
+    const impliedRole = org.getRoles().get(impliedRoleName,
+      {
+        required: true,
+        errMsgGen: (name) => `Staff member '${s.getEmail()}' claims unknown role '${name}' (by implication).`
+      })
+
+    const impliedRec = { "name": impliedRoleName, "manager": s.getEmail() }
+    roles.push(convertRoleToAttached(s, impliedRec, impliedRole, org))
+    processImpliedRoles(roles, s, impliedRec, impliedRole, org)
   }
 }
 
