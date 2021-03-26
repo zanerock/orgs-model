@@ -8,14 +8,20 @@ import { loadOrgState } from '../lib/org-state'
 
 const Organization = class {
   constructor(dataPath, staffJsonPath) {
+    // innerState defines:
+    // * thirdPartyAccounts
     this.innerState = loadOrgState(dataPath)
 
+    // TODO: Move all this to 'innerState' (for roles and staff, by loading all with the federated json used in
+    // 'loadOrgState') and just use the global hydration.
     this.dataPath = dataPath
     this.roles = new Roles(this, `${dataPath}/orgs/roles/roles.json`)
     this.roles.hydrate()
     this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
     this.staff = new Staff(staffJsonPath)
     this.staff.hydrate(this)
+
+    // hydrate(this)
 
     this.accounts = new AccountsAPI(this)
   }
@@ -43,6 +49,13 @@ const Organization = class {
   }
 
   generateOrgChartData(style = 'debang/OrgChart') {
+    // Implementation notes:
+    // The overall structure is generated per the 'google-chart' style by processing each role of each titular role of
+    // each staff member. At the moment, 'google-chart' style is more of an intermediate step than a final format as it
+    // does not support the full range of desired features. The resulting data format is:
+    //
+    //    [ '<individual email>/role', '<manager email>/role', '<role qualifier>' ]
+
     if (style === 'google-chart') {
       const result = []
       // luckily, the google org chart doesn't care whether we specify the nodes in order or not, so it's a simple
@@ -77,6 +90,7 @@ const Organization = class {
         .generateOrgChartData('google-chart')
         .map(row => {
           let [email, roleName] = row[0].split(/\//)
+          // if there's a qualifier, we create the 'effective' role name here
           const qualifier = row[2]
           if (qualifier) {
             roleName = roleName.replace(/^(Senior )?/, `$1${qualifier} `)
@@ -123,6 +137,9 @@ const Organization = class {
           if (err) throw new Error(`Could not find parent for '${node.id}'; is chart valid?`)
 
           if (parent && node.email === parent.email) {
+            // It may be the case that we have a node with multiple roles and a sub-role has reports. The sub-node will
+            // be rendered in order to clarify the nature of the reports, but we hide the email which is appearent in
+            // the parent node.
             node.hideName = true
 
             if (parent.children.length === 1 || node.children === undefined) {
