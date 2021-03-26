@@ -26,7 +26,14 @@ const Roles = class {
   getAll() { return this.items.slice() }
   list() { return this.items.slice() }
 
-  get(name) { return this.map[name] }
+  get(name, opts) {
+    const {required, errMsgGen} = opts || {}
+    const result = this.map[name]
+    if (result === undefined && required) {
+      throw new Error(errMsgGen?.(name) || `Did not find requried role '${name}'.`)
+    }
+    return result
+  }
 
   getStaffInRole(roleName) {
     return this.org.staff.list().filter((s) => s.roles.some((r) => r.name === roleName))
