@@ -20,7 +20,7 @@ const Organization = class {
     this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
     this.staff = new Staff(staffJsonPath)
     this.staff.hydrate(this)
-    
+
     // hydrate(this)
 
     this.accounts = new AccountsAPI(this)
