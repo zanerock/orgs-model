@@ -7,6 +7,8 @@ const Role = class {
 
   isTitular() { return !!this.titular }
 
+  isDesignated() { return !!this.designated }
+
   isQualifiable() { return !!this.qualifiable }
 }
 

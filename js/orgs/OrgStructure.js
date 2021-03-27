@@ -68,7 +68,16 @@ const OrgStructure = class {
         // implied roles are handled by inserting the implied roles as managed by the super-role. When the org chart is
         // generated, these will collapse into a single entry listing multiple roles and using the super role as the
         // title.
-        processNode(new Node([impliedRoleName, role.name, null]), true)
+
+        // TODO: this is a little messy
+        const impRole = roles.get(impliedRoleName,
+          {
+            required  : true,
+            errMsgGen : (name) => `Could not find implied role '${name}' while building org structure.`
+          })
+        if (impRole.isTitular()) { // only titular roles are used in the org structure
+          processNode(new Node([impliedRoleName, role.name, null]), true)
+        }
       }
     }
 

@@ -15,12 +15,12 @@ const Organization = class {
     // TODO: Move all this to 'innerState' (for roles and staff, by loading all with the federated json used in
     // 'loadOrgState') and just use the global hydration.
     this.dataPath = dataPath
-    this.roles = new Roles(this, `${dataPath}/orgs/roles/roles.json`)
+    this.roles = new Roles(this, this.innerState.roles)
     this.roles.hydrate()
     this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
     this.staff = new Staff(staffJsonPath)
     this.staff.hydrate(this)
-
+    
     // hydrate(this)
 
     this.accounts = new AccountsAPI(this)

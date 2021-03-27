@@ -1,4 +1,5 @@
 /* globals beforeAll describe expect test */
+import * as fs from 'fs'
 import { Roles } from '../../roles'
 import { OrgStructure } from '../OrgStructure'
 
@@ -6,7 +7,7 @@ describe('OrgStructure', () => {
   let roles
   let orgStructure
   beforeAll(() => {
-    roles = new Roles({}, './js/test-data/orgs/roles/roles.json').hydrate()
+    roles = new Roles({}, JSON.parse(fs.readFileSync('./js/test-data/orgs/roles/roles.json'))).hydrate()
     orgStructure = new OrgStructure('./js/test-data/orgs/org_structure.json', roles)
   })
 

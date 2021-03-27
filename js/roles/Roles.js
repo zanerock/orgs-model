@@ -1,15 +1,12 @@
-import * as fs from 'fs'
-
 import { Evaluator } from '@liquid-labs/condition-eval'
 
 import { Role } from './Role'
 
 const Roles = class {
-  constructor(org, fileName) {
+  constructor(org, rolesData) {
     this.org = org
 
-    const data = JSON.parse(fs.readFileSync(fileName))
-    this.items = data.map((rec) => new Role(rec))
+    this.items = rolesData.map((rec) => new Role(rec))
     this.map = this.items.reduce((acc, role, i) => {
       if (acc[role.getName()] !== undefined) {
         throw new Error(`Role with name '${role.name}' already exists at entry ${i}.`)

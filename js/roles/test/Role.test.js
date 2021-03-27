@@ -1,10 +1,12 @@
 /* globals beforeAll describe expect test */
+import * as fs from 'fs'
+
 import { Roles } from '..'
 
 describe('Role', () => {
   let roles
   beforeAll(() => {
-    roles = new Roles({}, './js/test-data/orgs/roles/roles.json').hydrate()
+    roles = new Roles({}, JSON.parse(fs.readFileSync('./js/test-data/orgs/roles/roles.json'))).hydrate()
   })
 
   test.each`
