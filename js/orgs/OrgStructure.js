@@ -1,8 +1,9 @@
 import * as fs from 'fs'
 
 const Node = class {
-  constructor([name, primMngrName, possibleMngrNames]) {
+  constructor([name, primMngrName, possibleMngrNames], implied = false) {
     this.name = name
+    this.implied = implied
     this.primMngrName = primMngrName
     this.primMngr = undefined
     this.possibleMngrNames = possibleMngrNames || []
@@ -33,7 +34,7 @@ const OrgStructure = class {
     const nodes = JSON.parse(fs.readFileSync(fileName)).map(r => new Node(r))
     this.roots = []
 
-    const processNode = (node, implied = false) => {
+    const processNode = (node) => {
       if (node.primMngrName === null) {
         node.primMngr = null // which is not undefined, but positively null
         this.roots.push(node)
@@ -62,7 +63,7 @@ const OrgStructure = class {
       const role = roles.get(node.name,
         {
           required  : true,
-          errMsgGen : (name) => `Could not find ${implied ? 'implied ' : ''}role '${name}' while building org structure.`
+          errMsgGen : (name) => `Could not find ${node.implied ? 'implied ' : ''}role '${name}' while building org structure.`
         })
       for (const impliedRoleName of role.implies || []) {
         // implied roles are handled by inserting the implied roles as managed by the super-role. When the org chart is
@@ -76,7 +77,7 @@ const OrgStructure = class {
             errMsgGen : (name) => `Could not find implied role '${name}' while building org structure.`
           })
         if (impRole.isTitular()) { // only titular roles are used in the org structure
-          processNode(new Node([impliedRoleName, role.name, null]), true)
+          processNode(new Node([impliedRoleName, role.name, null], true))
         }
       }
     }
