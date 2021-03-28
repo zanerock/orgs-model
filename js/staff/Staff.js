@@ -130,6 +130,7 @@ const convertRoleToAttached = (s, rec, role, org) => {
   let roleManager = null
   if (rec.manager) {
     // Then replace manager ID with manager object and add ourselves to their reports
+    // console.error(`converting with manager: ${rec.manager}`) // DEBUG
     roleManager = org.getStaff().get(rec.manager)
     if (roleManager === undefined) {
       throw new Error(`No such manager '${rec.manager}' found while loading staff member '${s.getEmail()}'.`)
@@ -148,14 +149,21 @@ const convertRoleToAttached = (s, rec, role, org) => {
 }
 
 const processImpliedRoles = (roles, s, rec, role, org) => {
-  for (const impliedRoleName of role.implies || []) {
+  for (const { name: impliedRoleName, mngrProtocol } of role.implies || []) {
     const impliedRole = org.getRoles().get(impliedRoleName,
       {
         required  : true,
         errMsgGen : (name) => `Staff member '${s.getEmail()}' claims unknown role '${name}' (by implication).`
       })
 
-    const impliedRec = { name : impliedRoleName, manager : s.getEmail() }
+    // console.error(`Processing staff implied role: ${s.getEmail()}/${impliedRoleName}`) // DEBUG
+
+    const manager = mngrProtocol === 'self'
+      ? s.getEmail()
+      : mngrProtocol === 'same'
+        ? rec.manager
+        : throw new Error(`Unkown (or undefined?) manager protocol '${mngrProtocol}' found while processing staff.`)
+    const impliedRec = { name : impliedRoleName, manager }
     roles.push(convertRoleToAttached(s, impliedRec, impliedRole, org))
     processImpliedRoles(roles, s, impliedRec, impliedRole, org)
   }

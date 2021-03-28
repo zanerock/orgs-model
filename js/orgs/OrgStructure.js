@@ -47,6 +47,7 @@ const OrgStructure = class {
         }
 
         node.primMngr = primMngr
+        // console.error(`Adding ${node.name} as child of ${primMngr.name}`) // DEBUG
         primMngr.children.push(node)
 
         node.possibleMngrNames.forEach(mngrName => {
@@ -65,7 +66,7 @@ const OrgStructure = class {
           required  : true,
           errMsgGen : (name) => `Could not find ${node.implied ? 'implied ' : ''}role '${name}' while building org structure.`
         })
-      for (const impliedRoleName of role.implies || []) {
+      for (const { name: impliedRoleName, mngrProtocol } of role.implies || []) {
         // implied roles are handled by inserting the implied roles as managed by the super-role. When the org chart is
         // generated, these will collapse into a single entry listing multiple roles and using the super role as the
         // title.
@@ -76,8 +77,20 @@ const OrgStructure = class {
             required  : true,
             errMsgGen : (name) => `Could not find implied role '${name}' while building org structure.`
           })
-        if (impRole.isTitular()) { // only titular roles are used in the org structure
-          processNode(new Node([impliedRoleName, role.name, null], true))
+        // console.error(`Processing implied role: ${impRole.name}...`) // DEBUG
+        if (impRole.isTitular() && !nodes.find(n => n.name === impRole.name)) { // only titular roles not already defined are implied into the org structure
+          // console.error("I'm in!") // DEBUG
+          // TODO: in theroy, I believe if the current node has no manager, then implied role's don't either.
+          // Otheriwse, the primary manager is effectively one's self, in the 'super' role or the same manager as the
+          // super role, depending on the manager protocol.
+          // console.error("\n\nHey:\n", role, node, "\n\n")// DEBUG
+          const managingRoleName = mngrProtocol === 'self'
+            ? role.name
+            : mngrProtocol === 'same'
+              ? node.primMngrName
+              : throw new Error(`Unkown (or undefined?) manager protocol '${mngrProtocol}' found while processing org structure.`)
+          // TODO: support optional managers.
+          processNode(new Node([impliedRoleName, managingRoleName, null], true))
         }
       }
     }

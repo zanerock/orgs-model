@@ -68,11 +68,22 @@ const Organization = class {
             if (!manager) result.push([myKey, '', r.getQualifier()])
             else {
               const mngrEmail = manager.getEmail()
-              const managingRole = this.getManagingRolesByManagedRoleName(r.getName()).find(mngrRole =>
-                this.hasStaffInRole(mngrEmail, mngrRole.getName())
-              )
+              const managingRoles = this.getManagingRolesByManagedRoleName(r.getName())
+              // DEBUG
+              /*if (r.getName() === 'Chairman of the Board') {
+                console.error("Hey!\n----------------\n")
+                console.error(managingRoles)
+              }*/
+              const managingRole = managingRoles.find(mngrRole =>
+                  this.hasStaffInRole(mngrEmail, mngrRole.getName())
+                )
+              /*`${mngrEmail}/${r.getName()}` === myKey
+                ? r
+                : this.getManagingRolesByManagedRoleName(r.getName()).find(mngrRole =>
+                    this.hasStaffInRole(mngrEmail, mngrRole.getName())
+                  )*/
               if (!managingRole) {
-                throw new Error(`Could not find manager ${mngrEmail}/${r.getName()} for ${myKey}.`)
+                throw new Error(`Could not find manager ${managingRoles.map(r => `${mngrEmail}/${r.name}`).join('|')} for ${myKey}.`)
               }
               const managerKey = `${mngrEmail}/${managingRole.getName()}`
               result.push([myKey, managerKey, r.getQualifier()])
@@ -80,21 +91,23 @@ const Organization = class {
           }
         })
       })
+      // console.error(result) // DEBUG
 
       return result
     }
     else if (style === 'debang/OrgChart') {
-      // Converts flat/tabular (Staff, Manager) to a JSON tree, allowing for the same staff member to appear at multiple
-      // nodes using conversion algorithm from debang demos: https://codepen.io/dabeng/pen/mRZpLK
+      // Converts array-based/tabular '[staff, manager, qualifier] to a JSON tree, allowing for the same staff member
+      // to appear at multiple nodes using conversion algorithm from debang demos: https://codepen.io/dabeng/pen/mRZpLK
       const seedData = this
         .generateOrgChartData('google-chart')
         .map(row => {
           let [email, roleName] = row[0].split(/\//)
           // if there's a qualifier, we create the 'effective' role name here
           const qualifier = row[2]
-          if (qualifier) {
-            roleName = roleName.replace(/^(Senior )?/, `$1${qualifier} `)
-          }
+          let title = qualifier
+            ? roleName.replace(/^(Senior )?/, `$1${qualifier} `)
+            : roleName
+          const role = this.roles.get(roleName)
 
           const staffMember = this.getStaff().get(email)
           return {
@@ -103,12 +116,14 @@ const Organization = class {
             parent_id : row[1],
             email     : email,
             name      : staffMember.getFullName(),
-            titles    : [roleName]
+            titles    : [title],
+            roles     : [role]
           }
         })
       var data = {}
       var childNodes = []
 
+      // build out the full tree with each titual role being it's own thing
       seedData.forEach((item, index) => {
         if (!item.parent_id) {
           Object.assign(data, item)
@@ -130,25 +145,58 @@ const Organization = class {
         }
       })
 
-      // now, collapse staff member roles to same staff in parent role if only child or sub-node has no children.
+      const mergeNodes = (target, source) => {
+        target.titles.push(...source.titles)
+        target.ids.push(...source.ids)
+        target.roles.push(...source.roles)
+      }
+
+      // collapse/merge nodes where appropriate
       childNodes.forEach(node => {
         const jsonloop = new JSONLoop(data, 'id', 'children')
         jsonloop.findParent(data, node, (err, parent) => {
           if (err) throw new Error(`Could not find parent for '${node.id}'; is chart valid?`)
 
-          if (parent && node.email === parent.email) {
-            // It may be the case that we have a node with multiple roles and a sub-role has reports. The sub-node will
-            // be rendered in order to clarify the nature of the reports, but we hide the email which is appearent in
-            // the parent node.
-            node.hideName = true
+          if (parent) {
+            // merge sideways
+            for (const role of node.roles) {
+              const sibblingsRoleNamesToMerge = role.implies
+                ?.filter(impSpec =>
+                  impSpec.mngrProtocol === 'same' && node.ids.indexOf(`${node.email}/${impSpec.mergeWith}`) >= 0 )
+                .map(i => i.name)
 
-            if (parent.children.length === 1 || node.children === undefined) {
-              parent.titles.push(...node.titles) // parent inherits collapsed node's titles
-              parent.ids.push(...node.ids) // and ids
-              // If 'node' is only child collapsing into parrent, just cut it out
-              if (parent.children.length === 1) parent.children = node.children
-              else { // Else, just cut the child out
-                parent.children.splice(parent.children.findIndex((t) => t === node), 1)
+              // const trimRoles = (n) => { const { roles, ...rest } = n; return rest; } // DEBUG
+
+              /*if (sibblingsRoleNamesToMerge) {// DEBUG
+                console.error(`Side merging to ${node.titles[0]}\n`, sibblingsRoleNamesToMerge)
+              }*/
+              for (const mergeMeName of sibblingsRoleNamesToMerge || []) {
+                const key = `${node.email}/${mergeMeName}`
+                // console.error(`Looking for '${key}' to merge in: `, parent.children.map(trimRoles))// DEBUG
+                const mergeMeNode = parent.children.find(c => c.ids.find(id => id === key))
+                if (mergeMeNode) {
+                  console.error(`Found: `, trimRoles(mergeMeNode))
+                  mergeNodes(node, mergeMeNode)
+                  parent.children.splice(parent.children.findIndex((t) => t === mergeMeNode), 1)
+                }
+              }
+            }
+
+            // merge up
+            if (node.email === parent.email) {
+              // It may be the case that we have a node with multiple roles and a sub-role has reports. The sub-node
+              // will be rendered in order to clarify the nature of the reports, but we hide the email which is
+              // appearent in the parent node.
+              node.hideName = true
+
+              // collapse staff member roles to same staff in parent role if only child or sub-node has no children.
+              if (parent.children.length === 1 || node.children === undefined) {
+                mergeNodes(parent, node)
+                // If 'node' is only child collapsing into parrent, just cut it out
+                if (parent.children.length === 1) parent.children = node.children
+                else { // Else, just cut the child out
+                  parent.children.splice(parent.children.findIndex((t) => t === node), 1)
+                }
               }
             }
           }
