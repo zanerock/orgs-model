@@ -70,18 +70,18 @@ const Organization = class {
               const mngrEmail = manager.getEmail()
               const managingRoles = this.getManagingRolesByManagedRoleName(r.getName())
               // DEBUG
-              /*if (r.getName() === 'Chairman of the Board') {
+              /* if (r.getName() === 'Chairman of the Board') {
                 console.error("Hey!\n----------------\n")
                 console.error(managingRoles)
-              }*/
+              } */
               const managingRole = managingRoles.find(mngrRole =>
-                  this.hasStaffInRole(mngrEmail, mngrRole.getName())
-                )
-              /*`${mngrEmail}/${r.getName()}` === myKey
+                this.hasStaffInRole(mngrEmail, mngrRole.getName())
+              )
+              /* `${mngrEmail}/${r.getName()}` === myKey
                 ? r
                 : this.getManagingRolesByManagedRoleName(r.getName()).find(mngrRole =>
                     this.hasStaffInRole(mngrEmail, mngrRole.getName())
-                  )*/
+                  ) */
               if (!managingRole) {
                 throw new Error(`Could not find manager ${managingRoles.map(r => `${mngrEmail}/${r.name}`).join('|')} for ${myKey}.`)
               }
@@ -101,10 +101,10 @@ const Organization = class {
       const seedData = this
         .generateOrgChartData('google-chart')
         .map(row => {
-          let [email, roleName] = row[0].split(/\//)
+          const [email, roleName] = row[0].split(/\//)
           // if there's a qualifier, we create the 'effective' role name here
           const qualifier = row[2]
-          let title = qualifier
+          const title = qualifier
             ? roleName.replace(/^(Senior )?/, `$1${qualifier} `)
             : roleName
           const role = this.roles.get(roleName)
@@ -160,22 +160,30 @@ const Organization = class {
           if (parent) {
             // merge sideways
             for (const role of node.roles) {
-              const sibblingsRoleNamesToMerge = role.implies
-                ?.filter(impSpec =>
+              /* OK, wanted to do:
+              const sibblingsRoleNamesToMerge = role.implies?.filter(impSpec =>
                   impSpec.mngrProtocol === 'same' && node.ids.indexOf(`${node.email}/${impSpec.mergeWith}`) >= 0 )
+                .map(i => i.name)
+
+              But eslint chokes... on the question mark? It's not clear. It talks about an undefined range.
+              Tried updating eslint and babel components 2021-03-28 with no success.
+              TODO: look into this and report bug if nothing found.
+              */
+              const sibblingsRoleNamesToMerge = role.implies && role.implies.filter(impSpec =>
+                impSpec.mngrProtocol === 'same' && node.ids.indexOf(`${node.email}/${impSpec.mergeWith}`) >= 0)
                 .map(i => i.name)
 
               // const trimRoles = (n) => { const { roles, ...rest } = n; return rest; } // DEBUG
 
-              /*if (sibblingsRoleNamesToMerge) {// DEBUG
+              /* if (sibblingsRoleNamesToMerge) {// DEBUG
                 console.error(`Side merging to ${node.titles[0]}\n`, sibblingsRoleNamesToMerge)
-              }*/
+              } */
               for (const mergeMeName of sibblingsRoleNamesToMerge || []) {
                 const key = `${node.email}/${mergeMeName}`
                 // console.error(`Looking for '${key}' to merge in: `, parent.children.map(trimRoles))// DEBUG
                 const mergeMeNode = parent.children.find(c => c.ids.find(id => id === key))
                 if (mergeMeNode) {
-                  console.error(`Found: `, trimRoles(mergeMeNode))
+                  // console.error('Found: ', trimRoles(mergeMeNode)) // DEBUG
                   mergeNodes(node, mergeMeNode)
                   parent.children.splice(parent.children.findIndex((t) => t === mergeMeNode), 1)
                 }
