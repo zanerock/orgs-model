@@ -155,4 +155,10 @@ foreach my $source (split /\n/, $sources) {
   push(@all, $safe_target);
 }
 
-print "all: ".join(" ", @all);
+my $roles_ref = "${OUT_DIR}".'/Company\ Jobs\ and\ Roles\ Reference.md';
+print "${roles_ref}:\n";
+print "\t@[[ '\$(STAFF_FILE)' != '' ]] || { echo \"'STAFF_FILE' var not set. Try calling 'STAFF_FILE=/foo/bar make'\"; exit 1; }\n";
+print "\t\$(BIN)/liq-gen-roles-ref \$(PWD)/data \$(STAFF_FILE) > \"\$@\"\n";
+push(@all, $roles_ref);
+
+print "\nall: ".join(" ", @all);
