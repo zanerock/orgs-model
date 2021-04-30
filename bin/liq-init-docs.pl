@@ -69,23 +69,38 @@ sub process_for_template_deps {
     /#no-dep/ and next; # TODO: only necessary while supproting the '-' convention
     my $template = $2;
     $template =~ s/^\s+|\s+$//g;
-    # we don't currently support cross-including item lists; only the partner file can do that.
-    next if $template =~ /- items$/;
-    $template .= '.tmpl';
-
     my $template_path;
-    for (split /\n/, `find -L 'node_modules/\@liquid-labs' -maxdepth 1 -name "policy-*"`) {
-      my $candidate = `find -L "$_" -path "*${template}" -not -path "node_modules/*/node_modules/*" -not -path "*/.yalc/*"`;
-      chomp($candidate);
-      ($candidate && $template_path) and die "Ambiguous template: ${template}. Found at '$candidate' and '$template_path'.";
-      $candidate && ($template_path = $candidate);
+    # If the file is including it's own list, we don't need to recognize that as a dependency here. That's handled
+    # separate.
+    if ($template =~ /- items$/) {
+      (my $template_stem = $template) =~ s/ - items$//;
+      $template_stem =~ s/^\s+//;
+      (my $file_stem = $file) =~ s/\.md$//;
+      if ($file_stem =~ /${template_stem}$/) {
+        next
+      }
+      else {
+        $template_path = ".build/${template}.tmpl";
+      }
     }
 
-    !$template_path and die "Could not find template: ${template}.";
+    if (!$template_path) {
+      $template .= '.tmpl';
+      for (split /\n/, `find -L 'node_modules/\@liquid-labs' -maxdepth 1 -name "policy-*"`) {
+        my $candidate = `find -L "$_" -path "*${template}" -not -path "node_modules/*/node_modules/*" -not -path "*/.yalc/*"`;
+        chomp($candidate);
+        ($candidate && $template_path) and die "Ambiguous template: ${template}. Found at '$candidate' and '$template_path'.";
+        $candidate && ($template_path = $candidate);
+      }
+
+      !$template_path and die "Could not find template: ${template}.";
+    }
     $deps_tracker->{$template_path} = 1;
 
-    # now, process that template
-    process_for_template_deps($template_path, $deps_tracker);
+    if ($template !~ / - items$/) {
+      # now, process that template
+      process_for_template_deps($template_path, $deps_tracker);
+    }
   }
 
   close $fd;

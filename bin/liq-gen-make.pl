@@ -72,20 +72,31 @@ EOF
 
 print $common_make;
 
-foreach my $source (split /\n/, $sources) {
-  (my $safe_source = $source) =~ s/ /\\ /g;
-  my @bits = split(/\/+/, $source);
+sub extract_context {
+	my $source = shift;
+
+	my @bits = split(/\/+/, $source);
   my $pivot = 0;
   for (@bits) {
     if (/^@/) { last; }
     $pivot += 1;
   }
+
   my $project = join("/", @bits[$pivot...$pivot + 1]);
+
   my $common_path = join("/", @bits[$pivot + 3...$#bits - 1]);
   $common_path ne 'policy' or $common_path = '';
+
 	my $raw_name = $bits[$#bits];
-  (my $base_name = $raw_name) =~ s/\.md//;
+	(my $base_name = $raw_name) =~ s/\.(md|tsv)$//;
   (my $safe_name = $base_name) =~ s/ /\\ /g;
+
+	return ($project, $common_path, $raw_name, $safe_name)
+}
+
+foreach my $source (split /\n/, $sources) {
+  (my $safe_source = $source) =~ s/ /\\ /g;
+	my ($project, $common_path, $raw_name, $safe_name) = extract_context($source);
 
 	# For each sourch path (which is a merge of the source paths), we generate a 'policy-refs.yaml' file that creates an
   # entry for each of the possible document paths and it's relative position to the current document. (This enables the # use of an absolute reference in the source which is translated into a relative URL in the generated document.)
@@ -107,35 +118,11 @@ foreach my $source (split /\n/, $sources) {
 
   (my $items = $source) =~ s/\.md/ - items.tsv/;
   (my $safe_items = $safe_source) =~ s/\.md/\\ -\\ items.tsv/;
-  my $tsv = '';
-  my $tmpl = '';
+	my $tmpl = '';
   if (-e "$items") {
-		my @incs=`grep -E "^# *include +" "$items"`;
-		@incs = map {
-			chomp;
-			/^#\s*include\s+([^\r]+)/; # handle DOS-y files...
-			my @res = `find -L ./node_modules/\@liquid-labs/ -path "*/policy-*/*" -path "*/$1.tsv" -not -path "*@*@*"`;
-			if (scalar(@res) > 1) { die "Ambiguous include '$1' in '$source' for gen-make. (".join(", ", @res).")"; }
-			if (scalar(@res) == 0) { die "Did not find include '$1' in '$source' gen-make."; }
-			$res[0] =~ s/ /\\ /g;
-			chomp($res[0]);
-			$res[0];
-		} @incs;
-			# s|^#\s*include\s*|node_modules/${project}/policy/|; s/ /\\ /g; chomp($_); "$_.tsv"; } @incs;
-
-    $tsv = ".build/${common_path}/${safe_name}".'\ -\ items.tsv';
-    print "$tsv : $safe_items $SETTINGS_FILE_SRC ".join(' ', @incs).' $(TSV_FILTER) | .build'."\n";
-    print "\t".'rm -f "$@"'."\n";
-    print "\t".'$(TSV_FILTER) --settings="'.$SETTINGS_FILE_SRC.'" "$<" "$@"'."\n";
-    print "\n";
-
-    $tmpl = ".build/${common_path}/${safe_name}".'\ -\ items.tmpl';
-    print "$tmpl : ".$tsv.' $(TSV2MD) | .build'."\n";
-    print "\t".'rm -f "$@"'."\n";
-    print "\t".'$(TSV2MD) "$<" "$@"'."\n";
-    print "\n";
-  }
-  else {
+		$tmpl = ".build/${common_path}/${safe_name}".'\ -\ items.tmpl';
+	}
+	else {
     $safe_items = '';
   }
 
@@ -155,10 +142,46 @@ foreach my $source (split /\n/, $sources) {
   push(@all, $safe_target);
 }
 
-my $roles_ref = "${OUT_DIR}".'/Company\ Jobs\ and\ Roles\ Reference.md';
+foreach my $items (split /\n/, `find -L node_modules/\@liquid-labs -path "*/policy-*/policy/*" -name "* - items.tsv" -not -path "node_modules/*/node_modules/*" -not -path "*/.yalc/*"`) {
+	# TODO: make dependent on 'verbose'...
+	# print STDERR "Proccening items: $items\n";
+	my ($project, $common_path, $raw_name, $safe_name) = extract_context($items);
+	(my $safe_items = $items) =~ s/ /\\ /g;
+	my $tsv = '';
+	my $tmpl = '';
+
+	my @incs=`grep -E "^# *include +" "$items"`;
+	@incs = map {
+		chomp;
+		/^#\s*include\s+([^\r]+)/; # handle DOS-y files...
+		my @res = `find -L ./node_modules/\@liquid-labs/ -path "*/policy-*/*" -path "*/$1.tsv" -not -path "*@*@*"`;
+		if (scalar(@res) > 1) { die "Ambiguous include '$1' in '$items' for gen-make. (".join(", ", @res).")"; }
+		if (scalar(@res) == 0) { die "Did not find include '$1' in '$items' gen-make."; }
+		$res[0] =~ s/ /\\ /g;
+		chomp($res[0]);
+		$res[0];
+	} @incs;
+		# s|^#\s*include\s*|node_modules/${project}/policy/|; s/ /\\ /g; chomp($_); "$_.tsv"; } @incs;
+
+	$tsv = ".build/${common_path}/${safe_name}.tsv";
+	print "$tsv : $safe_items $SETTINGS_FILE_SRC ".join(' ', @incs).' $(TSV_FILTER) | .build'."\n";
+	print "\t".'rm -f "$@"'."\n";
+	print "\t".'$(TSV_FILTER) --settings="'.$SETTINGS_FILE_SRC.'" "$<" "$@"'."\n";
+	print "\n";
+
+	$tmpl = ".build/${common_path}/${safe_name}.tmpl";
+	print "$tmpl : ".$tsv.' $(TSV2MD) | .build'."\n";
+	print "\t".'rm -f "$@"'."\n";
+	print "\t".'$(TSV2MD) "$<" "$@"'."\n";
+	print "\n";
+}
+
+my $roles_ref = "${OUT_DIR}".'/staff/Company\ Jobs\ and\ Roles\ Reference.md';
 print "${roles_ref}:\n";
 print "\t@[[ '\$(STAFF_FILE)' != '' ]] || { echo \"'STAFF_FILE' var not set. Try calling 'STAFF_FILE=/foo/bar make'\"; exit 1; }\n";
+print "\t".'mkdir -p $(shell dirname "$@")'."\n";
 print "\t\$(BIN)/liq-gen-roles-ref \$(PWD)/data \$(STAFF_FILE) > \"\$@\"\n";
-push(@all, $roles_ref);
+# push(@all, $roles_ref);
+print "\nroles-ref: $roles_ref\n";
 
 print "\nall: ".join(" ", @all);
