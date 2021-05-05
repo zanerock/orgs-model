@@ -14,9 +14,9 @@ const VendorsAPI = class {
     this.key = 'name'
   }
 
-  get(name) { return accounts.get(this.org.innerState, name) }
+  get(name) { return vendors.get(this.org.innerState, name) }
 
-  list() { return accounts.list(this.org.innerState) }
+  list() { return vendors.list(this.org.innerState) }
 }
 
 /**
