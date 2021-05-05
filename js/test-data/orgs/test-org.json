@@ -9,10 +9,15 @@
         {
           "dataPath": "roles",
           "dataFile": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/roles/roles.json"
+        },
+        {
+          "dataPath": "vendors",
+          "dataFile": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/vendors.json"
         }
       ]
     }
   },
   "roles": null,
-  "thirdPartyAccounts": null
+  "thirdPartyAccounts": null,
+  "vendors": null
 }

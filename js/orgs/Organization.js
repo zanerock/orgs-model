@@ -4,6 +4,7 @@ import { JSONLoop } from './lib/JSONLoop'
 import { AccountsAPI } from '../accounts'
 import { Roles } from '../roles'
 import { Staff } from '../staff'
+import { VendorsAPI } from '../vendors'
 import { loadOrgState } from '../lib/org-state'
 
 const Organization = class {
@@ -24,6 +25,7 @@ const Organization = class {
     // hydrate(this)
 
     this.accounts = new AccountsAPI(this)
+    this.vendors = new VendorsAPI(this)
   }
 
   // TODO: deprecated; just use 'org.roles'
