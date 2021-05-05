@@ -39,7 +39,7 @@ const checkCondition = (condition, productRec) => {
   )
 
   // TODO: create a handly conversion class/lib for the sensitivity codes; SensitivityCode?
-  const sensitivityCode = acct.sensitivityApproval || 'Quarantined Only'
+  const sensitivityCode = productRec.sensitivityApproval || 'Quarantined Only'
 
   switch (sensitivityCode) {
   case 'Top Secret Use':
