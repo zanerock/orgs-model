@@ -1,5 +1,6 @@
 /**
-* Basic methods for accessing the accounts data.
+* Basic methods for accessing the accounts data. Note that functionality is split up like this to make these functions
+* easier to unit test.
 */
 
 /**

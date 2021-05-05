@@ -1,15 +1,15 @@
 import { Evaluator } from '@liquid-labs/condition-eval'
 
-import * as accounts from './Accounts'
+import * as vendors from './Vendors'
 
 /**
-* Public API for managing third-party account records. Uses the `Accounts` library, which actually implements the
-* functions. The library is split like this to make testing easier.
+* Public API for managing vendor/product records. Uses the `Vendors` library, which actually implements the functions.
+* The library is split like this to make testing easier.
 */
-const AccountsAPI = class {
+const VendorsAPI = class {
   constructor(org) {
     this.org = org
-    this.checkCondition = AccountsAPI.checkCondition
+    this.checkCondition = VendorsAPI.checkCondition
 
     this.key = 'name'
   }
@@ -23,7 +23,7 @@ const AccountsAPI = class {
 * Obligitory 'checkCondition' function provided by the API for processing inclusion or exclusion of Account targets in
 * an audit. We do this weird 'defineProperty' thing because it effectively gives us a 'static const'
 */
-const checkCondition = (condition, acct) => {
+const checkCondition = (condition, productRec) => {
   const parameters = Object.assign(
     {
       SEC_TRIVIAL : 1,
@@ -35,39 +35,40 @@ const checkCondition = (condition, acct) => {
       HIGH        : 3,
       EXISTENTIAL : 4
     },
-    acct.parameters
+    productRec.parameters
   )
 
   // TODO: create a handly conversion class/lib for the sensitivity codes; SensitivityCode?
-  const sensitivityCode = acct.sensitivity || 'EXISTENTIAL'
+  const sensitivityCode = acct.sensitivityApproval || 'Quarantined Only'
 
   switch (sensitivityCode) {
-  case 'NONE':
+  case 'Top Secret Use':
     parameters.SENSITIVITY = 0; break
-  case 'LOW':
+  case 'Secret Use':
     parameters.SENSITIVITY = 1; break
-  case 'MODERATE':
+  case 'Sensitive Use':
     parameters.SENSITIVITY = 2; break
-  case 'HIGH':
+  case 'General Use':
     parameters.SENSITIVITY = 3; break
-  case 'EXISTENTIAL':
+  case 'Quarantined Only':
     parameters.SENSITIVITY = 4; break
   default:
-    throw new Error(`Unknown sensitivity code: '${sensitivityCode}'.`)
+    throw new Error(`Unknown sensitivity approval code: '${sensitivityCode}'.`)
   }
 
   // configure the non-existent tags to 'zero' out
-  const zeroRes = [/BUSINESS|NETWORKING/]
+  // const zeroRes = [/BUSINESS|NETWORKING/]
+  const zeroRes = []
 
   const evaluator = new Evaluator({ parameters, zeroRes })
   return evaluator.evalTruth(condition)
 }
 
-Object.defineProperty(AccountsAPI, 'checkCondition', {
+Object.defineProperty(VendorsAPI, 'checkCondition', {
   value        : checkCondition,
   writable     : false,
   enumerable   : true,
   configurable : false
 })
 
-export { AccountsAPI }
+export { VendorsAPI }
