@@ -11,7 +11,7 @@ const VendorsAPI = class {
     this.org = org
     this.checkCondition = VendorsAPI.checkCondition
 
-    this.key = 'name'
+    this.key = 'Name'
   }
 
   get(name) { return vendors.get(this.org.innerState, name) }
@@ -39,18 +39,18 @@ const checkCondition = (condition, productRec) => {
   )
 
   // TODO: create a handly conversion class/lib for the sensitivity codes; SensitivityCode?
-  const sensitivityCode = productRec.sensitivityApproval || 'Quarantined Only'
+  const sensitivityCode = productRec['Sensitivity approval'] || 'quarantined only'
 
   switch (sensitivityCode) {
-  case 'Top Secret Use':
+  case 'top secret use':
     parameters.SENSITIVITY = 0; break
-  case 'Secret Use':
+  case 'secret use':
     parameters.SENSITIVITY = 1; break
-  case 'Sensitive Use':
+  case 'sensitive use':
     parameters.SENSITIVITY = 2; break
-  case 'General Use':
+  case 'general use':
     parameters.SENSITIVITY = 3; break
-  case 'Quarantined Only':
+  case 'quarantined only':
     parameters.SENSITIVITY = 4; break
   default:
     throw new Error(`Unknown sensitivity approval code: '${sensitivityCode}'.`)
