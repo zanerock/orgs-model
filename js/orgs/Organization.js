@@ -25,6 +25,7 @@ const Organization = class {
     // hydrate(this)
 
     this.accounts = new AccountsAPI(this)
+    this.audits = this.innerState.audits
     this.vendors = new VendorsAPI(this)
   }
 
