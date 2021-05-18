@@ -2,6 +2,7 @@ import { OrgStructure } from './OrgStructure'
 import { JSONLoop } from './lib/JSONLoop'
 
 import { AccountsAPI } from '../accounts'
+import { AuditRecordsAPI } from '../auditRecords'
 import { Roles } from '../roles'
 import { Staff } from '../staff'
 import { VendorsAPI } from '../vendors'
@@ -25,7 +26,7 @@ const Organization = class {
     // hydrate(this)
 
     this.accounts = new AccountsAPI(this)
-    this.auditRecords = this.innerState.auditRecords
+    this.auditRecords = new AuditRecordsAPI(this)
     this.audits = this.innerState.audits
     this.vendors = new VendorsAPI(this)
   }
