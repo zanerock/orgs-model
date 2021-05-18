@@ -17,6 +17,10 @@ const AuditRecordsAPI = class {
   get(id) { return auditRecords.get(this.org.innerState, id) }
 
   list(options) { return auditRecords.list(this.org.innerState, options) }
+
+  persist(options) { return auditRecords.persist(this.org.innerState, options) }
+
+  update(auditRecord) { return auditRecords.update(this.org.innerState, auditRecord) }
 }
 
 /**
