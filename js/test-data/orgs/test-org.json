@@ -3,15 +3,15 @@
     "com.liquid-labs.federated-json": {
       "mountSpecs": [
         {
-          "dataPath": "thirdPartyAccounts",
+          "dataPath": ".thirdPartyAccounts",
           "dataFile": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/third-party-accounts.json"
         },
         {
-          "dataPath": "roles",
+          "dataPath": ".roles",
           "dataFile": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/roles/roles.json"
         },
         {
-          "dataPath": "vendors",
+          "dataPath": ".vendors",
           "dataFile": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/vendors.json"
         }
       ]
