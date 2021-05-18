@@ -14,6 +14,6 @@ const list = (data) => Object.keys(data?.vendors || {}).sort().map((key) => toSt
 /**
 * Since our data is complete as is, this just makes a copy for safety's sake.
 */
-const toStandalone = (data, name) => Object.assign({}, data.vendors[name])
+const toStandalone = (data, name) => Object.assign({ id : name }, data.vendors[name])
 
 export { get, list }
