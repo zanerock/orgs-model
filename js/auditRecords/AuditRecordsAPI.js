@@ -42,6 +42,7 @@ const checkCondition = (condition, productRec) => {
     productRec.parameters
   )
 
+  const zeroRes = []
   const evaluator = new Evaluator({ parameters, zeroRes })
   return evaluator.evalTruth(condition)
 }

@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@liquid-labs/condition-eval": "^1.0.0-alpha.10",
-    "@liquid-labs/federated-json": "^1.0.0-alpha.11",
+    "@liquid-labs/federated-json": "^1.0.0-alpha.17",
     "@liquid-labs/gucci-wrapper": "^1.0.0-alpha.2",
     "dotenv": "^8.2.0",
     "fs": "0.0.1-security"
