@@ -40,26 +40,21 @@ const list = (data, { domain, 'audit name': auditName }) => {
 }
 
 const persist = (data, { domain, domains }) => {
-  console.error('--------\nSAVING\n---------')
   if (!domains && domain) {
     domains = [domain]
   }
   if (domains && domains.length > 0) {
     for (domain of domains) {
-      console.error(`--------\nSAVING domain ${domain}\n---------`)
       fjson.write({ data, saveFrom : `.auditRecords.${domain}` })
     }
   }
   else {
-    console.error('--------\nSAVING all audit records\n---------')
     fjson.write({ data, saveFrom : '.auditRecords' })
   }
 }
 
 const update = (data, auditRecord) => {
-  console.error('auditRecord in update', auditRecord)
   const { id } = auditRecord
-  console.error(`id: ${id}`)
   const [auditName, targetId] = splitId(id)
   const [domain] = auditName.split('-')
 
@@ -82,9 +77,7 @@ const splitId = (id) => {
   if (id === undefined) {
     throw new Error('Must provide id in call to get audit records.')
   }
-  console.error(`splitId: ${id}\n`, `is: ${typeof id}`)
   const [auditName, targetId] = id.split(/\/(.+)/)
-  console.error('hey!')
   if (auditName === undefined || targetId === undefined) {
     throw new Error(`Malformed audit record ID '${id}'. Should have form '<audit name>/<target ID>'.`)
   }
