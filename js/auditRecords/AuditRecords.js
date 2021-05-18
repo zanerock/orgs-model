@@ -10,7 +10,7 @@ import * as fjson from '@liquid-labs/federated-json'
 */
 const get = (data, id) => {
   const [ auditName, targetId ] = splitId(id)
-  data?.auditRecords?.[auditName]?.[targetId] && toStandalone(data, auditName, targetId)
+  return data?.auditRecords?.[auditName]?.[targetId] && toStandalone(data, auditName, targetId)
 }
 
 const list = (data, { domain, "audit name": auditName }) => {
@@ -36,7 +36,7 @@ const list = (data, { domain, "audit name": auditName }) => {
     return acc
   },
   [])
-  .sort((a,b) => a.id.localCompare(b.id))
+  .sort((a,b) => a.id.localeCompare(b.id))
 }
 
 const persist = (data, { domain, domains }) => {
@@ -91,16 +91,16 @@ const splitId = (id) => {
   return [ auditName, targetId ]
 }
 
-const domainRe = /^([^-]?-.+)/
-
 /**
 * Since our data is complete as is, this just makes a copy for safety's sake.
 */
-const toStandalone = (data, auditName, targetId) =>
-  Object.assign({
+const toStandalone = (data, auditName, targetId) => {
+  const [ domain ] = auditName.split(/-(.+)/)
+  return Object.assign({
       id: `${auditName}/${targetId}`,
-      domain: auditName.replace(domainRe, '${1}')
+      domain
     },
-    data.auditRecords[auditName][targetId])
+    data.auditRecords[domain][auditName][targetId])
+}
 
 export { get, list, persist, update }
