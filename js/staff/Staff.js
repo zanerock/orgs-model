@@ -37,7 +37,6 @@ const Staff = class {
   getByRoleName(roleName) { return this.members.filter(s => s.hasRole(roleName)) }
 
   addData(memberData) {
-    console.log('Staff: ', memberData)
     this.members.push(new StaffMember(memberData))
     this.hydrate(this.org)
   }

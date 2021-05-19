@@ -74,11 +74,6 @@ const Organization = class {
             else {
               const mngrEmail = manager.getEmail()
               const managingRoles = this.getManagingRolesByManagedRoleName(r.getName())
-              // DEBUG
-              /* if (r.getName() === 'Chairman of the Board') {
-                console.error("Hey!\n----------------\n")
-                console.error(managingRoles)
-              } */
               const managingRole = managingRoles.find(mngrRole =>
                 this.hasStaffInRole(mngrEmail, mngrRole.getName())
               )
