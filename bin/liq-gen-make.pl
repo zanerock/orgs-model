@@ -40,8 +40,8 @@ BIN := $(shell npm bin)
 SETTINGS_CONV := $(BIN)/liq-settings-conv
 PROJ_MAPPER := $(BIN)/liq-proj-mapper
 REFS_GEN := $(BIN)/liq-refs-gen
-TSV_FILTER := $(BIN)/liq-standards-filter-abs
-TSV2MD := $(BIN)/liq-tsv2md
+POLICY_TSV_FILTER := $(BIN)/liq-standards-filter-abs
+POLICY_TSV2MD := $(BIN)/liq-tsv2md
 GUCCI := $(BIN)/gucci
 
 POLICY_PROJECTS = $(shell find node_modules/@liquid-labs -maxdepth 1 -name "policy-*")
@@ -164,15 +164,15 @@ foreach my $items (split /\n/, `find -L node_modules/\@liquid-labs -path "*/poli
 		# s|^#\s*include\s*|node_modules/${project}/policy/|; s/ /\\ /g; chomp($_); "$_.tsv"; } @incs;
 
 	$tsv = ".build/${common_path}/${safe_name}.tsv";
-	print "$tsv : $safe_items $SETTINGS_FILE_SRC ".join(' ', @incs).' $(TSV_FILTER) | .build'."\n";
+	print "$tsv : $safe_items $SETTINGS_FILE_SRC ".join(' ', @incs).' $(POLICY_TSV_FILTER) | .build'."\n";
 	print "\t".'rm -f "$@"'."\n";
-	print "\t".'$(TSV_FILTER) --settings="'.$SETTINGS_FILE_SRC.'" "$<" "$@"'."\n";
+	print "\t".'$(POLICY_TSV_FILTER) --settings="'.$SETTINGS_FILE_SRC.'" "$<" "$@"'."\n";
 	print "\n";
 
 	$tmpl = ".build/${common_path}/${safe_name}.tmpl";
-	print "$tmpl : ".$tsv.' $(TSV2MD) | .build'."\n";
+	print "$tmpl : ".$tsv.' $(POLICY_TSV2MD) | .build'."\n";
 	print "\t".'rm -f "$@"'."\n";
-	print "\t".'$(TSV2MD) "$<" "$@"'."\n";
+	print "\t".'$(POLICY_TSV2MD) "$<" "$@"'."\n";
 	print "\n";
 }
 
