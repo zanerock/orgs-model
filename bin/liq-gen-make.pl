@@ -45,7 +45,7 @@ POLICY_TSV2MD := $(BIN)/liq-tsv2md
 GUCCI := $(BIN)/gucci
 
 POLICY_PROJECTS = $(shell find node_modules/@liquid-labs -maxdepth 1 -name "policy-*")
-ASSET_DIRS = $(shell find -L node_modules/@liquid-labs -path "*/policy-*/policy/*" -type d -not -path "node_modules/*/node_modules/*" -not -path "*/.yalc/*")
+ASSET_DIRS = $(shell find -L node_modules/@liquid-labs/policy-* -path "*/policy-*/policy/*" -type d -not -path "node_modules/*/node_modules/*" -not -path "*/.yalc/*")
 
 default: all
 
