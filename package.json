@@ -10,6 +10,7 @@
   ],
   "bin": {
     "liq-init-docs": "bin/liq-init-docs.pl",
+    "liq-gen-glossary": "dist/liq-gen-glossary.sh",
     "liq-gen-make": "bin/liq-gen-make.pl",
     "liq-settings-conv": "bin/liq-settings-conv.pl",
     "liq-refs-gen": "bin/liq-refs-gen.pl",
@@ -18,7 +19,7 @@
     "liq-tsv2md": "bin/liq-tsv2md.pl"
   },
   "scripts": {
-    "build": "catalyst-scripts build",
+    "build": "catalyst-scripts build && make",
     "pretest": "catalyst-scripts pretest",
     "test": "catalyst-scripts test",
     "preversion": "npm test && npm run lint",
@@ -37,11 +38,13 @@
   },
   "homepage": "https://github.com/Liquid-Labs/orgs-model#readme",
   "devDependencies": {
-    "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.34"
+    "@liquid-labs/bash-rollup": "^1.0.0-alpha.5",
+    "@liquid-labs/bash-toolkit": "^1.0.0-alpha.52",
+    "@liquid-labs/catalyst-scripts": "file:.yalc/@liquid-labs/catalyst-scripts"
   },
   "dependencies": {
     "@liquid-labs/condition-eval": "^1.0.0-alpha.10",
-    "@liquid-labs/federated-json": "^1.0.0-alpha.17",
+    "@liquid-labs/federated-json": "file:.yalc/@liquid-labs/federated-json",
     "@liquid-labs/gucci-wrapper": "^1.0.0-alpha.2",
     "dotenv": "^8.2.0",
     "fs": "0.0.1-security"

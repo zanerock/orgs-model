@@ -43,9 +43,11 @@ REFS_GEN := $(BIN)/liq-refs-gen
 POLICY_TSV_FILTER := $(BIN)/liq-standards-filter-abs
 POLICY_TSV2MD := $(BIN)/liq-tsv2md
 GUCCI := $(BIN)/gucci
+GLOSSARY_BUILDER := $(BIN)/liq-gen-glossary
 
-POLICY_PROJECTS = $(shell find node_modules/@liquid-labs -maxdepth 1 -name "policy-*")
-ASSET_DIRS = $(shell find -L node_modules/@liquid-labs/policy-* -path "*/policy-*/policy/*" -type d -not -path "node_modules/*/node_modules/*" -not -path "*/.yalc/*")
+POLICY_PROJECTS ?= $(shell find node_modules/@liquid-labs -maxdepth 1 -name "policy-*")
+ASSET_DIRS ?= $(shell find -L node_modules/@liquid-labs/policy-* -path "*/policy-*/policy/*" -not -path "node_modules/*/node_modules/*" -not -path "*/.yalc/*" -type d )
+GLOSSARY_JSONS ?= $(shell find -L node_modules/@liquid-labs/policy-* -path "*/policy-*/policy/*" -not -path "node_modules/*/node_modules/*" -not -path "*/.yalc/*" -name "glossary.json")
 
 default: all
 
@@ -181,7 +183,13 @@ print "${roles_ref}:\n";
 print "\t@[[ '\$(STAFF_FILE)' != '' ]] || { echo \"'STAFF_FILE' var not set. Try calling 'STAFF_FILE=/foo/bar make'\"; exit 1; }\n";
 print "\t".'mkdir -p $(shell dirname "$@")'."\n";
 print "\t\$(BIN)/liq-gen-roles-ref \$(PWD)/data \$(STAFF_FILE) > \"\$@\"\n";
-# push(@all, $roles_ref);
+# push(@all, $roles_ref); # TODO: why is this commented out?
 print "\nroles-ref: $roles_ref\n";
+
+# Set up glossary
+my $glossary = "${OUT_DIR}/Glossary.md";
+print "\n${glossary}: \$(GLOSSARY_JSONS)\n";
+print "\t\$(GLOSSARY_BUILDER) \$^ > \$@\n";
+push(@all, $glossary);
 
 print "\nall: ".join(" ", @all);
