@@ -8,8 +8,6 @@ const dashCase = (term) => {
 
 const definitionFiles = [...process.argv.slice(2)]
 
-console.error(definitionFiles)
-
 const allTerms = generateGlossary({ definitionFiles })
 
 // Note: 'console.log(...)' adds it's own newline, so the '\n' in the following creates a blank line.
