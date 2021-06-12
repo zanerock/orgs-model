@@ -40,12 +40,12 @@
   "devDependencies": {
     "@liquid-labs/bash-rollup": "^1.0.0-alpha.5",
     "@liquid-labs/bash-toolkit": "^1.0.0-alpha.52",
-    "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.36"
+    "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.38"
   },
   "dependencies": {
-    "@liquid-labs/condition-eval": "^1.0.0-alpha.10",
+    "@liquid-labs/condition-eval": "^1.0.0-alpha.11",
     "@liquid-labs/federated-json": "^1.0.0-alpha.18",
-    "@liquid-labs/gucci-wrapper": "^1.0.0-alpha.2",
+    "@liquid-labs/gucci-wrapper": "^1.0.0-alpha.3",
     "dotenv": "^8.2.0",
     "fs": "0.0.1-security"
   },
@@ -54,5 +54,8 @@
     "changeControl": {
       "type": "code"
     }
+  },
+  "liq": {
+    "packageType": "tools|libary|node"
   }
 }
