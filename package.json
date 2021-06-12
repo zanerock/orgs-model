@@ -1,6 +1,6 @@
 {
   "name": "@liquid-labs/orgs-model",
-  "version": "1.0.0-beta.32",
+  "version": "1.0.0-beta.33",
   "description": "Liquid organizations model.",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -58,8 +58,12 @@
     "orgBase": "git@github.com:Liquid-Labs/Liquid-Labs.git",
     "packageType": "tools|libary|node",
     "versionCheck": {
-      "ignore": [ "@babel/runtime" ],
-      "options": [ "--skip-unused" ]
+      "ignore": [
+        "@babel/runtime"
+      ],
+      "options": [
+        "--skip-unused"
+      ]
     }
   }
 }
