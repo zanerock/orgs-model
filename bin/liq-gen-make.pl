@@ -96,6 +96,20 @@ sub extract_context {
 	return ($project, $common_path, $raw_name, $safe_name)
 }
 
+sub policy_refs_build {
+	my $common_path = shift;
+	my $project = shift;
+
+	my $prefix = $common_path ? "${common_path}/" : "";
+
+	print ".build/${prefix}policy-refs.yaml : ".'$(ASSET_DIRS) $(REFS_GEN) .build/proj-maps.pl '."$SETTINGS_FILE | .build\n";
+	print "\t".'rm -f "$@"'."\n";
+	print "\t".'mkdir -p $(dir $@)'."\n";
+	print "\t".'$(REFS_GEN) "$@" ./.build/proj-maps.pl "'.${project}.'" "'.${common_path}.'" $(ASSET_DIRS)'."\n";
+	print "\t".'cat "$@" '."$SETTINGS_FILE".' > tmp.yaml && mv tmp.yaml "$@"'."\n";
+	print "\n";
+}
+
 foreach my $source (split /\n/, $sources) {
   (my $safe_source = $source) =~ s/ /\\ /g;
 	my ($project, $common_path, $raw_name, $safe_name) = extract_context($source);
@@ -108,14 +122,8 @@ foreach my $source (split /\n/, $sources) {
   # definition to be written. Looking at the current implementation, I worry that this just changed the race condition.
   # But... maybe it's a valid fix. This code is way to subtle.
   if (!exists($refs_tracker{$common_path})) {
-    print ".build/$common_path/policy-refs.yaml : ".'$(ASSET_DIRS) $(REFS_GEN) .build/proj-maps.pl '."$SETTINGS_FILE | .build\n";
-    print "\t".'rm -f "$@"'."\n";
-    print "\t".'mkdir -p $(dir $@)'."\n";
-    print "\t".'$(REFS_GEN) "$@" ./.build/proj-maps.pl "'.${project}.'" "'.${common_path}.'" $(ASSET_DIRS)'."\n";
-    print "\t".'cat "$@" '."$SETTINGS_FILE".' > tmp.yaml && mv tmp.yaml "$@"'."\n";
-    print "\n";
-
-    $refs_tracker{$common_path} = ".build/${common_path}/policy-refs.yaml";
+		policy_refs_build($common_path, $project);
+		$refs_tracker{$common_path} = ".build/${common_path}/policy-refs.yaml";
   }
 
   (my $items = $source) =~ s/\.md/ - items.tsv/;
@@ -184,12 +192,20 @@ print "\t@[[ '\$(STAFF_FILE)' != '' ]] || { echo \"'STAFF_FILE' var not set. Try
 print "\t".'mkdir -p $(shell dirname "$@")'."\n";
 print "\t\$(BIN)/liq-gen-roles-ref \$(PWD)/data \$(STAFF_FILE) > \"\$@\"\n";
 # push(@all, $roles_ref); # TODO: why is this commented out?
-print "\nroles-ref: $roles_ref\n";
+print "\nroles-ref: $roles_ref\n\n";
 
 # Set up glossary
+my $glossaryTemplate = '.build/Glossary.md';
 my $glossary = "${OUT_DIR}/Glossary.md";
-print "\n${glossary}: \$(GLOSSARY_JSONS)\n";
+# build a refs/vars def in the base dir to resolve links and parameters in the glossary
+policy_refs_build('', '');
+# build the glossary template
+print "${glossaryTemplate}: \$(GLOSSARY_JSONS)\n";
 print "\t\$(GLOSSARY_BUILDER) \$^ > \$@\n";
+# build the fully resolved glossary file
+print "\n${glossary}: ${glossaryTemplate} .build/policy-refs.yaml\n";
+print "\t".'cat "$<" | $(GUCCI) --vars-file .build/policy-refs.yaml > "$@" || { rm "$@"; echo "\nFailed to make\n$@\n"; exit 1; }'."\n";
+
 push(@all, $glossary);
 
 print "\nall: ".join(" ", @all);
