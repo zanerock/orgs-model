@@ -122,8 +122,8 @@ const Organization = class {
             acting
           }
         })
-      var data = {}
-      var childNodes = []
+      const data = {}
+      const childNodes = []
 
       // build out the full tree with each titual role being it's own thing
       seedData.forEach((item, index) => {
@@ -131,7 +131,7 @@ const Organization = class {
           Object.assign(data, item)
         }
         else {
-          var jsonloop = new JSONLoop(data, 'id', 'children')
+          const jsonloop = new JSONLoop(data, 'id', 'children')
           jsonloop.findNodeById(data, item.parent_id, function(err, node) {
             if (err) throw new Error(`Error finding '${item.parent_id}'; ${err}`)
             else {

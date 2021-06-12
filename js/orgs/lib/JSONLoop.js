@@ -12,14 +12,11 @@ const JSONLoop = class {
   }
 
   isEmpty(obj) {
-    for (var property in obj) { // eslint-disable-line guard-for-in
-      return false
-    }
-    return true
+    return Object.keys(obj).length === 0
   }
 
   countNodes(obj) {
-    var that = this
+    const that = this
     this.count++
     return (function() {
       if (!obj || that.isEmpty(obj)) {
@@ -36,8 +33,8 @@ const JSONLoop = class {
   }
 
   generateClone(obj) {
-    var target = {}
-    for (var i in obj) {
+    const target = {}
+    for (const i in obj) {
       if (i !== this.children) {
         target[i] = obj[i]
       }
@@ -57,7 +54,7 @@ const JSONLoop = class {
       }
       this.count--
       if (obj[this.children]) {
-        var that = this
+        const that = this
         obj[this.children].forEach(function(node) {
           that.findNodeById(node, id, callback)
         })
@@ -66,7 +63,7 @@ const JSONLoop = class {
   }
 
   matchConditions(obj, conditions) {
-    var flag = true
+    let flag = true
     Object.keys(conditions).forEach(function(item) {
       if (typeof conditions[item] === 'string' || typeof conditions[item] === 'number') {
         if (obj[item] !== conditions[item]) {
@@ -132,8 +129,8 @@ const JSONLoop = class {
   }
 
   findNodes(obj, conditions, callback) {
-    var that = this
-    var copy = [] // ths shallow copy of nodes array
+    const that = this
+    let copy = [] // ths shallow copy of nodes array
     return (function(obj, conditions, callback) {
       if (that.matchConditions(obj, conditions)) {
         nodes.push(obj)
@@ -178,13 +175,13 @@ const JSONLoop = class {
   }
 
   findSiblings(obj, node, callback) {
-    var that = this
+    const that = this
     this.findParent(obj, node, function(err, parent) {
       if (err) {
         callback(new Error('its sibling nodes do not exist'))
       }
       else {
-        var siblings = []
+        const siblings = []
         parent[that.children].forEach(function(item) {
           if (item[that.id] !== node[that.id]) {
             siblings.push(that.generateClone(item))
@@ -196,9 +193,9 @@ const JSONLoop = class {
   }
 
   findAncestors(obj, node, callback) {
-    var that = this
+    const that = this
     if (node[this.id] === obj[this.id]) {
-      var copy = nodes.slice(0)
+      const copy = nodes.slice(0)
       nodes = []
       callback(null, copy)
     }

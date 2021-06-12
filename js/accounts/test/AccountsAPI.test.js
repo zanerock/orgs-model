@@ -4,14 +4,14 @@ import { AccountsAPI } from '../AccountsAPI'
 import { Organization } from '../../orgs/Organization'
 
 describe('AccountsAPI', () => {
-  var acctsAPI
+  let acctsAPI
   beforeAll(() => {
     const org = new Organization('./js/test-data', './js/staff/test/staff.json')
     acctsAPI = new AccountsAPI(org)
   })
 
   describe('checkCondition', () => {
-    var acctList
+    let acctList
     beforeAll(() => { acctList = acctsAPI.list() })
 
     test.each`
@@ -21,9 +21,9 @@ describe('AccountsAPI', () => {
       ${'parameter tags'}|${'BUSINESS'}|${['business/fax-co']}
       ${'parameter numbers'}|${'REVIEW_PERIOD == 360'}|${['business/fax-co']}
     `('properly evaluates $desc ($condition)', ({ desc, condition, expectation }) => {
-  const accts = acctList.filter((acct) => AccountsAPI.checkCondition(condition, acct))
-  expect(accts.map(e => e.name)).toEqual(expectation)
-})
+      const accts = acctList.filter((acct) => AccountsAPI.checkCondition(condition, acct))
+      expect(accts.map(e => e.name)).toEqual(expectation)
+    })
 
     test('complains of unknown parameters', () =>
       expect(() => AccountsAPI.checkCondition('BLAH', acctList[0]))

@@ -5,11 +5,6 @@ import { Evaluator } from '@liquid-labs/condition-eval'
 import { StaffMember } from './StaffMember'
 import { AttachedRole } from '../roles'
 
-const roleRe = new RegExp('^HAS_[A-Z_]+_ROLE$')
-const staffParameters = ['USES_CENTRALIZED_ANTIVIRUS', 'USES_CENTRALIZED_FIREWALL']
-const zeroRes = staffParameters.map(p => new RegExp(p))
-zeroRes.push(roleRe)
-
 const Staff = class {
   constructor(fileName) {
     this.fileName = fileName
@@ -167,6 +162,13 @@ const processImpliedRoles = (roles, s, rec, role, org) => {
     processImpliedRoles(roles, s, impliedRec, impliedRole, org)
   }
 }
+
+// Setup 'zeroRes' matchers for 'checkCondition'. If matching parameters are missing, treated as false rather than an
+// error
+const roleRe = /^HAS_[A-Z_]+_ROLE$/
+const staffParameters = ['^USES_CENTRALIZED_ANTIVIRUS$', '^USES_CENTRALIZED_FIREWALL$']
+const zeroRes = staffParameters.map(p => new RegExp(p))
+zeroRes.push(roleRe)
 
 /**
 * Obligitory 'checkCondition' function provided by the API for processing inclusion or exclusion of Staff targets in

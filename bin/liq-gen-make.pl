@@ -40,12 +40,14 @@ BIN := $(shell npm bin)
 SETTINGS_CONV := $(BIN)/liq-settings-conv
 PROJ_MAPPER := $(BIN)/liq-proj-mapper
 REFS_GEN := $(BIN)/liq-refs-gen
-TSV_FILTER := $(BIN)/liq-standards-filter-abs
-TSV2MD := $(BIN)/liq-tsv2md
+POLICY_TSV_FILTER := $(BIN)/liq-standards-filter-abs
+POLICY_TSV2MD := $(BIN)/liq-tsv2md
 GUCCI := $(BIN)/gucci
+GLOSSARY_BUILDER := $(BIN)/liq-gen-glossary
 
-POLICY_PROJECTS = $(shell find node_modules/@liquid-labs -maxdepth 1 -name "policy-*")
-ASSET_DIRS = $(shell find -L node_modules/@liquid-labs -path "*/policy-*/policy/*" -type d -not -path "node_modules/*/node_modules/*" -not -path "*/.yalc/*")
+POLICY_PROJECTS ?= $(shell find node_modules/@liquid-labs -maxdepth 1 -name "policy-*")
+ASSET_DIRS ?= $(shell find -L node_modules/@liquid-labs/policy-* -path "*/policy-*/policy/*" -not -path "node_modules/*/node_modules/*" -not -path "*/.yalc/*" -type d )
+GLOSSARY_JSONS ?= $(shell find -L node_modules/@liquid-labs/policy-* -path "*/policy-*/policy/*" -not -path "node_modules/*/node_modules/*" -not -path "*/.yalc/*" -name "glossary.json")
 
 default: all
 
@@ -94,6 +96,20 @@ sub extract_context {
 	return ($project, $common_path, $raw_name, $safe_name)
 }
 
+sub policy_refs_build {
+	my $common_path = shift;
+	my $project = shift;
+
+	my $prefix = $common_path ? "${common_path}/" : "";
+
+	print ".build/${prefix}policy-refs.yaml : ".'$(ASSET_DIRS) $(REFS_GEN) .build/proj-maps.pl '."$SETTINGS_FILE | .build\n";
+	print "\t".'rm -f "$@"'."\n";
+	print "\t".'mkdir -p $(dir $@)'."\n";
+	print "\t".'$(REFS_GEN) "$@" ./.build/proj-maps.pl "'.${project}.'" "'.${common_path}.'" $(ASSET_DIRS)'."\n";
+	print "\t".'cat "$@" '."$SETTINGS_FILE".' > tmp.yaml && mv tmp.yaml "$@"'."\n";
+	print "\n";
+}
+
 foreach my $source (split /\n/, $sources) {
   (my $safe_source = $source) =~ s/ /\\ /g;
 	my ($project, $common_path, $raw_name, $safe_name) = extract_context($source);
@@ -106,14 +122,8 @@ foreach my $source (split /\n/, $sources) {
   # definition to be written. Looking at the current implementation, I worry that this just changed the race condition.
   # But... maybe it's a valid fix. This code is way to subtle.
   if (!exists($refs_tracker{$common_path})) {
-    print ".build/$common_path/policy-refs.yaml : ".'$(ASSET_DIRS) $(REFS_GEN) .build/proj-maps.pl '."$SETTINGS_FILE | .build\n";
-    print "\t".'rm -f "$@"'."\n";
-    print "\t".'mkdir -p $(dir $@)'."\n";
-    print "\t".'$(REFS_GEN) "$@" ./.build/proj-maps.pl "'.${project}.'" "'.${common_path}.'" $(ASSET_DIRS)'."\n";
-    print "\t".'cat "$@" '."$SETTINGS_FILE".' > tmp.yaml && mv tmp.yaml "$@"'."\n";
-    print "\n";
-
-    $refs_tracker{$common_path} = ".build/${common_path}/policy-refs.yaml";
+		policy_refs_build($common_path, $project);
+		$refs_tracker{$common_path} = ".build/${common_path}/policy-refs.yaml";
   }
 
   (my $items = $source) =~ s/\.md/ - items.tsv/;
@@ -164,15 +174,15 @@ foreach my $items (split /\n/, `find -L node_modules/\@liquid-labs -path "*/poli
 		# s|^#\s*include\s*|node_modules/${project}/policy/|; s/ /\\ /g; chomp($_); "$_.tsv"; } @incs;
 
 	$tsv = ".build/${common_path}/${safe_name}.tsv";
-	print "$tsv : $safe_items $SETTINGS_FILE_SRC ".join(' ', @incs).' $(TSV_FILTER) | .build'."\n";
+	print "$tsv : $safe_items $SETTINGS_FILE_SRC ".join(' ', @incs).' $(POLICY_TSV_FILTER) | .build'."\n";
 	print "\t".'rm -f "$@"'."\n";
-	print "\t".'$(TSV_FILTER) --settings="'.$SETTINGS_FILE_SRC.'" "$<" "$@"'."\n";
+	print "\t".'$(POLICY_TSV_FILTER) --settings="'.$SETTINGS_FILE_SRC.'" "$<" "$@"'."\n";
 	print "\n";
 
 	$tmpl = ".build/${common_path}/${safe_name}.tmpl";
-	print "$tmpl : ".$tsv.' $(TSV2MD) | .build'."\n";
+	print "$tmpl : ".$tsv.' $(POLICY_TSV2MD) | .build'."\n";
 	print "\t".'rm -f "$@"'."\n";
-	print "\t".'$(TSV2MD) "$<" "$@"'."\n";
+	print "\t".'$(POLICY_TSV2MD) "$<" "$@"'."\n";
 	print "\n";
 }
 
@@ -181,7 +191,21 @@ print "${roles_ref}:\n";
 print "\t@[[ '\$(STAFF_FILE)' != '' ]] || { echo \"'STAFF_FILE' var not set. Try calling 'STAFF_FILE=/foo/bar make'\"; exit 1; }\n";
 print "\t".'mkdir -p $(shell dirname "$@")'."\n";
 print "\t\$(BIN)/liq-gen-roles-ref \$(PWD)/data \$(STAFF_FILE) > \"\$@\"\n";
-# push(@all, $roles_ref);
-print "\nroles-ref: $roles_ref\n";
+# push(@all, $roles_ref); # TODO: why is this commented out?
+print "\nroles-ref: $roles_ref\n\n";
+
+# Set up glossary
+my $glossaryTemplate = '.build/Glossary.md';
+my $glossary = "${OUT_DIR}/Glossary.md";
+# build a refs/vars def in the base dir to resolve links and parameters in the glossary
+policy_refs_build('', '');
+# build the glossary template
+print "${glossaryTemplate}: \$(GLOSSARY_JSONS)\n";
+print "\t\$(GLOSSARY_BUILDER) \$^ > \$@\n";
+# build the fully resolved glossary file
+print "\n${glossary}: ${glossaryTemplate} .build/policy-refs.yaml\n";
+print "\t".'cat "$<" | $(GUCCI) --vars-file .build/policy-refs.yaml > "$@" || { rm "$@"; echo "\nFailed to make\n$@\n"; exit 1; }'."\n";
+
+push(@all, $glossary);
 
 print "\nall: ".join(" ", @all);

@@ -41,8 +41,8 @@ describe('OrgStructure', () => {
     ${'CTO'} | ${2}
     ${'Developer'} | ${0}
     `('expect $count descendents for node \'$name\'', ({ name, count }) => {
-  expect(orgStructure.getNodeByRoleName(name).getDescendents()).toHaveLength(count)
-})
+      expect(orgStructure.getNodeByRoleName(name).getDescendents()).toHaveLength(count)
+    })
 
     test.each`
     name | count
@@ -50,8 +50,8 @@ describe('OrgStructure', () => {
     ${'CTO'} | ${3}
     ${'Developer'} | ${1}
     `('expect $count tree nodes for node \'$name\'', ({ name, count }) => {
-  expect(orgStructure.getNodeByRoleName(name).getTreeNodes()).toHaveLength(count)
-})
+      expect(orgStructure.getNodeByRoleName(name).getTreeNodes()).toHaveLength(count)
+    })
 
     test('\'CEO\' has null parent', () => {
       expect(orgStructure.getNodeByRoleName('CEO').getPrimMngr()).toBe(null)
@@ -62,15 +62,15 @@ describe('OrgStructure', () => {
     ${'CTO'} | ${'CEO'}
     ${'Developer'} | ${'CTO'}
     `('\'$name\' has primary manager \'$mngrName\'', ({ name, mngrName }) => {
-  expect(orgStructure.getNodeByRoleName(name).getPrimMngr().getName()).toEqual(mngrName)
-})
+      expect(orgStructure.getNodeByRoleName(name).getPrimMngr().getName()).toEqual(mngrName)
+    })
 
     test.each`
     name | mngrs
     ${'CTO'} | ${['CEO']}
     ${'Developer'} | ${['CTO', 'Developer']}
     `('\'$name\' has possible managers \'$mngrs\'', ({ name, mngrs }) => {
-  expect(orgStructure.getNodeByRoleName(name).getPossibleMngrs().map(m => m.getName())).toEqual(mngrs)
-})
+      expect(orgStructure.getNodeByRoleName(name).getPossibleMngrs().map(m => m.getName())).toEqual(mngrs)
+    })
   })
 })
