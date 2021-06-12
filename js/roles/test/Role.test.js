@@ -14,6 +14,6 @@ describe('Role', () => {
   ${'Developer'} | ${true}
   ${'CEO'} | ${false}
   `('Role \'$roleName\' is qualifiable: $isQualifiable', ({ roleName, isQualifiable }) =>
-  expect(roles.get(roleName).isQualifiable()).toBe(isQualifiable)
-)
+    expect(roles.get(roleName).isQualifiable()).toBe(isQualifiable)
+  )
 })

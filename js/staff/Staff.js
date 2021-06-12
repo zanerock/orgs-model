@@ -5,7 +5,7 @@ import { Evaluator } from '@liquid-labs/condition-eval'
 import { StaffMember } from './StaffMember'
 import { AttachedRole } from '../roles'
 
-const roleRe = new RegExp('^HAS_[A-Z_]+_ROLE$')
+const roleRe = /^HAS_[A-Z_]+_ROLE$'/
 const staffParameters = ['USES_CENTRALIZED_ANTIVIRUS', 'USES_CENTRALIZED_FIREWALL']
 const zeroRes = staffParameters.map(p => new RegExp(p))
 zeroRes.push(roleRe)

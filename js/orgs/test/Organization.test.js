@@ -39,8 +39,8 @@ describe('Organization', () => {
     ${'ceo@foo.com'} | ${'CTO'} | ${'ceo@foo.com'}
     ${'dev@foo.com'} | ${'Developer'} | ${'ceo@foo.com'}
     `('$email as $roleName managed by $managerName', ({ email, roleName, managerEmail }) => {
-  expect(org.getStaff().get(email).getAttachedRole(roleName).getManager().getEmail()).toEqual(managerEmail)
-})
+      expect(org.getStaff().get(email).getAttachedRole(roleName).getManager().getEmail()).toEqual(managerEmail)
+    })
 
     test.each`
     managerEmail | roleName | reportCount
@@ -49,8 +49,8 @@ describe('Organization', () => {
     ${'dev@foo.com'} | ${'Developer'} | ${1}
     ${'test@foo.com'} | ${'Developer'} | ${0}
     `('$managerEamil manages $reportCount $roleName staff', ({ managerEmail, roleName, managerName, reportCount }) => {
-  expect(org.getStaff().get(managerEmail).getReportsByRoleName(roleName)).toHaveLength(reportCount)
-})
+      expect(org.getStaff().get(managerEmail).getReportsByRoleName(roleName)).toHaveLength(reportCount)
+    })
 
     test.each`
     email | reportCount
@@ -58,8 +58,8 @@ describe('Organization', () => {
     ${'dev@foo.com'} | ${1}
     ${'test@foo.com'} | ${0}
     `('$email has $reportCount total reports', ({ email, roleName, managerName, reportCount }) => {
-  expect(org.getStaff().get(email).getReports()).toHaveLength(reportCount)
-})
+      expect(org.getStaff().get(email).getReports()).toHaveLength(reportCount)
+    })
   })
 
   describe('getStaff', () => {

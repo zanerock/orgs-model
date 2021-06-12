@@ -4,7 +4,7 @@ import * as accounts from '../Accounts'
 import { loadOrgState } from '../../lib/org-state'
 
 describe('Account', () => {
-  var orgState
+  let orgState
   beforeAll(() => { orgState = loadOrgState('./js/test-data') })
 
   describe('get', () => {
@@ -21,7 +21,7 @@ describe('Account', () => {
   })
 
   describe('list', () => {
-    var acctList
+    let acctList
     beforeAll(() => { acctList = accounts.list(orgState) })
 
     test('retrieves all accounts by default', () => expect(acctList.length).toBe(2))

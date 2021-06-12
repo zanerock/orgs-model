@@ -17,16 +17,16 @@ describe('AttachedRole', () => {
   ${'dev@foo.com'} | ${'Developer'}
   ${'ceo@foo.com'}| ${'CEO'}
   `('\'$email\' role \'$roleName\' presents expected name', ({ email, roleName }) => {
-  expect(org.getStaff().get(email).getAttachedRole(roleName).getName()).toBe(roleName)
-})
+    expect(org.getStaff().get(email).getAttachedRole(roleName).getName()).toBe(roleName)
+  })
 
   test.each`
   email | roleName | isQualifiable
   ${'dev@foo.com'} | ${'Developer'} | ${true}
   ${'ceo@foo.com'}| ${'CEO'} | ${false}
   `('\'$email\' role \'$roleName\' is qualifiable: $isQualifiable', ({ email, roleName, isQualifiable }) => {
-  expect(org.getStaff().get(email).getAttachedRole(roleName).isQualifiable()).toBe(isQualifiable)
-})
+    expect(org.getStaff().get(email).getAttachedRole(roleName).isQualifiable()).toBe(isQualifiable)
+  })
 
   test.each`
   email | roleName | qualifier
@@ -34,6 +34,6 @@ describe('AttachedRole', () => {
   ${'dev@foo.com'} | ${'Developer'} | ${null}
   ${'ceo@foo.com'} | ${'CEO'} | ${null}
   `('\'$email\' role \'$roleName\' has \'$qualifier\' qualifier.', ({ email, roleName, qualifier }) => {
-  expect(org.getStaff().get(email).getAttachedRole(roleName).getQualifier()).toBe(qualifier)
-})
+    expect(org.getStaff().get(email).getAttachedRole(roleName).getQualifier()).toBe(qualifier)
+  })
 })
