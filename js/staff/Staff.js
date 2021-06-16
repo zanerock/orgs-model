@@ -70,7 +70,7 @@ const Staff = class {
             errMsgGen : (name) => `Staff member '${s.getEmail()}' claims unknown role '${name}'.`
           })
 
-        roles.push(convertRoleToAttached(s, rec, role, this.org))
+        roles.push(convertRoleToAttached({ staff: s, rec, role, org: this.org }))
         processImpliedRoles(roles, s, rec, role, this.org)
         return roles
       }, []) // StaffMember roles reduce
@@ -109,12 +109,12 @@ const Staff = class {
   }
 }
 
-const convertRoleToAttached = (s, rec, role, org) => {
+const convertRoleToAttached = ({ staff, rec, role, org, impliedBy }) => {
   if (role.isTitular()) {
     // notice we check 'rec', not 'role'; role may be implied.
     const orgNode = org.orgStructure.getNodeByRoleName(rec.name)
     if (orgNode === undefined) {
-      throw new Error(`Staff member '${s.getEmail()}' claims role '${rec.name}' not used in this org.`)
+      throw new Error(`Staff member '${staff.getEmail()}' claims role '${rec.name}' not used in this org.`)
     }
     // TODO: check the prim manager from the org structure persective
     // orgNode.getPrimMngr() !== null
@@ -128,14 +128,14 @@ const convertRoleToAttached = (s, rec, role, org) => {
     // console.error(`converting with manager: ${rec.manager}`) // DEBUG
     roleManager = org.getStaff().get(rec.manager)
     if (roleManager === undefined) {
-      throw new Error(`No such manager '${rec.manager}' found while loading staff member '${s.getEmail()}'.`)
+      throw new Error(`No such manager '${rec.manager}' found while loading staff member '${staff.getEmail()}'.`)
     }
 
     // Add ourselves to the manager's reports
     if (roleManager.reportsByReportRole[role.name] === undefined) {
       roleManager.reportsByReportRole[role.name] = []
     }
-    roleManager.reportsByReportRole[role.name].push(s)
+    roleManager.reportsByReportRole[role.name].push(staff)
   }
 
   if (role.isTitular() && roleManager !== null) {
@@ -151,8 +151,10 @@ const convertRoleToAttached = (s, rec, role, org) => {
     }
   }
 
-  const attachedRole = new AttachedRole(role, rec, roleManager, managerRole, s)
-  s.attachedRolesByName[role.name] = attachedRole
+  // TODO: have constructor take an object and include 'impliedBy'
+  const attachedRole = new AttachedRole(role, rec, roleManager, managerRole, staff)
+  if (impliedBy !== undefined) { attachedRole.impliedBy = impliedBy }
+  staff.attachedRolesByName[role.name] = attachedRole
   return attachedRole
 }
 
@@ -172,7 +174,7 @@ const processImpliedRoles = (roles, s, rec, role, org) => {
         ? rec.manager
         : throw new Error(`Unkown (or undefined?) manager protocol '${mngrProtocol}' found while processing staff.`)
     const impliedRec = { name : impliedRoleName, manager }
-    roles.push(convertRoleToAttached(s, impliedRec, impliedRole, org))
+    roles.push(convertRoleToAttached({ staff: s, rec: impliedRec, role: impliedRole, org, impliedBy: role }))
     processImpliedRoles(roles, s, impliedRec, impliedRole, org)
   }
 }
