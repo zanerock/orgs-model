@@ -122,6 +122,7 @@ const convertRoleToAttached = (s, rec, role, org) => {
 
   // TODO: this is only valid for titular roles, yeah? nest this if...
   let roleManager = null
+  let managerRole = null
   if (rec.manager) {
     // Then replace manager ID with manager object and add ourselves to their reports
     // console.error(`converting with manager: ${rec.manager}`) // DEBUG
@@ -137,7 +138,20 @@ const convertRoleToAttached = (s, rec, role, org) => {
     roleManager.reportsByReportRole[role.name].push(s)
   }
 
-  const attachedRole = new AttachedRole(role, rec, roleManager, s)
+  if (role.isTitular() && roleManager !== null) {
+    const node = org.orgStructure.getNodeByRoleName(role.name)
+    if (node === undefined) { throw new Error(`Did not find org structure node for '${role.name}'.`) }
+    if (node.primMngrName) {
+      if (roleManager.hasRole(node.primMngrName)) {
+        managerRole = roleManager.getAttachedRole(node.primMngrName)
+      }
+      else {
+        node.possibleMngrNames.some((name) => { managerRole = roleManager.getAttachedRole(name) })
+      }
+    }
+  }
+
+  const attachedRole = new AttachedRole(role, rec, roleManager, managerRole, s)
   s.attachedRolesByName[role.name] = attachedRole
   return attachedRole
 }
