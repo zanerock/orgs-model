@@ -1,7 +1,7 @@
 import { Role } from './Role'
 
 const AttachedRole = class extends Role {
-  constructor(baseRole, rec, manager, managerRole, staffMember) {
+  constructor(baseRole, rec, manager, staffMember) {
     super(baseRole)
     if (!baseRole.isQualifiable() && rec.qualifier !== undefined) {
       throw new Error(`Attempt to qualify non-qualifiable role '${baseRole.getName()}' `
@@ -10,7 +10,6 @@ const AttachedRole = class extends Role {
 
     Object.assign(this, rec)
     this.manager = manager
-    this.managerRole = managerRole
   }
 
   getManager() { return this.manager }

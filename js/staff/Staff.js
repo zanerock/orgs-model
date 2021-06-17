@@ -76,6 +76,28 @@ const Staff = class {
       }, []) // StaffMember roles reduce
     }) // StaffMember iteration
 
+    // we need to determine the manager role after everything else has been set up because the manager's role is not
+    // determined strictly by the abstract or chart due to the 'possible managers' convention.
+    this.members.forEach((s) => {
+      s.getAttachedRoles().forEach((attachedRole) => {
+        const roleManager = attachedRole.getManager()
+        if (attachedRole.isTitular() && roleManager !== null) {
+          let managerRole = null
+          const node = org.orgStructure.getNodeByRoleName(attachedRole.name)
+          if (node === undefined) { throw new Error(`Did not find org structure node for '${attachedRole.name}'.`) }
+          if (node.primMngrName) {
+            if (roleManager.hasRole(node.primMngrName)) {
+              managerRole = roleManager.getAttachedRole(node.primMngrName)
+            }
+            else {
+              node.possibleMngrNames.some((name) => { managerRole = roleManager.getAttachedRole(name) })
+            }
+          }
+          attachedRole.managerRole = managerRole
+        }
+      })
+    })
+
     return this
   }
 
@@ -122,7 +144,6 @@ const convertRoleToAttached = ({ staff, rec, role, org, impliedBy }) => {
 
   // TODO: this is only valid for titular roles, yeah? nest this if...
   let roleManager = null
-  let managerRole = null
   if (rec.manager) {
     // Then replace manager ID with manager object and add ourselves to their reports
     // console.error(`converting with manager: ${rec.manager}`) // DEBUG
@@ -138,21 +159,8 @@ const convertRoleToAttached = ({ staff, rec, role, org, impliedBy }) => {
     roleManager.reportsByReportRole[role.name].push(staff)
   }
 
-  if (role.isTitular() && roleManager !== null) {
-    const node = org.orgStructure.getNodeByRoleName(role.name)
-    if (node === undefined) { throw new Error(`Did not find org structure node for '${role.name}'.`) }
-    if (node.primMngrName) {
-      if (roleManager.hasRole(node.primMngrName)) {
-        managerRole = roleManager.getAttachedRole(node.primMngrName)
-      }
-      else {
-        node.possibleMngrNames.some((name) => { managerRole = roleManager.getAttachedRole(name) })
-      }
-    }
-  }
-
   // TODO: have constructor take an object and include 'impliedBy'
-  const attachedRole = new AttachedRole(role, rec, roleManager, managerRole, staff)
+  const attachedRole = new AttachedRole(role, rec, roleManager, staff)
   if (impliedBy !== undefined) { attachedRole.impliedBy = impliedBy }
   staff.attachedRolesByName[role.name] = attachedRole
   return attachedRole
